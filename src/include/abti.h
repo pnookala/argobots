@@ -169,7 +169,9 @@ struct ABTI_global {
     int max_xstreams;            /* Max. size of p_xstreams */
     int num_xstreams;            /* Current # of ESs */
 #ifdef ABT_XSTREAM_USE_VIRTUAL
-    int max_vxstreams;
+    int max_vxstreams; 		/* Max. number of virtual ESs per kernel thread */
+    int num_kthreads;
+    ABTI_kthread **k_threads;	/* Kernel thread array, has pointers to p_xstreams */
 #endif
     ABTI_xstream **p_xstreams;   /* ES array */
     ABTI_spinlock xstreams_lock; /* Spinlock protecting p_xstreams. Any write
@@ -256,27 +258,28 @@ struct ABTI_xstream {
     ABTI_sched *p_main_sched;   /* Main scheduler */
 
     ABTD_xstream_context ctx;   /* ES context */
+#ifdef ABT_XSTREAM_USE_VIRTUAL
+    ABTI_kthread *p_kthread;    /* Parent kernel thread that this ES is running on */
+#endif
 };
 
 #ifdef ABT_XSTREAM_USE_VIRTUAL
 struct ABTI_ksched {
     ABTI_sched_used used;       /* To know if it is used and how */
     ABT_bool automatic;         /* To know if automatic data free */
-    ABTI_sched_kind kind;       /* Kind of the scheduler  */
     ABT_sched_type type;        /* Can yield or not (ULT or task) */
     ABT_sched_state state;      /* State */
     uint32_t request;           /* Request */
-    ABT_xstream *v_xstreams;            /* Work unit pools */
-    int num_vxstreams;              /* Number of work unit pools */
+    ABTI_sched **v_scheds;  /* Array of Work units */
+    int num_scheds;          /* Number of work units in the array */
     ABTI_thread *p_thread;      /* Associated ULT */
     ABTD_thread_context *p_ctx; /* Context */
     void *data;                 /* Data for a specific scheduler */
 
     /* Scheduler functions */
-    ABT_sched_init_fn init;
-    ABT_sched_run_fn  run;
-    ABT_sched_free_fn free;
-    ABT_sched_get_migr_pool_fn get_migr_pool;
+    int (*init)(struct ABTI_ksched *, void *);
+    void (*run)(struct ABTI_ksched *);
+    int (*free)(struct ABTI_ksched *);
 #ifdef ABT_CONFIG_USE_DEBUG_LOG
     uint64_t id;                /* ID */
 #endif
@@ -287,6 +290,8 @@ struct ABTI_kthread {
     ABTD_thread_context *k_ctx; /* Context */
     void *k_req_arg;            /* Request argument */
     uint32_t request;           /* Request */
+    ABTI_xstream **v_xstreams;  /* Virtual ESs running on this kernel thread */
+    int num_vxstreams;          /* Number of virtual ESs */
 };
 #endif
 
@@ -574,6 +579,9 @@ ABT_sched_def *ABTI_sched_get_basic_def(void);
 ABT_sched_def *ABTI_sched_get_basic_wait_def(void);
 ABT_sched_def *ABTI_sched_get_prio_def(void);
 ABT_sched_def *ABTI_sched_get_randws_def(void);
+#ifdef ABT_XSTREAM_USE_VIRTUAL
+ABT_sched_def *ABTI_sched_get_master_def(void);
+#endif
 int ABTI_sched_free(ABTI_sched *p_sched);
 int ABTI_sched_get_migration_pool(ABTI_sched *, ABTI_pool *, ABTI_pool **);
 ABTI_sched_kind ABTI_sched_get_kind(ABT_sched_def *def);
