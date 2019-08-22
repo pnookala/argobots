@@ -13,6 +13,14 @@ static inline int ABTI_thread_create(ABTI_pool *p_pool,
                                      ABTI_xstream *p_parent_xstream,
                                      ABT_bool push_pool,
                                      ABTI_thread **pp_newthread);
+#ifdef ABT_XSTREAM_USE_VIRTUAL
+static inline int ABTI_ksched_thread_create(void (*thread_func)(void *),
+                                     void *arg, ABTI_thread_attr *p_attr,
+                                     ABTI_thread_type thread_type,
+                                     ABTI_ksched *p_sched, int refcount,
+                                     ABTI_kthread *k_parent_thread,
+                                     ABTI_thread **pp_newthread);
+#endif
 static inline ABT_bool ABTI_thread_is_ready(ABTI_thread *p_thread);
 static inline void ABTI_thread_free_internal(ABTI_thread *p_thread);
 static inline ABT_thread_id ABTI_thread_get_new_id(void);
@@ -1615,6 +1623,90 @@ int ABT_thread_get_attr(ABT_thread thread, ABT_thread_attr *attr)
 /*****************************************************************************/
 /* Private APIs                                                              */
 /*****************************************************************************/
+#ifdef ABT_XSTREAM_USE_VIRTUAL
+static inline
+int ABTI_ksched_thread_create(void (*thread_func)(void *),
+                       void *arg, ABTI_thread_attr *p_attr,
+                       ABTI_thread_type thread_type, ABTI_ksched *p_sched,
+                       int refcount, ABTI_kthread *k_parent_thread,
+                       ABTI_thread **pp_newthread)
+{
+    int abt_errno = ABT_SUCCESS;
+    ABTI_thread *p_newthread;
+
+    /* Allocate a ULT object and its stack, then create a thread context. */
+    p_newthread = ABTI_mem_alloc_thread(p_attr);
+    if ((thread_type == ABTI_THREAD_TYPE_MAIN ||
+         thread_type == ABTI_THREAD_TYPE_MAIN_SCHED)
+         && p_newthread->attr.p_stack == NULL
+	) {
+
+        /* We don't need to initialize the context of 1. the main thread, and
+         * 2. the main scheduler thread which runs on OS-level threads
+         * (p_stack == NULL). Invalidate the context here. */
+	abt_errno = ABTD_thread_context_invalidate(&p_newthread->ctx);
+    } else if (p_sched == NULL) {
+#if ABT_CONFIG_THREAD_TYPE != ABT_THREAD_TYPE_DYNAMIC_PROMOTION
+        size_t stack_size = p_newthread->attr.stacksize;
+        void *p_stack = p_newthread->attr.p_stack;
+        abt_errno = ABTD_thread_context_create_thread(NULL, thread_func, arg,
+                                                      stack_size, p_stack,
+                                                      &p_newthread->ctx);
+#else
+        /* The context is not fully created now. */
+        abt_errno = ABTD_thread_context_init(NULL, thread_func, arg,
+                                             &p_newthread->ctx);
+#endif
+    } else {
+        size_t stack_size = p_newthread->attr.stacksize;
+        void *p_stack = p_newthread->attr.p_stack;
+        abt_errno = ABTD_thread_context_create_sched(NULL, thread_func, arg,
+                                                     stack_size, p_stack,
+                                                     &p_newthread->ctx);
+    }
+    ABTI_CHECK_ERROR(abt_errno);
+
+    p_newthread->state          = ABT_THREAD_STATE_READY;
+    p_newthread->request        = 0;
+    p_newthread->p_last_xstream = NULL;
+    p_newthread->p_pool         = NULL;
+    p_newthread->refcount       = refcount;
+    p_newthread->type           = thread_type;
+    p_newthread->p_req_arg      = NULL;
+    p_newthread->p_keytable     = NULL;
+    p_newthread->id             = ABTI_THREAD_INIT_ID;
+
+    /* Create a spinlock */
+    ABTI_spinlock_create(&p_newthread->lock);
+
+#ifdef ABT_CONFIG_USE_DEBUG_LOG
+    ABT_thread_id thread_id = ABTI_thread_get_id(p_newthread);
+    if (thread_type == ABTI_THREAD_TYPE_MAIN) {
+        LOG_EVENT("[U%" PRIu64 ":T%d] main ULT created\n", thread_id,
+                  k_parent_thread ? k_parent_thread->rank : 0);
+    } else if (thread_type == ABTI_THREAD_TYPE_MAIN_SCHED) {
+        LOG_EVENT("[U%" PRIu64 ":T%d] main sched ULT created\n", thread_id,
+                  k_parent_thread ? k_parent_thread->rank : 0);
+    } else {
+        LOG_EVENT("[U%" PRIu64 "] created\n", thread_id);
+    }
+#endif
+
+    /* Create a wrapper unit */
+    p_newthread->unit = ABT_UNIT_NULL;
+
+    /* Return value */
+    *pp_newthread = p_newthread;
+
+  fn_exit:
+    return abt_errno;
+
+  fn_fail:
+    *pp_newthread = NULL;
+    HANDLE_ERROR_FUNC_WITH_CODE(abt_errno);
+    goto fn_exit;
+}
+#endif
 
 static inline
 int ABTI_thread_create(ABTI_pool *p_pool, void (*thread_func)(void *),
@@ -1630,14 +1722,15 @@ int ABTI_thread_create(ABTI_pool *p_pool, void (*thread_func)(void *),
     /* Allocate a ULT object and its stack, then create a thread context. */
     p_newthread = ABTI_mem_alloc_thread(p_attr);
     if ((thread_type == ABTI_THREAD_TYPE_MAIN ||
-         thread_type == ABTI_THREAD_TYPE_MAIN_SCHED) && p_parent_xstream->type != ABTI_XSTREAM_TYPE_VIRTUAL
-         && p_newthread->attr.p_stack == NULL) {
+	 thread_type == ABTI_THREAD_TYPE_MAIN_SCHED
+	) && p_newthread->attr.p_stack == NULL) {
 
         /* We don't need to initialize the context of 1. the main thread, and
          * 2. the main scheduler thread which runs on OS-level threads
          * (p_stack == NULL). Invalidate the context here. */
-        abt_errno = ABTD_thread_context_invalidate(&p_newthread->ctx);
-    } else if (p_sched == NULL) {
+	abt_errno = ABTD_thread_context_invalidate(&p_newthread->ctx);
+    } else 
+    if (p_sched == NULL) {
 #if ABT_CONFIG_THREAD_TYPE != ABT_THREAD_TYPE_DYNAMIC_PROMOTION
         size_t stack_size = p_newthread->attr.stacksize;
         void *p_stack = p_newthread->attr.p_stack;
@@ -1775,7 +1868,7 @@ int ABTI_thread_create_main(ABTI_xstream *p_xstream, ABTI_thread **p_thread)
 
     /* Get the first pool of ES */
     p_pool = ABTI_pool_get_ptr(p_xstream->p_main_sched->pools[0]);
-
+    //p_pool = ABTI_pool_get_ptr(p_xstream->p_kthread->k_main_sched->pools[0]);
     /* Allocate a ULT object */
 
     /* TODO: Need to set the actual stack address and size for the main ULT */
@@ -1803,30 +1896,25 @@ int ABTI_thread_create_main(ABTI_xstream *p_xstream, ABTI_thread **p_thread)
 }
 
 #ifdef ABT_XSTREAM_USE_VIRTUAL
-int ABTI_thread_create_main_sched_virtual(ABTI_xstream *p_xstream, ABTI_xstream *v_xstream, ABTI_sched *v_sched)
+int ABTI_thread_create_main_ksched(ABTI_kthread *k_thread, ABTI_ksched *k_sched)
 {
     int abt_errno = ABT_SUCCESS;
     ABTI_thread *v_newthread;
 
-    if(v_xstream->type != ABTI_XSTREAM_TYPE_VIRTUAL)
-    {
-	abt_errno = ABT_ERR_INV_XSTREAM;
-	return abt_errno;
-    }
-
-    ABTI_pool *p_tar_pool = ABTI_pool_get_ptr(p_xstream->p_main_sched->pools[0]);
-
     ABTI_thread_attr attr;
     ABTI_thread_attr_init(&attr, NULL, ABTI_global_get_sched_stacksize(),
 		                                  ABTI_STACK_TYPE_MALLOC, ABT_FALSE);
-    //ABTI_thread_attr_init(&attr, NULL, 0, ABTI_STACK_TYPE_MAIN, ABT_FALSE);
 
-    abt_errno = ABTI_thread_create(p_tar_pool, ABTI_xstream_schedule, (void *)v_xstream, &attr,
-		    ABTI_THREAD_TYPE_MAIN_SCHED, v_sched, 0, v_xstream, ABT_TRUE, &v_newthread);
+    abt_errno = ABTI_ksched_thread_create(ABTI_kthread_schedule, (void*)k_thread, &attr,
+		    ABTI_THREAD_TYPE_MAIN_SCHED, k_sched, 0, k_thread, &v_newthread);
     ABTI_CHECK_ERROR(abt_errno);
 
-    v_sched->p_thread = v_newthread;
-    v_sched->p_ctx = &v_newthread->ctx;
+    k_sched->p_thread = v_newthread;
+    k_sched->p_ctx = &v_newthread->ctx;
+
+    //ABTI_thread *p_main_thread = ABTI_global_get_main();
+    //I think change needs to be done here with fresh mind!!!
+    //ABTD_thread_context_change_link(&v_newthread->ctx, &p_main_thread->ctx);
 
   fn_exit:
     return abt_errno;
@@ -1857,8 +1945,8 @@ int ABTI_thread_create_main_sched(ABTI_xstream *p_xstream, ABTI_sched *p_sched)
         ABTI_CHECK_ERROR(abt_errno);
         /* When the main scheduler is terminated, the control will jump to the
          * primary ULT. */
-        ABTD_thread_context_change_link(&p_newthread->ctx, &p_main_thread->ctx);
-    } else {
+	ABTD_thread_context_change_link(&p_newthread->ctx, &p_main_thread->ctx);
+     } else {
         /* For secondary ESs, the stack of OS thread is used for the main
          * scheduler's ULT. */
         ABTI_thread_attr attr;

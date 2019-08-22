@@ -13,6 +13,18 @@ ABTI_xstream *ABTI_local_get_xstream(void) {
     return lp_ABTI_local->p_xstream;
 }
 
+#ifdef ABT_XSTREAM_USE_VIRTUAL
+static inline
+ABTI_kthread *ABTI_local_get_kthread(void) {
+    return lp_ABTI_local->k_thread;
+}
+
+static inline
+void ABTI_local_set_kthread(ABTI_kthread *k_thread) {
+    lp_ABTI_local->k_thread = k_thread;
+}
+#endif
+
 static inline
 void ABTI_local_set_xstream(ABTI_xstream *p_xstream) {
     lp_ABTI_local->p_xstream = p_xstream;
