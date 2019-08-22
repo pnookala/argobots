@@ -114,7 +114,11 @@ int ABT_pool_create_basic(ABT_pool_kind kind, ABT_pool_access access,
         case ABT_POOL_FIFO_WAIT:
             abt_errno = ABTI_pool_get_fifo_wait_def(access, &def);
             break;
-        default:
+#ifdef ABT_XSTREAM_USE_VIRTUAL
+        case ABT_POOL_RANDOM:
+	    abt_errno = ABTI_pool_get_random_def(access, &def);
+#endif
+	default:
             abt_errno = ABT_ERR_INV_POOL_KIND;
             break;
     }
@@ -134,6 +138,30 @@ int ABT_pool_create_basic(ABT_pool_kind kind, ABT_pool_access access,
     goto fn_exit;
 }
 
+#ifdef ABT_XSTREAM_USE_VIRTUAL
+int ABT_pool_create_random(ABT_pool_access access,
+                          ABT_bool automatic, ABT_pool *newpool)
+{
+    int abt_errno = ABT_SUCCESS;
+    ABT_pool_def def;
+
+    abt_errno = ABTI_pool_get_random_def(access, &def);
+    ABTI_CHECK_ERROR(abt_errno);
+
+    abt_errno = ABT_pool_create(&def, ABT_POOL_CONFIG_NULL, newpool);
+    ABTI_CHECK_ERROR(abt_errno);
+    ABTI_pool *p_pool = ABTI_pool_get_ptr(*newpool);
+    p_pool->automatic = automatic;
+
+  fn_exit:
+    return abt_errno;
+
+  fn_fail:
+    HANDLE_ERROR_FUNC_WITH_CODE(abt_errno);
+    *newpool = ABT_POOL_NULL;
+    goto fn_exit;
+}
+#endif
 /**
  * @ingroup POOL
  * @brief   Free the given pool, and modify its value to ABT_POOL_NULL

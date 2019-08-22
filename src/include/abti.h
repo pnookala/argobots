@@ -217,6 +217,9 @@ struct ABTI_global {
 };
 
 struct ABTI_local {
+#ifdef ABT_XSTREAM_USE_VIRTUAL
+    ABTI_kthread *k_thread;     /* Kernel thread running the current ES */
+#endif
     ABTI_xstream *p_xstream;    /* Current ES */
     ABTI_thread *p_thread;      /* Current running ULT */
     ABTI_task *p_task;          /* Current running tasklet */
@@ -270,8 +273,11 @@ struct ABTI_ksched {
     ABT_sched_type type;        /* Can yield or not (ULT or task) */
     ABT_sched_state state;      /* State */
     uint32_t request;           /* Request */
-    ABTI_sched **v_scheds;  /* Array of Work units */
-    int num_scheds;          /* Number of work units in the array */
+    ABT_pool *pools;
+    int num_pools;
+    //ABTI_sched **v_scheds;  /* Array of Work units */
+    //int num_scheds;          /* Number of work units in the array */
+    int max_scheds;
     ABTI_thread *p_thread;      /* Associated ULT */
     ABTD_thread_context *p_ctx; /* Context */
     void *data;                 /* Data for a specific scheduler */
@@ -287,11 +293,13 @@ struct ABTI_ksched {
 
 struct ABTI_kthread {
     ABTI_ksched *k_main_sched;          /* Main scheduler of this kernel thread, schedules virtual ESs */
-    ABTD_thread_context *k_ctx; /* Context */
+    ABTD_xstream_context ctx; /* Kernel thread context */
     void *k_req_arg;            /* Request argument */
     uint32_t request;           /* Request */
     ABTI_xstream **v_xstreams;  /* Virtual ESs running on this kernel thread */
     int num_vxstreams;          /* Number of virtual ESs */
+    int rank;
+    ABTI_spinlock sched_lock;   /* Lock for the scheduler management */
 };
 #endif
 
@@ -324,12 +332,6 @@ struct ABTI_sched {
 
 #ifdef ABT_CONFIG_USE_DEBUG_LOG
     uint64_t id;                /* ID */
-#endif
-
-#ifdef ABT_XSTREAM_USE_VIRTUAL
-    ABT_bool is_master_sched;  /* Set to true if this is a master scheduler that schedules shedulers of virtual execution streams */
-    int num_vxstreams;         /* Number of virtual execution streams in the v_xstreams array  */
-    ABTI_xstream **v_xstreams; /* A master scheduler will be looking at the array of virtual execution streams to schedule them. */
 #endif
 };
 
@@ -554,14 +556,19 @@ void          ABTI_elem_print(ABTI_elem *p_elem, FILE *p_os, int indent,
 
 /* Execution Stream (ES) */
 int ABTI_xstream_create(ABTI_sched *p_sched, ABTI_xstream **pp_xstream);
-int ABTI_xstream_create_primary(ABTI_xstream **pp_xstream);
 #ifdef ABT_XSTREAM_USE_VIRTUAL
-int ABTI_xstream_create_virtual_basic(ABTI_xstream **v_xstream, ABTI_xstream *p_xstream);
+int ABTI_kthread_create_master(ABTI_kthread **k_thread);
 #endif
+int ABTI_xstream_create_primary(ABTI_xstream **pp_xstream);
 int ABTI_xstream_start(ABTI_xstream *p_xstream);
 int ABTI_xstream_start_primary(ABTI_xstream *p_xstream, ABTI_thread *p_thread);
 int ABTI_xstream_free(ABTI_xstream *p_xstream);
 void ABTI_xstream_schedule(void *p_arg);
+#ifdef ABT_XSTREAM_USE_VIRTUAL
+void ABTI_kthread_schedule(void *p_arg);
+int ABTI_kthread_schedule_thread(ABTI_kthread *k_thread, ABTI_thread *p_thread);
+int ABTI_kthread_run_unit(ABTI_kthread *k_thread, ABT_unit unit, ABTI_pool *p_pool);
+#endif
 int ABTI_xstream_run_unit(ABTI_xstream *p_xstream, ABT_unit unit,
                           ABTI_pool *p_pool);
 int ABTI_xstream_schedule_thread(ABTI_xstream *p_xstream,
@@ -580,7 +587,7 @@ ABT_sched_def *ABTI_sched_get_basic_wait_def(void);
 ABT_sched_def *ABTI_sched_get_prio_def(void);
 ABT_sched_def *ABTI_sched_get_randws_def(void);
 #ifdef ABT_XSTREAM_USE_VIRTUAL
-ABT_sched_def *ABTI_sched_get_master_def(void);
+int ABTI_sched_create_master(ABT_sched_config config, ABTI_ksched** sched);
 #endif
 int ABTI_sched_free(ABTI_sched *p_sched);
 int ABTI_sched_get_migration_pool(ABTI_sched *, ABTI_pool *, ABTI_pool **);
@@ -603,6 +610,11 @@ int ABTI_sched_config_read_global(ABT_sched_config config,
 /* Pool */
 int ABTI_pool_get_fifo_def(ABT_pool_access access, ABT_pool_def *p_def);
 int ABTI_pool_get_fifo_wait_def(ABT_pool_access access, ABT_pool_def *p_def);
+#ifdef ABT_XSTREAM_USE_VIRTUAL
+int ABTI_pool_get_random_def(ABT_pool_access access, ABT_pool_def *p_def);
+int ABT_pool_create_random(ABT_pool_access access,
+                          ABT_bool automatic, ABT_pool *newpool);
+#endif
 #ifndef ABT_CONFIG_DISABLE_POOL_CONSUMER_CHECK
 int ABTI_pool_set_consumer(ABTI_pool *p_pool, ABTI_xstream *p_xstream);
 #endif
@@ -617,11 +629,13 @@ void ABTI_pool_reset_id(void);
 int   ABTI_thread_migrate_to_pool(ABTI_thread *p_thread, ABTI_pool *p_pool);
 int   ABTI_thread_create_main(ABTI_xstream *p_xstream, ABTI_thread **p_thread);
 int   ABTI_thread_create_main_sched(ABTI_xstream *p_xstream, ABTI_sched *p_sched);
+#ifdef ABT_XSTREAM_USE_VIRTUAL
+int   ABTI_thread_create_main_ksched(ABTI_kthread *k_thread, ABTI_ksched *k_sched);
+#endif
 int   ABTI_thread_create_sched(ABTI_pool *p_pool, ABTI_sched *p_sched);
 void  ABTI_thread_free(ABTI_thread *p_thread);
 void  ABTI_thread_free_main(ABTI_thread *p_thread);
 void  ABTI_thread_free_main_sched(ABTI_thread *p_thread);
-int ABTI_thread_create_main_sched_virtual(ABTI_xstream *p_xstream, ABTI_xstream *v_xstream, ABTI_sched *v_sched);
 int   ABTI_thread_set_blocked(ABTI_thread *p_thread);
 void  ABTI_thread_suspend(ABTI_thread *p_thread);
 int   ABTI_thread_set_ready(ABTI_thread *p_thread);

@@ -158,7 +158,8 @@ enum ABT_sched_type {
 
 enum ABT_pool_kind {
     ABT_POOL_FIFO,       /* FIFO pool */
-    ABT_POOL_FIFO_WAIT   /* FIFO pool with ability to wait for units */
+    ABT_POOL_FIFO_WAIT,   /* FIFO pool with ability to wait for units */
+    ABT_POOL_RANDOM
 };
 
 enum ABT_pool_access {

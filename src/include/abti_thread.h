@@ -205,7 +205,7 @@ void ABTI_thread_context_switch_sched_to_thread_internal(ABTI_sched *p_old,
     ABTI_ASSERT(!p_old->p_thread
                 || ABTI_thread_is_dynamic_promoted(p_old->p_thread));
     if (!ABTI_thread_is_dynamic_promoted(p_new)) {
-        void *p_stacktop = ((char *)p_new->attr.p_stack) +
+	void *p_stacktop = ((char *)p_new->attr.p_stack) +
                             p_new->attr.stacksize;
         LOG_EVENT("[U%" PRIu64 "] run ULT (dynamic promotion)\n",
                   ABTI_thread_get_id(p_new));
@@ -299,6 +299,65 @@ void ABTI_thread_context_switch_thread_to_sched(ABTI_thread *p_old,
     ABTI_thread_context_switch_thread_to_sched_internal(p_old, p_new,
                                                         ABT_FALSE);
 }
+
+#ifdef ABT_XSTREAM_USE_VIRTUAL
+static inline
+void ABTI_thread_context_switch_ksched_to_thread_internal(ABTI_ksched *p_old, 
+				ABTI_thread *p_new,
+			   	ABT_bool is_finish)
+{
+    if (is_finish) {
+	ABTD_thread_finish_context(p_old->p_ctx, &p_new->ctx);
+    } else {
+	ABTD_thread_context_switch(p_old->p_ctx, &p_new->ctx);
+    }
+}
+
+static inline
+void ABTI_thread_context_switch_ksched_to_thread(ABTI_ksched *p_old,
+						ABTI_thread *p_new)
+{
+    ABTI_thread_context_switch_ksched_to_thread_internal(p_old, p_new, ABT_TRUE);
+}
+
+static inline
+void ABTI_thread_context_switch_thread_to_ksched_internal(ABTI_thread *p_old,
+                                                         ABTI_ksched *p_new,
+                                                         ABT_bool is_finish)
+{
+    if (is_finish) {
+        ABTD_thread_finish_context(&p_old->ctx, p_new->p_ctx);
+    } else {
+        ABTD_thread_context_switch(&p_old->ctx, p_new->p_ctx);
+    }
+}
+
+static inline
+void ABTI_thread_context_switch_ksched_to_sched_internal(ABTI_ksched *p_old,
+                                                        ABTI_sched *p_new,
+                                                        ABT_bool is_finish)
+{
+    if (is_finish) {
+        ABTD_thread_finish_context(p_old->p_ctx, p_new->p_ctx);
+    } else {
+        ABTD_thread_context_switch(p_old->p_ctx, p_new->p_ctx);
+    }
+}
+
+static inline
+void ABTI_thread_context_switch_thread_to_ksched(ABTI_thread *p_old,
+                                                ABTI_ksched *p_new)
+{
+    ABTI_thread_context_switch_thread_to_ksched_internal(p_old, p_new, ABT_TRUE);
+}
+
+static inline
+void ABTI_thread_context_switch_ksched_to_sched(ABTI_ksched *p_old,
+                                               ABTI_sched *p_new)
+{
+    ABTI_thread_context_switch_ksched_to_sched_internal(p_old, p_new, ABT_FALSE);
+}
+#endif
 
 static inline
 void ABTI_thread_context_switch_sched_to_thread(ABTI_sched *p_old,

@@ -27,8 +27,8 @@ static int  sched_free(ABTI_ksched *sched);
 
 typedef struct {
     uint32_t event_freq;
-    int num_scheds;
-    ABTI_sched **v_scheds;
+    int num_pools;
+    ABT_pool *pools;
 #ifdef ABT_CONFIG_USE_SCHED_SLEEP
     struct timespec sleep_time;
 #endif
@@ -42,12 +42,18 @@ ABT_sched_config_var ABT_sched_master_freq = {
 int ABTI_sched_create_master(ABT_sched_config config, ABTI_ksched **newsched) {
    int abt_errno = ABT_SUCCESS;
    ABTI_ksched *p_sched;
+   int p;
 
    p_sched = (ABTI_ksched *) ABTU_malloc(sizeof(ABTI_ksched));
 
    //Create the array of execution streams
-   p_sched->num_scheds = 0;
-   p_sched->v_scheds = (ABTI_sched **) ABTU_malloc(sizeof(ABTI_sched *) * gp_ABTI_global->max_vxstreams);
+   p_sched->num_pools = 1;
+   p_sched->pools = (ABT_pool *) ABTU_malloc(p_sched->num_pools * sizeof(ABT_pool));
+   /* Create random access pool here */
+   for (p = 0; p < p_sched->num_pools; p++) {
+	abt_errno = ABT_pool_create_random(ABT_POOL_ACCESS_PRIV, 
+					  ABT_TRUE, &p_sched->pools[p]);
+   }  
  
    p_sched->used	= ABTI_SCHED_NOT_USED;
    p_sched->automatic	= ABT_TRUE;
@@ -95,8 +101,8 @@ static int sched_init(ABTI_ksched *sched, ABT_sched_config config)
     /* Set the variables from the config */
     ABT_sched_config_read(config, 1, &p_data->event_freq);
 
-    p_data->num_scheds = sched->num_scheds;
-    p_data->v_scheds = sched->v_scheds;
+    p_data->num_pools = sched->num_pools;
+    p_data->pools = sched->pools;
 
     sched->data = (void *)p_data;
     return abt_errno;
@@ -115,24 +121,28 @@ static void sched_run(ABTI_ksched *p_sched)
     sched_data *p_data;
     uint32_t event_freq;
     int i;
-    int num_scheds;
     CNT_DECL(run_cnt);
 
     //ABTI_xstream *p_xstream = ABTI_local_get_xstream();
+    ABTI_kthread *k_thread = ABTI_local_get_kthread();
 
     p_data = sched_data_get_ptr(p_sched->data);
     event_freq = p_data->event_freq;
-    num_scheds = p_data->num_scheds;
+    ABT_pool *pools;
+    pools = p_data->pools;
 
     while (1) {
         CNT_INIT(run_cnt, 0);
 
         /* Execute one work unit from the scheduler's pool */
-        for (i = 0; i < num_scheds; i++) {
+        for (i = 0; i < p_data->num_pools; i++) {
             /* Pop one work unit */
-            ABT_unit unit = p_sched->v_scheds[i];
+	    ABT_pool pool = pools[i];
+            ABTI_pool *p_pool = ABTI_pool_get_ptr(pool);
+            /* Pop one work unit */
+            ABT_unit unit = ABTI_pool_pop(p_pool);
             if (unit != ABT_UNIT_NULL) {
-                //ABTI_xstream_run_unit(p_xstream, unit, p_pool);
+                ABTI_kthread_run_unit(k_thread, unit, p_pool);
                 CNT_INC(run_cnt);
                 break;
             }
@@ -157,7 +167,7 @@ static int sched_free(ABTI_ksched *sched)
 
     data = sched->data;
     sched_data *p_data = sched_data_get_ptr(data);
-    ABTU_free(p_data->v_scheds);
+    ABTU_free(p_data->pools);
     ABTU_free(p_data);
     return abt_errno;
 }

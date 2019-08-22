@@ -102,11 +102,22 @@ int ABT_init(int argc, char **argv)
     abt_errno = ABTI_local_init();
     ABTI_CHECK_ERROR_MSG(abt_errno, "ABTI_local_init");
 
+#ifdef ABT_XSTREAM_USE_VIRTUAL
+    ABTI_kthread *k_newthread;
+    abt_errno = ABTI_kthread_create_master(&k_newthread);
+    ABTI_CHECK_ERROR_MSG(abt_errno, "ABTI_kthread_create_master");
+    ABTI_local_set_kthread(k_newthread);
+#endif
     /* Create the primary ES */
     ABTI_xstream *p_newxstream;
     abt_errno = ABTI_xstream_create_primary(&p_newxstream);
     ABTI_CHECK_ERROR_MSG(abt_errno, "ABTI_xstream_create_primary");
     ABTI_local_set_xstream(p_newxstream);
+
+#ifdef ABT_XSTREAM_USE_VIRTUAL
+    /* Set the parent kernel thread that is going to run this virtual ES */
+    p_newxstream->p_kthread = k_newthread;
+#endif
 
     /* Create the primary ULT, i.e., the main thread */
     ABTI_thread *p_main_thread;
@@ -118,10 +129,6 @@ int ABT_init(int argc, char **argv)
     gp_ABTI_global->p_thread_main = p_main_thread;
     ABTI_local_set_thread(p_main_thread);
 
-#ifdef ABT_XSTREAM_USE_VIRTUAL
-    ABTI_xstream *v_newxstream;
-    abt_errno = ABTI_xstream_create_virtual_basic(&v_newxstream, p_newxstream);
-#endif
     /* Start the primary ES */
     abt_errno = ABTI_xstream_start_primary(p_newxstream, p_main_thread);
     ABTI_CHECK_ERROR_MSG(abt_errno, "ABTI_xstream_start_primary");
