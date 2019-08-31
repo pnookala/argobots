@@ -13,9 +13,9 @@
 static inline uint64_t ABTI_sched_get_new_id(void);
 #endif
 
-static int  sched_init(ABTI_ksched *sched, ABT_sched_config config);
-static void sched_run(ABTI_ksched *sched);
-static int  sched_free(ABTI_ksched *sched);
+static int  sched_init(ABT_sched sched, ABT_sched_config config);
+static void sched_run(ABT_sched sched);
+static int  sched_free(ABT_sched sched);
 
 /*static ABT_sched_def sched_master_def = {
     .type = ABT_SCHED_TYPE_ULT,
@@ -39,12 +39,12 @@ ABT_sched_config_var ABT_sched_master_freq = {
     .type = ABT_SCHED_CONFIG_INT
 };
 
-int ABTI_sched_create_master(ABT_sched_config config, ABTI_ksched **newsched) {
+int ABTI_sched_create_master(ABT_sched_config config, ABTI_sched **newsched) {
    int abt_errno = ABT_SUCCESS;
-   ABTI_ksched *p_sched;
+   ABTI_sched *p_sched;
    int p;
 
-   p_sched = (ABTI_ksched *) ABTU_malloc(sizeof(ABTI_ksched));
+   p_sched = (ABTI_sched *) ABTU_malloc(sizeof(ABTI_sched));
 
    //Create the array of execution streams
    p_sched->num_pools = 1;
@@ -86,7 +86,7 @@ static inline sched_data *sched_data_get_ptr(void *data)
     return (sched_data *)data;
 }
 
-static int sched_init(ABTI_ksched *sched, ABT_sched_config config)
+static int sched_init(ABT_sched sched, ABT_sched_config config)
 {
     int abt_errno = ABT_SUCCESS;
 
@@ -101,28 +101,34 @@ static int sched_init(ABTI_ksched *sched, ABT_sched_config config)
     /* Set the variables from the config */
     ABT_sched_config_read(config, 1, &p_data->event_freq);
 
-    p_data->num_pools = sched->num_pools;
-    p_data->pools = sched->pools;
+    int num_pools;
+    //p_data->num_pools = sched->num_pools;
+    ABT_sched_get_num_pools(sched, &num_pools);
+    //p_data->pools = sched->pools;
+    p_data->num_pools = num_pools;
+    p_data->pools = (ABT_pool *)ABTU_malloc(num_pools * sizeof(ABT_pool));
+    abt_errno = ABT_sched_get_pools(sched, num_pools, 0, p_data->pools);
+    ABTI_CHECK_ERROR(abt_errno);
 
-    sched->data = (void *)p_data;
-    return abt_errno;
+    //sched->data = (void *)p_data;
+    abt_errno = ABT_sched_set_data(sched, (void *)p_data);
 
-  /*fn_exit:
+  fn_exit:
     return abt_errno;
 
   fn_fail:
     HANDLE_ERROR_WITH_CODE("master: sched_init", abt_errno);
-    goto fn_exit;*/
+    goto fn_exit;
 }
 
-static void sched_run(ABTI_ksched *p_sched)
+static void sched_run(ABT_sched sched)
 {
     uint32_t work_count = 0;
     sched_data *p_data;
     uint32_t event_freq;
     int i;
     CNT_DECL(run_cnt);
-
+    ABTI_sched *p_sched = ABTI_sched_get_ptr(sched);
     //ABTI_xstream *p_xstream = ABTI_local_get_xstream();
     ABTI_kthread *k_thread = ABTI_local_get_kthread();
 
@@ -159,13 +165,13 @@ static void sched_run(ABTI_ksched *p_sched)
     }
 }
 
-static int sched_free(ABTI_ksched *sched)
+static int sched_free(ABT_sched sched)
 {
     int abt_errno = ABT_SUCCESS;
 
     void *data;
-
-    data = sched->data;
+    ABT_sched_get_data(sched, &data);
+//    data = sched->data;
     sched_data *p_data = sched_data_get_ptr(data);
     ABTU_free(p_data->pools);
     ABTU_free(p_data);

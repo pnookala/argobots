@@ -17,7 +17,7 @@ static inline int ABTI_thread_create(ABTI_pool *p_pool,
 static inline int ABTI_ksched_thread_create(void (*thread_func)(void *),
                                      void *arg, ABTI_thread_attr *p_attr,
                                      ABTI_thread_type thread_type,
-                                     ABTI_ksched *p_sched, int refcount,
+                                     ABTI_sched *p_sched, int refcount,
                                      ABTI_kthread *k_parent_thread,
                                      ABTI_thread **pp_newthread);
 #endif
@@ -1627,7 +1627,7 @@ int ABT_thread_get_attr(ABT_thread thread, ABT_thread_attr *attr)
 static inline
 int ABTI_ksched_thread_create(void (*thread_func)(void *),
                        void *arg, ABTI_thread_attr *p_attr,
-                       ABTI_thread_type thread_type, ABTI_ksched *p_sched,
+                       ABTI_thread_type thread_type, ABTI_sched *p_sched,
                        int refcount, ABTI_kthread *k_parent_thread,
                        ABTI_thread **pp_newthread)
 {
@@ -1721,8 +1721,8 @@ int ABTI_thread_create(ABTI_pool *p_pool, void (*thread_func)(void *),
 
     /* Allocate a ULT object and its stack, then create a thread context. */
     p_newthread = ABTI_mem_alloc_thread(p_attr);
-    if ((thread_type == ABTI_THREAD_TYPE_MAIN ||
-	 thread_type == ABTI_THREAD_TYPE_MAIN_SCHED
+    if ((thread_type == ABTI_THREAD_TYPE_MAIN
+//	 thread_type == ABTI_THREAD_TYPE_MAIN_SCHED
 	) && p_newthread->attr.p_stack == NULL) {
 
         /* We don't need to initialize the context of 1. the main thread, and
@@ -1878,6 +1878,7 @@ int ABTI_thread_create_main(ABTI_xstream *p_xstream, ABTI_thread **p_thread)
      * so that the scheduler can schedule the main ULT when the main ULT is
      * context switched to the scheduler for the first time. */
     ABT_bool push_pool = ABT_TRUE;
+
     abt_errno = ABTI_thread_create(p_pool, NULL, NULL, &attr,
                                    ABTI_THREAD_TYPE_MAIN, NULL, 0, p_xstream,
                                    push_pool, &p_newthread);
@@ -1896,7 +1897,7 @@ int ABTI_thread_create_main(ABTI_xstream *p_xstream, ABTI_thread **p_thread)
 }
 
 #ifdef ABT_XSTREAM_USE_VIRTUAL
-int ABTI_thread_create_main_ksched(ABTI_kthread *k_thread, ABTI_ksched *k_sched)
+int ABTI_thread_create_main_ksched(ABTI_kthread *k_thread, ABTI_sched *k_sched)
 {
     int abt_errno = ABT_SUCCESS;
     ABTI_thread *v_newthread;
@@ -1912,8 +1913,7 @@ int ABTI_thread_create_main_ksched(ABTI_kthread *k_thread, ABTI_ksched *k_sched)
     k_sched->p_thread = v_newthread;
     k_sched->p_ctx = &v_newthread->ctx;
 
-    //ABTI_thread *p_main_thread = ABTI_global_get_main();
-    //I think change needs to be done here with fresh mind!!!
+    ABTI_thread *p_main_thread = ABTI_global_get_main();
     //ABTD_thread_context_change_link(&v_newthread->ctx, &p_main_thread->ctx);
 
   fn_exit:
@@ -1946,7 +1946,7 @@ int ABTI_thread_create_main_sched(ABTI_xstream *p_xstream, ABTI_sched *p_sched)
         /* When the main scheduler is terminated, the control will jump to the
          * primary ULT. */
 	ABTD_thread_context_change_link(&p_newthread->ctx, &p_main_thread->ctx);
-     } else {
+    } else {
         /* For secondary ESs, the stack of OS thread is used for the main
          * scheduler's ULT. */
         ABTI_thread_attr attr;

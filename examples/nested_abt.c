@@ -102,6 +102,7 @@ void abt_for(int num_threads, int loop_count, inner_f inner_func) {
 
   free(threads);
   free(xstreams);
+  printf("call finalize\n");
   ABT_finalize();
 }
 

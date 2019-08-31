@@ -260,9 +260,11 @@ struct ABTI_xstream {
     void *p_req_arg;            /* Request argument */
     ABTI_sched *p_main_sched;   /* Main scheduler */
 
-    ABTD_xstream_context ctx;   /* ES context */
 #ifdef ABT_XSTREAM_USE_VIRTUAL
+    ABTD_thread_context p_ctx;
     ABTI_kthread *p_kthread;    /* Parent kernel thread that this ES is running on */
+#else
+    ABTD_xstream_context ctx;	/* ES context */
 #endif
 };
 
@@ -292,7 +294,7 @@ struct ABTI_ksched {
 };
 
 struct ABTI_kthread {
-    ABTI_ksched *k_main_sched;          /* Main scheduler of this kernel thread, schedules virtual ESs */
+    ABTI_sched *k_main_sched;          /* Main scheduler of this kernel thread, schedules virtual ESs */
     ABTD_xstream_context ctx; /* Kernel thread context */
     void *k_req_arg;            /* Request argument */
     uint32_t request;           /* Request */
@@ -587,7 +589,7 @@ ABT_sched_def *ABTI_sched_get_basic_wait_def(void);
 ABT_sched_def *ABTI_sched_get_prio_def(void);
 ABT_sched_def *ABTI_sched_get_randws_def(void);
 #ifdef ABT_XSTREAM_USE_VIRTUAL
-int ABTI_sched_create_master(ABT_sched_config config, ABTI_ksched** sched);
+int ABTI_sched_create_master(ABT_sched_config config, ABTI_sched** sched);
 #endif
 int ABTI_sched_free(ABTI_sched *p_sched);
 int ABTI_sched_get_migration_pool(ABTI_sched *, ABTI_pool *, ABTI_pool **);
@@ -630,7 +632,7 @@ int   ABTI_thread_migrate_to_pool(ABTI_thread *p_thread, ABTI_pool *p_pool);
 int   ABTI_thread_create_main(ABTI_xstream *p_xstream, ABTI_thread **p_thread);
 int   ABTI_thread_create_main_sched(ABTI_xstream *p_xstream, ABTI_sched *p_sched);
 #ifdef ABT_XSTREAM_USE_VIRTUAL
-int   ABTI_thread_create_main_ksched(ABTI_kthread *k_thread, ABTI_ksched *k_sched);
+int   ABTI_thread_create_main_ksched(ABTI_kthread *k_thread, ABTI_sched *k_sched);
 #endif
 int   ABTI_thread_create_sched(ABTI_pool *p_pool, ABTI_sched *p_sched);
 void  ABTI_thread_free(ABTI_thread *p_thread);
