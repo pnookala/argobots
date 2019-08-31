@@ -109,7 +109,7 @@ int ABTI_kthread_create_master(ABTI_kthread **k_thread)
     int abt_errno = ABT_SUCCESS;
 
     ABTI_kthread *k_newthread;
-    ABTI_sched* sched;
+    ABTI_ksched* sched;
 
     abt_errno = ABTI_sched_create_master(ABT_SCHED_CONFIG_NULL, &sched);
     ABTI_CHECK_ERROR(abt_errno);
@@ -323,11 +323,8 @@ int ABTI_xstream_start(ABTI_xstream *p_xstream)
 
     if (p_xstream->type == ABTI_XSTREAM_TYPE_PRIMARY) {
         LOG_EVENT("[E%d] start\n", p_xstream->rank);
-#ifdef ABT_XSTREAM_USE_VIRTUAL
-	abt_errno = ABTD_xstream_context_self(&p_xstream->p_kthread->ctx);
-#else
+
         abt_errno = ABTD_xstream_context_self(&p_xstream->ctx);
-#endif
         ABTI_CHECK_ERROR_MSG(abt_errno, "ABTD_xstream_context_self");
 
         /* Create the main sched ULT */
@@ -337,25 +334,17 @@ int ABTI_xstream_start(ABTI_xstream *p_xstream)
         p_sched->p_thread->p_last_xstream = p_xstream;
 
     } else {
-#ifdef ABT_XSTREAM_USE_VIRTUAL
-	abt_errno = ABTD_xstream_context_create(
-		ABTI_xstream_launch_main_sched, (void *)p_xstream,
-		&p_xstream->p_kthread->ctx);
-#else
         /* Start the main scheduler on a different ES */
         abt_errno = ABTD_xstream_context_create(
                 ABTI_xstream_launch_main_sched, (void *)p_xstream,
                 &p_xstream->ctx);
-#endif
-	ABTI_CHECK_ERROR_MSG(abt_errno, "ABTD_xstream_context_create");
+        ABTI_CHECK_ERROR_MSG(abt_errno, "ABTD_xstream_context_create");
     }
 
-#ifndef ABT_XSTREAM_USE_VIRTUAL
     /* Set the CPU affinity for the ES */
     if (gp_ABTI_global->set_affinity == ABT_TRUE) {
         ABTD_affinity_set(p_xstream->ctx, p_xstream->rank);
     }
-#endif
 
   fn_exit:
     return abt_errno;
@@ -406,7 +395,7 @@ int ABTI_xstream_start_primary(ABTI_xstream *p_xstream, ABTI_thread *p_thread)
 #endif
 #ifdef ABT_XSTREAM_USE_VIRTUAL
     /* Create the main sched ULT for primary kernel thread */
-    ABTI_sched *k_sched = p_kthread->k_main_sched;
+    ABTI_ksched *k_sched = p_kthread->k_main_sched;
     if (k_sched == NULL) goto fn_exit;
 
     abt_errno = ABTI_thread_create_main_ksched(p_kthread, k_sched);
@@ -431,7 +420,7 @@ int ABTI_xstream_start_primary(ABTI_xstream *p_xstream, ABTI_thread *p_thread)
 
     LOG_EVENT("[U%" PRIu64 ":E%d:T%d] yield\n",
 		                  ABTI_thread_get_id(p_thread), p_thread->p_last_xstream->rank, p_kthread->rank);
-    ABTI_thread_context_switch_thread_to_sched(p_thread, k_sched);
+    ABTI_thread_context_switch_thread_to_ksched(p_thread, k_sched);
 #else
     /* Start the scheduler by context switching to it */
     LOG_EVENT("[U%" PRIu64 ":E%d] yield\n",
@@ -587,13 +576,9 @@ int ABT_xstream_join(ABT_xstream xstream)
     }
 
   fn_join:
-#ifdef ABT_XSTREAM_USE_VIRTUAL
-    /* Do we need to do something here? Not sure yet! */
-#else
     /* Normal join request */
     abt_errno = ABTD_xstream_context_join(p_xstream->ctx);
     ABTI_CHECK_ERROR_MSG(abt_errno, "ABTD_xstream_context_join");
-#endif
 
   fn_exit:
     return abt_errno;
@@ -780,12 +765,10 @@ int ABT_xstream_set_rank(ABT_xstream xstream, const int rank)
 
     p_xstream->rank = rank;
 
-#ifndef ABT_XSTREAM_USE_VIRTUAL
     /* Set the CPU affinity for the ES */
     if (gp_ABTI_global->set_affinity == ABT_TRUE) {
         ABTD_affinity_set(p_xstream->ctx, p_xstream->rank);
     }
-#endif
 
   fn_exit:
     return abt_errno;
@@ -1305,10 +1288,8 @@ int ABT_xstream_set_cpubind(ABT_xstream xstream, int cpuid)
     ABTI_xstream *p_xstream = ABTI_xstream_get_ptr(xstream);
     ABTI_CHECK_NULL_XSTREAM_PTR(p_xstream);
 
-#ifndef ABT_XSTREAM_USE_VIRTUAL
     abt_errno = ABTD_affinity_set_cpuset(p_xstream->ctx, 1, &cpuid);
     ABTI_CHECK_ERROR(abt_errno);
-#endif
 
   fn_exit:
     return abt_errno;
@@ -1336,10 +1317,10 @@ int ABT_xstream_get_cpubind(ABT_xstream xstream, int *cpuid)
     int abt_errno = ABT_SUCCESS;
     ABTI_xstream *p_xstream = ABTI_xstream_get_ptr(xstream);
     ABTI_CHECK_NULL_XSTREAM_PTR(p_xstream);
-#ifndef ABT_XSTREAM_USE_VIRTUAL
+
     abt_errno = ABTD_affinity_get_cpuset(p_xstream->ctx, 1, cpuid, NULL);
     ABTI_CHECK_ERROR(abt_errno);
-#endif
+
   fn_exit:
     return abt_errno;
 
@@ -1367,10 +1348,10 @@ int ABT_xstream_set_affinity(ABT_xstream xstream, int cpuset_size, int *cpuset)
     int abt_errno = ABT_SUCCESS;
     ABTI_xstream *p_xstream = ABTI_xstream_get_ptr(xstream);
     ABTI_CHECK_NULL_XSTREAM_PTR(p_xstream);
-#ifndef ABT_XSTREAM_USE_VIRTUAL
+
     abt_errno = ABTD_affinity_set_cpuset(p_xstream->ctx, cpuset_size, cpuset);
     ABTI_CHECK_ERROR(abt_errno);
-#endif
+
   fn_exit:
     return abt_errno;
 
@@ -1409,12 +1390,9 @@ int ABT_xstream_get_affinity(ABT_xstream xstream, int cpuset_size, int *cpuset,
     if (cpuset == NULL && num_cpus == NULL) {
         goto fn_exit;
     }
-#ifdef ABT_XSTREAM_USE_VIRTUAL
-    abt_errno = ABTD_affinity_get_cpuset(p_xstream->p_kthread->ctx, cpuset_size, cpuset, num_cpus);
-#else
+
     abt_errno = ABTD_affinity_get_cpuset(p_xstream->ctx, cpuset_size, cpuset,
                                          num_cpus);
-#endif
     ABTI_CHECK_ERROR(abt_errno);
 
   fn_exit:
@@ -1449,11 +1427,11 @@ int ABTI_xstream_free(ABTI_xstream *p_xstream)
 
     /* Free the array of sched contexts */
     ABTU_free(p_xstream->scheds);
-#ifndef ABT_XSTREAM_USE_VIRTUAL
+
     /* Free the context */
     abt_errno = ABTD_xstream_context_free(&p_xstream->ctx);
     ABTI_CHECK_ERROR(abt_errno);
-#endif
+
     /* Free the spinlock */
     ABTI_spinlock_free(&p_xstream->sched_lock);
 
@@ -1540,7 +1518,7 @@ void ABTI_kthread_schedule(void *p_arg)
         uint32_t request;
 
         /* Execute the run function of scheduler */
-        ABTI_sched *k_sched = k_thread->k_main_sched;
+        ABTI_ksched *k_sched = k_thread->k_main_sched;
         
 	k_sched->state = ABT_SCHED_STATE_RUNNING;
         LOG_EVENT("[Master S%" PRIu64 "] start\n", k_sched->id);
@@ -1567,16 +1545,15 @@ void ABTI_kthread_schedule(void *p_arg)
         /* When join is requested, the ES terminates after finishing
          * execution of all work units. */
         if (request & ABTI_XSTREAM_REQ_JOIN) {
-            if (ABTI_sched_get_effective_size(k_sched) == 0) {
+            //if (ABTI_sched_get_effective_size(p_xstream->p_main_sched) == 0) {
                 /* If a ULT has been blocked on the join call, we make it ready */
-                if (k_thread->k_req_arg) {
-                    ABTI_thread_set_ready((ABTI_thread *)k_thread->k_req_arg);
-                    k_thread->k_req_arg = NULL;
-                }
+                //if (p_xstream->p_req_arg) {
+                //    ABTI_thread_set_ready((ABTI_thread *)p_xstream->p_req_arg);
+                //    p_xstream->p_req_arg = NULL;
+               // }
                 break;
             }
         }
-    }
 
     LOG_EVENT("[T%d] terminated\n", k_thread->rank);
 }
@@ -1600,17 +1577,16 @@ int ABTI_kthread_schedule_thread(ABTI_kthread *k_thread, ABTI_thread *p_thread)
     /* Switch the context */
     LOG_EVENT("[U%" PRIu64 ":T%d] start running\n",
               ABTI_thread_get_id(p_thread), k_thread->rank);
-    ABTI_sched *k_sched = k_thread->k_main_sched;
+    ABTI_ksched *k_sched = k_thread->k_main_sched;
    
     /* This ULT should be a scheduler for the virtual ES. If it is not, something went wrong! */ 
     if(p_thread->is_sched != NULL) {
     	p_thread->is_sched->p_ctx = &p_thread->ctx; 
    
     	/* Context switch to the virtual ES scheduler */    
-    	ABTI_thread_context_switch_sched_to_sched(k_sched, p_thread->is_sched);
+    	ABTI_thread_context_switch_ksched_to_sched(k_sched, p_thread->is_sched);
     } else {
-	/* This should be the main thread, everything else should be a scheduler */
-	ABTI_thread_context_switch_sched_to_thread(k_sched, p_thread);
+	ABTI_thread_context_switch_ksched_to_thread(k_sched, p_thread);
     }
 
     LOG_EVENT("[U%" PRIu64 ":T%d] stopped\n",
@@ -1619,9 +1595,9 @@ int ABTI_kthread_schedule_thread(ABTI_kthread *k_thread, ABTI_thread *p_thread)
   fn_exit:
     return abt_errno;
 
-  //fn_fail:
-    //HANDLE_ERROR_FUNC_WITH_CODE(abt_errno);
-    //goto fn_exit;
+  fn_fail:
+    HANDLE_ERROR_FUNC_WITH_CODE(abt_errno);
+    goto fn_exit;
 }
 #endif
 
@@ -1678,8 +1654,7 @@ int ABTI_xstream_schedule_thread(ABTI_xstream *p_xstream, ABTI_thread *p_thread)
         /* The scheduler continues from here. */
         /* The previous ULT may not be the same as one to which the
          * context has been switched. */
-        printf("do we get here?\n");
-	p_thread = ABTI_local_get_thread();
+        p_thread = ABTI_local_get_thread();
 #ifndef ABT_CONFIG_DISABLE_STACKABLE_SCHED
     }
 #endif
