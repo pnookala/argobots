@@ -129,7 +129,6 @@ static void sched_run(ABT_sched sched)
     int i;
     CNT_DECL(run_cnt);
     ABTI_sched *p_sched = ABTI_sched_get_ptr(sched);
-    ABTI_xstream *p_xstream = ABTI_local_get_xstream();
     ABTI_kthread *k_thread = ABTI_local_get_kthread();
 
     p_data = sched_data_get_ptr(p_sched->data);
