@@ -145,7 +145,7 @@ static size_t random_get_size(ABT_pool pool)
     ABTI_pool *p_pool = ABTI_pool_get_ptr(pool);
     void *data = ABTI_pool_get_data(p_pool);
     data_t *p_data = pool_get_data_ptr(data);
-    return p_data->num_units;
+    return p_data->num_units - p_data->cur_index;
 }
 
 static void random_push_shared(ABT_pool pool, ABT_unit unit)

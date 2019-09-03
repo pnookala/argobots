@@ -34,8 +34,10 @@ void ABTD_thread_func_wrapper_sched(void *p_arg)
 
     /* NOTE: ctx is located in the beginning of ABTI_thread */
     ABTI_thread *p_thread = (ABTI_thread *)p_fctx;
+#ifndef ABT_XSTREAM_USE_VIRTUAL
 #ifndef ABT_CONFIG_DISABLE_STACKABLE_SCHED
     ABTI_ASSERT(p_thread->is_sched != NULL);
+#endif
 #endif
 
     ABTD_thread_terminate_sched(p_thread);
@@ -97,10 +99,10 @@ static inline void ABTDI_thread_terminate(ABTI_thread *p_thread,
     ABTD_thread_context *p_link = (ABTD_thread_context *)
         ABTD_atomic_load_ptr((void **)&p_fctx->p_link);
     if (p_link) {
-        /* If p_link is set, it means that other ULT has called the join. */
+	/* If p_link is set, it means that other ULT has called the join. */
         ABTI_thread *p_joiner = (ABTI_thread *)p_link;
         if (p_thread->p_last_xstream == p_joiner->p_last_xstream) {
-            /* Only when the current ULT is on the same ES as p_joiner's,
+	    /* Only when the current ULT is on the same ES as p_joiner's,
              * we can jump to the joiner ULT. */
             ABTD_atomic_store_uint32((uint32_t *)&p_thread->state,
                                      ABT_THREAD_STATE_TERMINATED);
@@ -112,6 +114,7 @@ static inline void ABTDI_thread_terminate(ABTI_thread *p_thread,
              * type ULT would be a joiner (=suspend), no scheduler is available
              * when a running ULT needs suspension. Hence, it always jumps to a
              * non-scheduler-type ULT. */
+
 #ifndef ABT_CONFIG_DISABLE_STACKABLE_SCHED
             if (is_sched) {
                 ABTI_thread_finish_context_sched_to_thread(p_thread->is_sched,

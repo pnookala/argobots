@@ -468,7 +468,7 @@ int ABT_thread_join(ABT_thread thread)
                                                    ABTI_THREAD_REQ_JOIN);
         if (req & ABTI_THREAD_REQ_JOIN) goto yield_based;
 
-        ABTI_thread_set_blocked(p_self);
+	ABTI_thread_set_blocked(p_self);
         LOG_EVENT("[U%" PRIu64 ":E%d] blocked to join U%" PRIu64 "\n",
                   ABTI_thread_get_id(p_self), p_self->p_last_xstream->rank,
                   ABTI_thread_get_id(p_thread));
@@ -1644,6 +1644,7 @@ int ABTI_ksched_thread_create(void (*thread_func)(void *),
         /* We don't need to initialize the context of 1. the main thread, and
          * 2. the main scheduler thread which runs on OS-level threads
          * (p_stack == NULL). Invalidate the context here. */
+
 	abt_errno = ABTD_thread_context_invalidate(&p_newthread->ctx);
     } else if (p_sched == NULL) {
 #if ABT_CONFIG_THREAD_TYPE != ABT_THREAD_TYPE_DYNAMIC_PROMOTION
@@ -1675,7 +1676,7 @@ int ABTI_ksched_thread_create(void (*thread_func)(void *),
     p_newthread->p_req_arg      = NULL;
     p_newthread->p_keytable     = NULL;
     p_newthread->id             = ABTI_THREAD_INIT_ID;
-
+    p_newthread->is_sched       = p_sched;
     /* Create a spinlock */
     ABTI_spinlock_create(&p_newthread->lock);
 
@@ -1721,8 +1722,8 @@ int ABTI_thread_create(ABTI_pool *p_pool, void (*thread_func)(void *),
 
     /* Allocate a ULT object and its stack, then create a thread context. */
     p_newthread = ABTI_mem_alloc_thread(p_attr);
-    if ((thread_type == ABTI_THREAD_TYPE_MAIN
-//	 thread_type == ABTI_THREAD_TYPE_MAIN_SCHED
+    if ((thread_type == ABTI_THREAD_TYPE_MAIN ||
+	 thread_type == ABTI_THREAD_TYPE_MAIN_SCHED
 	) && p_newthread->attr.p_stack == NULL) {
 
         /* We don't need to initialize the context of 1. the main thread, and
@@ -1905,7 +1906,6 @@ int ABTI_thread_create_main_ksched(ABTI_kthread *k_thread, ABTI_sched *k_sched)
     ABTI_thread_attr attr;
     ABTI_thread_attr_init(&attr, NULL, ABTI_global_get_sched_stacksize(),
 		                                  ABTI_STACK_TYPE_MALLOC, ABT_FALSE);
-
     abt_errno = ABTI_ksched_thread_create(ABTI_kthread_schedule, (void*)k_thread, &attr,
 		    ABTI_THREAD_TYPE_MAIN_SCHED, k_sched, 0, k_thread, &v_newthread);
     ABTI_CHECK_ERROR(abt_errno);
@@ -1914,7 +1914,7 @@ int ABTI_thread_create_main_ksched(ABTI_kthread *k_thread, ABTI_sched *k_sched)
     k_sched->p_ctx = &v_newthread->ctx;
 
     ABTI_thread *p_main_thread = ABTI_global_get_main();
-    //ABTD_thread_context_change_link(&v_newthread->ctx, &p_main_thread->ctx);
+    ABTD_thread_context_change_link(&v_newthread->ctx, &p_main_thread->ctx);
 
   fn_exit:
     return abt_errno;
@@ -1933,7 +1933,7 @@ int ABTI_thread_create_main_sched(ABTI_xstream *p_xstream, ABTI_sched *p_sched)
 
     /* Create a ULT context */
     if (p_xstream->type == ABTI_XSTREAM_TYPE_PRIMARY) {
-        /* Create a ULT object and its stack */
+	/* Create a ULT object and its stack */
         ABTI_thread_attr attr;
         ABTI_thread_attr_init(&attr, NULL, ABTI_global_get_sched_stacksize(),
                               ABTI_STACK_TYPE_MALLOC, ABT_FALSE);
@@ -2123,7 +2123,7 @@ int ABTI_thread_set_ready(ABTI_thread *p_thread)
 
     /* The ULT should be in BLOCKED state. */
     ABTI_CHECK_TRUE(p_thread->state == ABT_THREAD_STATE_BLOCKED, ABT_ERR_THREAD);
-
+    
     /* We should wait until the scheduler of the blocked ULT resets the BLOCK
      * request. Otherwise, the ULT can be pushed to a pool here and be
      * scheduled by another scheduler if it is pushed to a shared pool. */
