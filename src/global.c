@@ -209,16 +209,23 @@ int ABT_finalize(void)
         ABTI_sched *p_sched = ABTI_xstream_get_top_sched(p_thread->p_last_xstream);
         ABTI_thread_context_switch_thread_to_sched(p_thread, p_sched);
    
-#ifdef ABT_XSTREAM_USE_VIRTUAL
-	/* After ending the primary virtual ES scheduler */
-	ABTI_kthread *k_thread = ABTI_local_get_kthread();
-	ABTI_kthread_set_request(k_thread, ABTI_XSTREAM_REQ_JOIN);
-	ABTI_thread_context_switch_thread_to_sched(p_thread, k_thread->k_main_sched);
-#endif     
 	/* Back to the original thread */
         LOG_EVENT("[U%" PRIu64 ":E%d] resume after yield\n",
                   ABTI_thread_get_id(p_thread), p_thread->p_last_xstream->rank);
     }
+
+#ifdef ABT_XSTREAM_USE_VIRTUAL
+    LOG_EVENT("[U%" PRIu64 ":E%d] yield to master scheduler\n",
+                  ABTI_thread_get_id(p_thread), p_thread->p_last_xstream->rank);
+    /* After ending the primary virtual ES scheduler */
+    ABTI_kthread *k_thread = ABTI_local_get_kthread();
+    ABTI_kthread_set_request(k_thread, ABTI_XSTREAM_REQ_JOIN);
+    ABTI_thread_context_switch_thread_to_sched(p_thread, k_thread->k_main_sched);
+
+    LOG_EVENT("[U%" PRIu64 ":E%d] resume after yield\n",
+                  ABTI_thread_get_id(p_thread), p_thread->p_last_xstream->rank);
+
+#endif
 
     /* Remove the primary ULT */
     ABTI_thread_free_main(p_thread);
