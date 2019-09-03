@@ -208,8 +208,14 @@ int ABT_finalize(void)
         /* Switch to the top scheduler */
         ABTI_sched *p_sched = ABTI_xstream_get_top_sched(p_thread->p_last_xstream);
         ABTI_thread_context_switch_thread_to_sched(p_thread, p_sched);
-
-        /* Back to the original thread */
+   
+#ifdef ABT_XSTREAM_USE_VIRTUAL
+	/* After ending the primary virtual ES scheduler */
+	ABTI_kthread *k_thread = ABTI_local_get_kthread();
+	ABTI_kthread_set_request(k_thread, ABTI_XSTREAM_REQ_JOIN);
+	ABTI_thread_context_switch_thread_to_sched(p_thread, k_thread->k_main_sched);
+#endif     
+	/* Back to the original thread */
         LOG_EVENT("[U%" PRIu64 ":E%d] resume after yield\n",
                   ABTI_thread_get_id(p_thread), p_thread->p_last_xstream->rank);
     }

@@ -408,9 +408,10 @@ int ABTI_xstream_start_primary(ABTI_xstream *p_xstream, ABTI_thread *p_thread)
     /* Create the main sched ULT for primary kernel thread */
     ABTI_sched *k_sched = p_kthread->k_main_sched;
     if (k_sched == NULL) goto fn_exit;
-
     abt_errno = ABTI_thread_create_main_ksched(p_kthread, k_sched);
     ABTI_CHECK_ERROR(abt_errno);
+
+    k_sched->p_thread->p_last_xstream = p_xstream;
 #endif
     /* Create the main sched ULT */
     ABTI_sched *p_sched = p_xstream->p_main_sched;
@@ -565,7 +566,7 @@ int ABT_xstream_join(ABT_xstream xstream)
 
     /* Wait until the target ES terminates */
     if (is_blockable == ABT_TRUE) {
-        ABTI_POOL_SET_CONSUMER(p_thread->p_pool, ABTI_local_get_xstream());
+	ABTI_POOL_SET_CONSUMER(p_thread->p_pool, ABTI_local_get_xstream());
 
         /* Save the caller ULT to set it ready when the ES is terminated */
         p_xstream->p_req_arg = (void *)p_thread;
@@ -1285,6 +1286,41 @@ int ABTI_xstream_check_events(ABTI_xstream *p_xstream, ABT_sched sched)
     goto fn_exit;
 }
 
+#ifdef ABT_XSTREAM_USE_VIRTUAL
+int ABTI_kthread_check_events(ABTI_kthread *k_thread, ABT_sched sched)
+{
+    int abt_errno = ABT_SUCCESS;
+    ABTI_info_check_print_all_thread_stacks();
+
+    if (k_thread->request & ABTI_XSTREAM_REQ_JOIN) {
+        abt_errno = ABT_sched_finish(sched);
+        ABTI_CHECK_ERROR(abt_errno);
+    }
+
+    if ((k_thread->request & ABTI_XSTREAM_REQ_EXIT) ||
+        (k_thread->request & ABTI_XSTREAM_REQ_CANCEL)) {
+        abt_errno = ABT_sched_exit(sched);
+        ABTI_CHECK_ERROR(abt_errno);
+    }
+
+    // TODO: check event queue
+#ifdef ABT_CONFIG_HANDLE_POWER_EVENT
+    if (ABTI_event_check_power() == ABT_TRUE) {
+        abt_errno = ABT_sched_exit(sched);
+        ABTI_CHECK_ERROR(abt_errno);
+    }
+#endif
+    ABTI_EVENT_PUBLISH_INFO();
+
+  fn_exit:
+    return abt_errno;
+
+  fn_fail:
+    HANDLE_ERROR_FUNC_WITH_CODE(abt_errno);
+    goto fn_exit;
+} 
+#endif
+
 
 /**
  * @ingroup ES
@@ -1580,6 +1616,7 @@ void ABTI_kthread_schedule(void *p_arg)
 
     LOG_EVENT("[T%d] terminated\n", k_thread->rank);
 }
+
 int ABTI_kthread_schedule_thread(ABTI_kthread *k_thread, ABTI_thread *p_thread)
 {
     int abt_errno = ABT_SUCCESS;
@@ -1678,7 +1715,6 @@ int ABTI_xstream_schedule_thread(ABTI_xstream *p_xstream, ABTI_thread *p_thread)
         /* The scheduler continues from here. */
         /* The previous ULT may not be the same as one to which the
          * context has been switched. */
-        printf("do we get here?\n");
 	p_thread = ABTI_local_get_thread();
 #ifndef ABT_CONFIG_DISABLE_STACKABLE_SCHED
     }

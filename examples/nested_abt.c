@@ -82,8 +82,11 @@ void abt_for(int num_threads, int loop_count, inner_f inner_func) {
                       ABT_THREAD_ATTR_NULL, &threads[i].thread);
   }
 
+  printf("threads created!\n");
   /* join ULTs */
+  printf("joining threads\n");
   for (i = 0; i < loop_count; i++) {
+    printf("joining thread %d\n", i);
     ABT_thread_free(&threads[i].thread);
   }
 
@@ -93,6 +96,7 @@ void abt_for(int num_threads, int loop_count, inner_f inner_func) {
   // main ULT might be scheduled by a secondary execuntion stream.
   for (i = 1; i < num_threads; i++)
 #else
+    printf("calling join on xstreams\n");
     for (i = start_i; i < num_threads; i++)
 #endif
       {
@@ -119,7 +123,7 @@ int main (int argc, char** argv) {
 	main_num_es = atoi(argv[1]);
 	inner_num_es = atoi(argv[2]);
   } 
-  abt_for(main_num_es, main_num_es, empty_f);
+  abt_for(main_num_es, inner_num_es, empty_f);
   //abt_for(main_num_es, main_num_es, empty_f);
   return 0;
 }

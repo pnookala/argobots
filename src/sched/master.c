@@ -129,7 +129,7 @@ static void sched_run(ABT_sched sched)
     int i;
     CNT_DECL(run_cnt);
     ABTI_sched *p_sched = ABTI_sched_get_ptr(sched);
-    //ABTI_xstream *p_xstream = ABTI_local_get_xstream();
+    ABTI_xstream *p_xstream = ABTI_local_get_xstream();
     ABTI_kthread *k_thread = ABTI_local_get_kthread();
 
     p_data = sched_data_get_ptr(p_sched->data);
@@ -149,17 +149,17 @@ static void sched_run(ABT_sched sched)
             ABT_unit unit = ABTI_pool_pop(p_pool);
             if (unit != ABT_UNIT_NULL) {
                 ABTI_kthread_run_unit(k_thread, unit, p_pool);
-                CNT_INC(run_cnt);
+		CNT_INC(run_cnt);
                 break;
             }
         }
 
         if (++work_count >= event_freq) {
-            /*ABTI_xstream_check_events(p_xstream, sched);
-            ABT_bool stop = ABTI_sched_has_to_stop(p_sched, p_xstream);
+	    ABTI_kthread_check_events(k_thread, sched);
+            ABT_bool stop = ABTI_master_sched_has_to_stop(p_sched, k_thread);
             if (stop == ABT_TRUE)
                 break;
-            work_count = 0;*/
+            work_count = 0;
             SCHED_SLEEP(run_cnt, p_data->sleep_time);
         }
     }

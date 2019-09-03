@@ -579,6 +579,9 @@ void ABTI_xstream_schedule_task(ABTI_xstream *p_xstream, ABTI_task *p_task);
 int ABTI_xstream_migrate_thread(ABTI_thread *p_thread);
 int ABTI_xstream_set_main_sched(ABTI_xstream *p_xstream, ABTI_sched *p_sched);
 int ABTI_xstream_check_events(ABTI_xstream *p_xstream, ABT_sched sched);
+#ifdef ABT_XSTREAM_USE_VIRTUAL
+int ABTI_kthread_check_events(ABTI_kthread *k_thread, ABT_sched sched);
+#endif
 void *ABTI_xstream_launch_main_sched(void *p_arg);
 void ABTI_xstream_print(ABTI_xstream *p_xstream, FILE *p_os, int indent,
                         ABT_bool print_sub);
@@ -595,6 +598,9 @@ int ABTI_sched_free(ABTI_sched *p_sched);
 int ABTI_sched_get_migration_pool(ABTI_sched *, ABTI_pool *, ABTI_pool **);
 ABTI_sched_kind ABTI_sched_get_kind(ABT_sched_def *def);
 ABT_bool ABTI_sched_has_to_stop(ABTI_sched *p_sched, ABTI_xstream *p_xstream);
+#ifdef ABT_XSTREAM_USE_VIRTUAL
+ABT_bool ABTI_master_sched_has_to_stop(ABTI_sched *p_sched, ABTI_kthread *k_thread);
+#endif
 size_t ABTI_sched_get_size(ABTI_sched *p_sched);
 size_t ABTI_sched_get_total_size(ABTI_sched *p_sched);
 size_t ABTI_sched_get_effective_size(ABTI_sched *p_sched);
@@ -744,5 +750,7 @@ void ABTI_info_check_print_all_thread_stacks(void);
 #include "abti_barrier.h"
 #include "abti_timer.h"
 #include "abti_mem.h"
-
+#ifdef ABT_XSTREAM_USE_VIRTUAL
+#include "abti_kthread.h"
+#endif
 #endif /* ABTI_H_INCLUDED */
