@@ -560,6 +560,7 @@ void          ABTI_elem_print(ABTI_elem *p_elem, FILE *p_os, int indent,
 int ABTI_xstream_create(ABTI_sched *p_sched, ABTI_xstream **pp_xstream);
 #ifdef ABT_XSTREAM_USE_VIRTUAL
 int ABTI_kthread_create_master(ABTI_kthread **k_thread);
+int ABTI_kthread_join(ABTI_kthread *k_thread);
 #endif
 int ABTI_xstream_create_primary(ABTI_xstream **pp_xstream);
 int ABTI_xstream_start(ABTI_xstream *p_xstream);
@@ -581,6 +582,8 @@ int ABTI_xstream_set_main_sched(ABTI_xstream *p_xstream, ABTI_sched *p_sched);
 int ABTI_xstream_check_events(ABTI_xstream *p_xstream, ABT_sched sched);
 #ifdef ABT_XSTREAM_USE_VIRTUAL
 int ABTI_kthread_check_events(ABTI_kthread *k_thread, ABT_sched sched);
+int ABTI_xstream_create_main_sched(void *p_arg);
+void *ABTI_kthread_launch_main_sched(void *p_arg);
 #endif
 void *ABTI_xstream_launch_main_sched(void *p_arg);
 void ABTI_xstream_print(ABTI_xstream *p_xstream, FILE *p_os, int indent,
@@ -638,7 +641,7 @@ int   ABTI_thread_migrate_to_pool(ABTI_thread *p_thread, ABTI_pool *p_pool);
 int   ABTI_thread_create_main(ABTI_xstream *p_xstream, ABTI_thread **p_thread);
 int   ABTI_thread_create_main_sched(ABTI_xstream *p_xstream, ABTI_sched *p_sched);
 #ifdef ABT_XSTREAM_USE_VIRTUAL
-int   ABTI_thread_create_main_ksched(ABTI_kthread *k_thread, ABTI_sched *k_sched);
+int   ABTI_thread_create_main_ksched(ABTI_kthread *k_thread, ABTI_sched *k_sched, ABT_bool is_primary);
 #endif
 int   ABTI_thread_create_sched(ABTI_pool *p_pool, ABTI_sched *p_sched);
 void  ABTI_thread_free(ABTI_thread *p_thread);

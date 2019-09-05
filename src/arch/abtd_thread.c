@@ -127,6 +127,7 @@ static inline void ABTDI_thread_terminate(ABTI_thread *p_thread,
 #endif
             return;
         } else {
+
             /* If the current ULT's associated ES is different from p_joiner's,
              * we can't directly jump to p_joiner.  Instead, we wake up
              * p_joiner here so that p_joiner's scheduler can resume it. */
@@ -138,6 +139,7 @@ static inline void ABTDI_thread_terminate(ABTI_thread *p_thread,
                                      ABTI_THREAD_REQ_TERMINATE);
         }
     } else {
+
         uint32_t req = ABTD_atomic_fetch_or_uint32(&p_thread->request,
                 ABTI_THREAD_REQ_JOIN | ABTI_THREAD_REQ_TERMINATE);
         if (req & ABTI_THREAD_REQ_JOIN) {
@@ -157,9 +159,17 @@ static inline void ABTDI_thread_terminate(ABTI_thread *p_thread,
     ABTI_sched *p_sched;
 #ifndef ABT_CONFIG_DISABLE_STACKABLE_SCHED
     if (p_thread->is_sched) {
+
+#ifdef ABT_XSTREAM_USE_VIRTUAL
+	/* If p_thread is a scheduler ULT, we have to context switch to master scheduler.
+	 * Now will stacked schedulers work? How do we handle this? */
+	ABTI_xstream *p_xstream = p_thread->p_last_xstream;
+	p_sched = p_xstream->p_kthread->k_main_sched;
+#else
         /* If p_thread is a scheduler ULT, we have to context switch to
          * the parent scheduler. */
         p_sched = ABTI_xstream_get_parent_sched(p_thread->p_last_xstream);
+#endif
     } else {
 #endif
         p_sched = ABTI_xstream_get_top_sched(p_thread->p_last_xstream);

@@ -215,7 +215,19 @@ int ABT_finalize(void)
     }
 
 #ifdef ABT_XSTREAM_USE_VIRTUAL
-    LOG_EVENT("[U%" PRIu64 ":E%d] yield to master scheduler\n",
+    /* We have to join all kernel threads */
+    for (int i = 1; i < gp_ABTI_global->num_kthreads; i++) {
+	LOG_EVENT("[U%" PRIu64 ":E%d] yield to master scheduler\n",
+                  ABTI_thread_get_id(p_thread), p_thread->p_last_xstream->rank);
+    	ABTI_kthread *k_thread = gp_ABTI_global->k_threads[i];
+    	ABTI_sched_set_request(k_thread->k_main_sched, ABTI_SCHED_REQ_FINISH);
+	//ABTI_thread_context_switch_thread_to_sched(p_thread, k_thread->k_main_sched);
+    	abt_errno = ABTD_xstream_context_join(k_thread->ctx);
+	LOG_EVENT("[U%" PRIu64 ":E%d] resume after yield\n",
+                  ABTI_thread_get_id(p_thread), p_thread->p_last_xstream->rank);
+    }
+
+    LOG_EVENT("[U%" PRIu64 ":E%d] yield to primary master scheduler\n",
                   ABTI_thread_get_id(p_thread), p_thread->p_last_xstream->rank);
     /* After ending the primary virtual ES scheduler */
     ABTI_kthread *k_thread = ABTI_local_get_kthread();

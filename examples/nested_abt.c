@@ -82,9 +82,8 @@ void abt_for(int num_threads, int loop_count, inner_f inner_func) {
                       ABT_THREAD_ATTR_NULL, &threads[i].thread);
   }
 
-  printf("threads created!\n");
+  printf("threads created...joining threads!\n");
   /* join ULTs */
-  printf("joining threads\n");
   for (i = 0; i < loop_count; i++) {
     printf("joining thread %d\n", i);
     ABT_thread_free(&threads[i].thread);

@@ -1670,7 +1670,7 @@ int ABTI_ksched_thread_create(void (*thread_func)(void *),
     p_newthread->state          = ABT_THREAD_STATE_READY;
     p_newthread->request        = 0;
     p_newthread->p_last_xstream = NULL;
-    p_newthread->p_pool         = NULL;
+    p_newthread->p_pool         = p_sched->pools[0];
     p_newthread->refcount       = refcount;
     p_newthread->type           = thread_type;
     p_newthread->p_req_arg      = NULL;
@@ -1898,7 +1898,7 @@ int ABTI_thread_create_main(ABTI_xstream *p_xstream, ABTI_thread **p_thread)
 }
 
 #ifdef ABT_XSTREAM_USE_VIRTUAL
-int ABTI_thread_create_main_ksched(ABTI_kthread *k_thread, ABTI_sched *k_sched)
+int ABTI_thread_create_main_ksched(ABTI_kthread *k_thread, ABTI_sched *k_sched, ABT_bool is_primary)
 {
     int abt_errno = ABT_SUCCESS;
     ABTI_thread *v_newthread;
@@ -1914,7 +1914,8 @@ int ABTI_thread_create_main_ksched(ABTI_kthread *k_thread, ABTI_sched *k_sched)
     k_sched->p_ctx = &v_newthread->ctx;
 
     ABTI_thread *p_main_thread = ABTI_global_get_main();
-    ABTD_thread_context_change_link(&v_newthread->ctx, &p_main_thread->ctx);
+    if(is_primary == ABT_TRUE)
+    	ABTD_thread_context_change_link(&v_newthread->ctx, &p_main_thread->ctx);
 
   fn_exit:
     return abt_errno;
@@ -1950,8 +1951,13 @@ int ABTI_thread_create_main_sched(ABTI_xstream *p_xstream, ABTI_sched *p_sched)
         /* For secondary ESs, the stack of OS thread is used for the main
          * scheduler's ULT. */
         ABTI_thread_attr attr;
+#ifdef ABT_XSTREAM_USE_VIRTUAL
+	ABTI_thread_attr_init(&attr, NULL, ABTI_global_get_sched_stacksize(),
+                              ABTI_STACK_TYPE_MALLOC, ABT_FALSE);
+#else
         ABTI_thread_attr_init(&attr, NULL, 0, ABTI_STACK_TYPE_MAIN, ABT_FALSE);
-        abt_errno = ABTI_thread_create(NULL, ABTI_xstream_schedule,
+#endif
+	abt_errno = ABTI_thread_create(NULL, ABTI_xstream_schedule,
                                        (void *)p_xstream, &attr,
                                        ABTI_THREAD_TYPE_MAIN_SCHED, p_sched, 0,
                                        p_xstream, ABT_FALSE, &p_newthread);
