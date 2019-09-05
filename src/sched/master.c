@@ -155,12 +155,13 @@ static void sched_run(ABT_sched sched)
 
         if (++work_count >= event_freq) {
 	    ABTI_kthread_check_events(k_thread, sched);
-            ABT_bool stop = ABTI_master_sched_has_to_stop(p_sched, k_thread);
-            if (stop == ABT_TRUE)
+	    ABT_bool stop = ABTI_master_sched_has_to_stop(k_thread->k_main_sched, k_thread);
+	    if (stop == ABT_TRUE)
                 break;
             work_count = 0;
             SCHED_SLEEP(run_cnt, p_data->sleep_time);
         }
+
     }
 }
 

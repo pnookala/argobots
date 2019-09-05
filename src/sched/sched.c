@@ -530,16 +530,17 @@ ABT_bool ABTI_master_sched_has_to_stop(ABTI_sched *p_sched, ABTI_kthread *k_thre
 
     /* Check exit request */
     if (p_sched->request & ABTI_SCHED_REQ_EXIT) {
-        ABTI_spinlock_acquire(&k_thread->sched_lock);
+        //ABTI_spinlock_acquire(&k_thread->sched_lock);
         p_sched->state = ABT_SCHED_STATE_TERMINATED;
-        stop = ABT_TRUE;
+        //ABTI_spinlock_release(&k_thread->sched_lock);
+	stop = ABT_TRUE;
         goto fn_exit;
     }
 
     size = ABTI_sched_get_effective_size(p_sched);
     if (size == 0) {
         if (p_sched->request & ABTI_SCHED_REQ_FINISH) {
-            /* Check join request */
+	    /* Check join request */
             /* We need to lock in case someone wants to migrate to this
              * scheduler */
 	    ABTI_spinlock_acquire(&k_thread->sched_lock);
@@ -744,7 +745,6 @@ size_t ABTI_sched_get_effective_size(ABTI_sched *p_sched)
             default: break;
         }
     }
-
     return pool_size;
 }
 
