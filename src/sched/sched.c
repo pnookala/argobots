@@ -502,7 +502,7 @@ ABT_bool ABTI_sched_has_to_stop(ABTI_sched *p_sched, ABTI_xstream *p_xstream)
                 ABTI_spinlock_release(&p_xstream->sched_lock);
             }
         } else if (p_sched->used == ABTI_SCHED_IN_POOL) {
-            /* If the scheduler is a stacked one, we have to escape from the
+	    /* If the scheduler is a stacked one, we have to escape from the
              * scheduling function. The scheduler will be stopped if it is a
              * tasklet type. However, if the scheduler is a ULT type, we
              * context switch to the parent scheduler. */
@@ -517,6 +517,19 @@ ABT_bool ABTI_sched_has_to_stop(ABTI_sched *p_sched, ABTI_xstream *p_xstream)
             }
         }
     }
+
+#ifdef ABT_XSTREAM_USE_VIRTUAL
+    if(stop != ABT_TRUE && size - ABTI_sched_get_size(p_sched) != 0) {
+	/* This case means that ULTs are either blocked of migrating, but none are in the pool *
+	 * We need to switch to another scheduler and let the ULT finish so the blcoked ULTs
+	 * can make progress */
+	ABTI_kthread *k_thread;
+	k_thread = ABTI_local_get_kthread();
+	p_sched->p_thread->request = ABTI_THREAD_REQ_YIELD;	
+	ABTI_thread_context_switch_sched_to_sched(p_sched, k_thread->k_main_sched);
+    }
+    //else stop = ABT_TRUE;
+#endif
 
   fn_exit:
     return stop;

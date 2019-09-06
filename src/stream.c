@@ -53,7 +53,9 @@ int ABT_xstream_create(ABT_sched sched, ABT_xstream *newxstream)
     ABTI_CHECK_ERROR(abt_errno);
 
 #ifdef ABT_XSTREAM_USE_VIRTUAL
+    /* Load balance with proper kernel thread  */
     p_newxstream->p_kthread = k_newthread;
+    ABTI_local_set_kthread(k_newthread);
 #endif
 
     /* Start this ES */
@@ -120,6 +122,18 @@ int ABTI_kthread_create_master(ABTI_kthread **k_thread)
     int abt_errno = ABT_SUCCESS;
 
     ABTI_kthread *k_newthread;
+    //Get handle to existing k_thread if we already exhausted all the cores
+    if(gp_ABTI_global->num_kthreads == gp_ABTI_global->num_cores)
+    {
+	ABTI_spinlock_acquire(&gp_ABTI_global->xstreams_lock);
+	//Get the kthread with minimum virtual ES count
+ 	*k_thread = gp_ABTI_global->k_threads[gp_ABTI_global->kthread_lastidx++];
+	//if(gp_ABTI_global->kthread_lastidx == gp_ABTI_global->num_cores)
+	  //  gp_ABTI_global->kthread_lastidx = 0;
+	ABTI_spinlock_release(&gp_ABTI_global->xstreams_lock);
+	goto fn_exit;
+    }
+
     ABTI_sched* sched;
 
     abt_errno = ABTI_sched_create_master(ABT_SCHED_CONFIG_NULL, &sched);
@@ -359,8 +373,11 @@ int ABTI_xstream_start(ABTI_xstream *p_xstream)
 	abt_errno = ABTI_xstream_create_main_sched((void *)p_xstream);
 	ABTI_CHECK_ERROR(abt_errno);
 
+	ABTI_spinlock_acquire(&gp_ABTI_global->xstreams_lock);
  	/* Push the scheduler to the list of schedulers */
-    	k_thread->v_xstreams[k_thread->num_vxstreams++] = p_xstream;
+    	int num_vxstreams = k_thread->num_vxstreams;
+	k_thread->v_xstreams[k_thread->num_vxstreams++] = p_xstream;
+	ABTI_spinlock_release(&gp_ABTI_global->xstreams_lock);
 
     	ABTI_pool *p_pool = k_sched->pools[0];
     	ABT_thread h_schedthread;
@@ -371,9 +388,13 @@ int ABTI_xstream_start(ABTI_xstream *p_xstream)
     	abt_errno = ABTI_pool_push(p_pool, p_sched->p_thread->unit, p_xstream);
     	ABTI_CHECK_ERROR(abt_errno);	
 	
-	abt_errno = ABTD_xstream_context_create(
-		ABTI_kthread_launch_main_sched, (void *)p_xstream,
-		&k_thread->ctx);
+	/* We dont need to start a new thread if it already exists!.
+	 * We just need to push the scheduler to the pool */
+	if(num_vxstreams == 0) {
+	    abt_errno = ABTD_xstream_context_create(
+			ABTI_kthread_launch_main_sched, (void *)p_xstream,
+			&k_thread->ctx);
+	}
 #else
         /* Start the main scheduler on a different ES */
         abt_errno = ABTD_xstream_context_create(
@@ -621,11 +642,7 @@ int ABT_xstream_join(ABT_xstream xstream)
     }
 
   fn_join:
-#ifdef ABT_XSTREAM_USE_VIRTUAL
-    ABTI_kthread_set_request(p_xstream->p_kthread, ABTI_XSTREAM_REQ_JOIN);
-    /* We need to manually context switch to scheduler here  */
-    //abt_errno = ABTD_xstream_context_join(p_xstream->p_kthread->ctx);
-#else
+#ifndef ABT_XSTREAM_USE_VIRTUAL
     /* Normal join request */
     abt_errno = ABTD_xstream_context_join(p_xstream->ctx);
     ABTI_CHECK_ERROR_MSG(abt_errno, "ABTD_xstream_context_join");
@@ -969,7 +986,8 @@ int ABT_xstream_set_main_sched_basic(ABT_xstream xstream,
     ABTI_sched *p_sched = ABTI_sched_get_ptr(sched);
 
     abt_errno = ABTI_xstream_set_main_sched(p_xstream, p_sched);
-    ABTI_CHECK_ERROR(abt_errno);
+    /* TODO: Handle gracefully instead of commenting it out */
+    //ABTI_CHECK_ERROR(abt_errno);
 
   fn_exit:
     return abt_errno;
@@ -1693,12 +1711,19 @@ int ABTI_kthread_schedule_thread(ABTI_kthread *k_thread, ABTI_thread *p_thread)
     LOG_EVENT("[U%" PRIu64 ":T%d] stopped\n",
               ABTI_thread_get_id(p_thread), k_thread->rank);
 
+    if(p_thread->request == ABTI_THREAD_REQ_YIELD) {
+	ABTI_pool *p_pool = k_sched->pools[0];
+	ABTI_xstream *p_xstream = p_thread->p_last_xstream;
+	ABTI_pool_push(p_pool, p_xstream->p_main_sched->p_thread, p_xstream);
+	printf("Will it work now?\n");	
+    }
+  
   fn_exit:
     return abt_errno;
 
-  fn_fail:
-    HANDLE_ERROR_FUNC_WITH_CODE(abt_errno);
-    goto fn_exit;
+  //fn_fail:
+    //HANDLE_ERROR_FUNC_WITH_CODE(abt_errno);
+    //goto fn_exit;
 }
 #endif
 

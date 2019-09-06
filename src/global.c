@@ -93,8 +93,10 @@ int ABT_init(int argc, char **argv)
     gp_ABTI_global->k_threads = (ABTI_kthread **) ABTU_calloc(
 	    gp_ABTI_global->max_xstreams, sizeof(ABTI_xstream *));
     gp_ABTI_global->num_kthreads = 0;
+    gp_ABTI_global->kthread_lastidx = 0;
 #endif
 
+    gp_ABTI_global->num_cores = 1;
     /* Create a spinlock */
     ABTI_spinlock_create(&gp_ABTI_global->xstreams_lock);
 
@@ -216,21 +218,24 @@ int ABT_finalize(void)
 
 #ifdef ABT_XSTREAM_USE_VIRTUAL
     /* We have to join all kernel threads */
-    for (int i = 1; i < gp_ABTI_global->num_kthreads; i++) {
-	LOG_EVENT("[U%" PRIu64 ":E%d] yield to master scheduler\n",
+    /*for (int i = 1; i < gp_ABTI_global->num_kthreads; i++) {
+	ABTI_kthread *k_thread = gp_ABTI_global->k_threads[i];
+	if(k_thread->k_main_sched->state != ABT_SCHED_STATE_TERMINATED) {
+	    LOG_EVENT("[U%" PRIu64 ":E%d] yield to master scheduler %d\n",
+                  ABTI_thread_get_id(p_thread), p_thread->p_last_xstream->rank, i);
+    	    ABTI_kthread *k_thread = gp_ABTI_global->k_threads[i];
+    	    ABTI_sched_set_request(k_thread->k_main_sched, ABTI_SCHED_REQ_FINISH);
+	    //ABTI_thread_context_switch_thread_to_sched(p_thread, k_thread->k_main_sched);
+    	    abt_errno = ABTD_xstream_context_join(k_thread->ctx);
+	    LOG_EVENT("[U%" PRIu64 ":E%d] resume after yield\n",
                   ABTI_thread_get_id(p_thread), p_thread->p_last_xstream->rank);
-    	ABTI_kthread *k_thread = gp_ABTI_global->k_threads[i];
-    	ABTI_sched_set_request(k_thread->k_main_sched, ABTI_SCHED_REQ_FINISH);
-	//ABTI_thread_context_switch_thread_to_sched(p_thread, k_thread->k_main_sched);
-    	abt_errno = ABTD_xstream_context_join(k_thread->ctx);
-	LOG_EVENT("[U%" PRIu64 ":E%d] resume after yield\n",
-                  ABTI_thread_get_id(p_thread), p_thread->p_last_xstream->rank);
-    }
+	}
+    }*/
 
     LOG_EVENT("[U%" PRIu64 ":E%d] yield to primary master scheduler\n",
                   ABTI_thread_get_id(p_thread), p_thread->p_last_xstream->rank);
     /* After ending the primary virtual ES scheduler */
-    ABTI_kthread *k_thread = ABTI_local_get_kthread();
+    ABTI_kthread *k_thread = gp_ABTI_global->k_threads[0];
     ABTI_kthread_set_request(k_thread, ABTI_XSTREAM_REQ_JOIN);
     ABTI_thread_context_switch_thread_to_sched(p_thread, k_thread->k_main_sched);
 

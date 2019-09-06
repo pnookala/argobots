@@ -39,6 +39,7 @@
 #define ABTI_THREAD_REQ_BLOCK       (1 << 5)
 #define ABTI_THREAD_REQ_ORPHAN      (1 << 6)
 #define ABTI_THREAD_REQ_NOPUSH      (1 << 7)
+#define ABTI_THREAD_REQ_YIELD	    (1 << 8)
 #define ABTI_THREAD_REQ_STOP        \
     (ABTI_THREAD_REQ_EXIT | ABTI_THREAD_REQ_TERMINATE)
 #define ABTI_THREAD_REQ_NON_YIELD   \
@@ -172,6 +173,7 @@ struct ABTI_global {
     int max_vxstreams; 		/* Max. number of virtual ESs per kernel thread */
     int num_kthreads;
     ABTI_kthread **k_threads;	/* Kernel thread array, has pointers to p_xstreams */
+    int kthread_lastidx;
 #endif
     ABTI_xstream **p_xstreams;   /* ES array */
     ABTI_spinlock xstreams_lock; /* Spinlock protecting p_xstreams. Any write
