@@ -41,13 +41,13 @@ void inner_func_wrapper(void *arg) {
   d->inner_func(d->arg);
 }
 
-void abt_for(int num_threads, int loop_count, inner_f inner_func) {
+void abt_for(int num_threads, int loop_count, inner_f inner_func, int first) {
   int i;
   ABT_pool pool;
   ABT_xstream *xstreams = NULL;
   abt_thread_data_t *threads = NULL;
   int set_main_sched_err = ABT_SUCCESS;
-
+  int start_i = 0;
   int initialized = ABT_initialized() != ABT_ERR_UNINITIALIZED;
   /* initialization */
   ABT_init(0, NULL);
@@ -57,14 +57,15 @@ void abt_for(int num_threads, int loop_count, inner_f inner_func) {
 
   /* ES creation */
   xstreams = (ABT_xstream *)malloc(sizeof(ABT_xstream) * num_threads);
-  /*ABT_xstream_self(&xstreams[0]);
+  if(first) {
+  ABT_xstream_self(&xstreams[0]);
 
   set_main_sched_err = ABT_xstream_set_main_sched_basic(xstreams[0],
                                          ABT_SCHED_DEFAULT, 1,
                                          &pool);
-  int start_i = (set_main_sched_err != ABT_SUCCESS) ? 0 : 1;
- */
-    int start_i = 0;
+  start_i = (set_main_sched_err != ABT_SUCCESS) ? 0 : 1;
+  }
+    else start_i = 0;
 //  printf("Creating xstreams from index %d\n", start_i);
   for (i = start_i; i < num_threads; i++) {
     ABT_xstream_create_basic(ABT_SCHED_DEFAULT, 1, &pool, ABT_SCHED_CONFIG_NULL,
@@ -99,7 +100,7 @@ void abt_for(int num_threads, int loop_count, inner_f inner_func) {
   for (i = 1; i < num_threads; i++)
 #else
     //printf("calling join on xstreams\n");
-    for (i = 0; i < num_threads; i++)
+    for (i = start_i; i < num_threads; i++)
 #endif
     {
   //      printf("JOINING XSTREAM %d\n", i);
@@ -115,12 +116,12 @@ void abt_for(int num_threads, int loop_count, inner_f inner_func) {
 }
 
 void inner2_par(int i) {
-  abt_for(inner_num_es, inner_num_es, empty_f);
+  abt_for(inner_num_es, inner_num_es, empty_f, 0);
 }
 
 void inner_par(void* data) {
  // printf("INNER ABT_FOR\n");
-    abt_for(inner_num_es, inner_num_es, empty_f);
+    abt_for(inner_num_es, inner_num_es, empty_f, 0);
 }
 
 int main (int argc, char** argv) {
@@ -128,7 +129,7 @@ int main (int argc, char** argv) {
 	main_num_es = atoi(argv[1]);
 	inner_num_es = atoi(argv[2]);
   } 
-  abt_for(main_num_es, main_num_es, inner_par);
+  abt_for(main_num_es, main_num_es, inner_par, 1);
   //abt_for(main_num_es, inner_num_es, empty_f);
   return 0;
 }
