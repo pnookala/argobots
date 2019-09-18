@@ -468,14 +468,13 @@ int ABT_thread_join(ABT_thread thread)
                                                    ABTI_THREAD_REQ_JOIN);
         if (req & ABTI_THREAD_REQ_JOIN) goto yield_based;
 
-	ABTI_thread_set_blocked(p_self);
+	    ABTI_thread_set_blocked(p_self);
         LOG_EVENT("[U%" PRIu64 ":E%d] blocked to join U%" PRIu64 "\n",
                   ABTI_thread_get_id(p_self), p_self->p_last_xstream->rank,
                   ABTI_thread_get_id(p_thread));
 
         /* Set the link in the context of the target ULT */
         ABTD_thread_context_change_link(&p_thread->ctx, &p_self->ctx);
-
         /* Suspend the current ULT */
         ABTI_thread_suspend(p_self);
     }
@@ -1722,8 +1721,8 @@ int ABTI_thread_create(ABTI_pool *p_pool, void (*thread_func)(void *),
 
     /* Allocate a ULT object and its stack, then create a thread context. */
     p_newthread = ABTI_mem_alloc_thread(p_attr);
-    if ((thread_type == ABTI_THREAD_TYPE_MAIN ||
-	 thread_type == ABTI_THREAD_TYPE_MAIN_SCHED
+    if ((thread_type == ABTI_THREAD_TYPE_MAIN //||
+	 //thread_type == ABTI_THREAD_TYPE_MAIN_SCHED
 	) && p_newthread->attr.p_stack == NULL) {
 
         /* We don't need to initialize the context of 1. the main thread, and
@@ -1764,7 +1763,9 @@ int ABTI_thread_create(ABTI_pool *p_pool, void (*thread_func)(void *),
     p_newthread->p_req_arg      = NULL;
     p_newthread->p_keytable     = NULL;
     p_newthread->id             = ABTI_THREAD_INIT_ID;
-
+#ifdef ABT_XSTREAM_USE_VIRTUAL
+    p_newthread->is_sched       = p_sched;
+#endif
     /* Create a spinlock */
     ABTI_spinlock_create(&p_newthread->lock);
 
@@ -1946,22 +1947,25 @@ int ABTI_thread_create_main_sched(ABTI_xstream *p_xstream, ABTI_sched *p_sched)
         ABTI_CHECK_ERROR(abt_errno);
         /* When the main scheduler is terminated, the control will jump to the
          * primary ULT. */
-	ABTD_thread_context_change_link(&p_newthread->ctx, &p_main_thread->ctx);
+	    ABTD_thread_context_change_link(&p_newthread->ctx, &p_main_thread->ctx);
     } else {
         /* For secondary ESs, the stack of OS thread is used for the main
          * scheduler's ULT. */
         ABTI_thread_attr attr;
 #ifdef ABT_XSTREAM_USE_VIRTUAL
-	ABTI_thread_attr_init(&attr, NULL, ABTI_global_get_sched_stacksize(),
+	    ABTI_thread_attr_init(&attr, NULL, ABTI_global_get_sched_stacksize(),
                               ABTI_STACK_TYPE_MALLOC, ABT_FALSE);
 #else
         ABTI_thread_attr_init(&attr, NULL, 0, ABTI_STACK_TYPE_MAIN, ABT_FALSE);
 #endif
-	abt_errno = ABTI_thread_create(NULL, ABTI_xstream_schedule,
+	    abt_errno = ABTI_thread_create(NULL, ABTI_xstream_schedule,
                                        (void *)p_xstream, &attr,
                                        ABTI_THREAD_TYPE_MAIN_SCHED, p_sched, 0,
                                        p_xstream, ABT_FALSE, &p_newthread);
         ABTI_CHECK_ERROR(abt_errno);
+//#ifdef ABT_XSTREAM_USE_VIRTUAL
+//        ABTD_thread_context_change_link(&p_newthread->ctx, &p_xstream->p_kthread->k_main_sched->p_thread->ctx);
+//#endif
     }
 
     /* Return value */
@@ -2072,7 +2076,7 @@ void ABTI_thread_free_main_sched(ABTI_thread *p_thread)
     if (p_thread->p_keytable) {
         ABTI_ktable_free(p_thread->p_keytable);
     }
-
+    
     ABTI_mem_free_thread(p_thread);
 }
 

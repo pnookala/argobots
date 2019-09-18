@@ -90,13 +90,15 @@ int ABT_init(int argc, char **argv)
     gp_ABTI_global->num_xstreams = 0;
 
 #ifdef ABT_XSTREAM_USE_VIRTUAL
+    //gp_ABTI_global->num_cores = 2;
     gp_ABTI_global->k_threads = (ABTI_kthread **) ABTU_calloc(
 	    gp_ABTI_global->max_xstreams, sizeof(ABTI_xstream *));
     gp_ABTI_global->num_kthreads = 0;
     gp_ABTI_global->kthread_lastidx = 0;
+    ABTI_spinlock_create(&gp_ABTI_global->kthreads_lock);
 #endif
 
-    gp_ABTI_global->num_cores = 1;
+    //gp_ABTI_global->num_cores = 1;
     /* Create a spinlock */
     ABTI_spinlock_create(&gp_ABTI_global->xstreams_lock);
 
@@ -179,6 +181,7 @@ int ABT_finalize(void)
         abt_errno = ABT_ERR_UNINITIALIZED;
         goto fn_exit;
     }
+    
     /* If Argobots is still referenced by others, just return */
     if (--g_ABTI_num_inits != 0)
         goto fn_exit;
@@ -232,15 +235,16 @@ int ABT_finalize(void)
 	}
     }*/
 
-    LOG_EVENT("[U%" PRIu64 ":E%d] yield to primary master scheduler\n",
-                  ABTI_thread_get_id(p_thread), p_thread->p_last_xstream->rank);
+    //LOG_EVENT("[U%" PRIu64 ":E%d] yield to primary master scheduler\n",
+    //              ABTI_thread_get_id(p_thread), p_thread->p_last_xstream->rank);
     /* After ending the primary virtual ES scheduler */
-    ABTI_kthread *k_thread = gp_ABTI_global->k_threads[0];
-    ABTI_kthread_set_request(k_thread, ABTI_XSTREAM_REQ_JOIN);
-    ABTI_thread_context_switch_thread_to_sched(p_thread, k_thread->k_main_sched);
+    //ABTI_kthread *k_thread = gp_ABTI_global->k_threads[0];
+    //ABTI_local_set_kthread(k_thread);
+    //ABTI_kthread_set_request(k_thread, ABTI_XSTREAM_REQ_JOIN);
+    //ABTI_thread_context_switch_thread_to_sched(p_thread, k_thread->k_main_sched);
 
-    LOG_EVENT("[U%" PRIu64 ":E%d] resume after yield\n",
-                  ABTI_thread_get_id(p_thread), p_thread->p_last_xstream->rank);
+    //LOG_EVENT("[U%" PRIu64 ":E%d] resume after yield\n",
+    //              ABTI_thread_get_id(p_thread), p_thread->p_last_xstream->rank);
 
 #endif
 
@@ -267,6 +271,9 @@ int ABT_finalize(void)
     /* Free the spinlock */
     ABTI_spinlock_free(&gp_ABTI_global->xstreams_lock);
 
+#ifdef ABT_XSTREAM_USE_VIRTUAL
+    ABTI_spinlock_free(&gp_ABTI_global->kthreads_lock);
+#endif
     /* Free the ABTI_global structure */
     ABTU_free(gp_ABTI_global);
     gp_ABTI_global = NULL;

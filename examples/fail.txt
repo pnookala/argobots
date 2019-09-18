@@ -1,0 +1,162 @@
+[poornimans@jlselogin2 examples]$ ./nested_abt 2 1
+<U0:E0> [P0] created
+<U0:E0> [Master S0] created
+<U0:E0> [P1] created
+<U0:E0> [S0] created
+<U0:E0> [E0] created
+<U0:E0> [U0:E0] main ULT created
+<U0:E0> [U0] pushed to P1 (producer: E0)
+<U0:E0> [E0] start
+<U0:E0> [T0] started for [E0]
+<U0:E0> [U1:T0] main sched ULT created
+<U0:E0> [U2:E0] main sched ULT created
+<U0:E0> [U2:E0] pushed to P0 (producer: E0)
+<U0:E0> [U0:E0:T0] yield
+<S0:E0> [Master S0] start
+<S0:E0> [U2:E0] popped from P0
+<S0:E0> [U2:T0] start running
+<S0:E0> [S0] start
+<S0:E0> [U0:E0] popped from P1
+<S0:E0> [U0:E0] start running
+<U0:E0> [U0:E0] resume
+<U0:E0> [P2] created
+Creating xstreams from index 0
+<U0:E0> [S1] created
+<U0:E0> [P3] created
+<U0:E0> [Master S1] created
+<U0:E0> [E1] created
+<U0:E0> [U3:E1] main sched ULT created
+<U0:E0> [U3:E1] pushed to P3 (producer: E1)
+<U0:E0> [S2] created
+<U0:E0> [P4] created
+<U0:E0> [Master S2] created
+<U0:E0> [E2] created
+<U0:E0> [U4:E2] main sched ULT created
+<U0:E0> [U4:E2] pushed to P4 (producer: E2)
+[mem/malloc.c:329] mmap a regular page (8388608): 0x7f59eaf04000
+<U0:E0> [U5] created
+<U0:E0> [U5] pushed to P2 (producer: E0)
+<U0:E0> [U6] created
+<U0:E0> [U6] pushed to P2 (producer: E0)
+joining thread 0
+<U0:E0> [U0:E0] blocked
+<U0:E0> [U0:E0] blocked to join U5
+<U0:E0> [U0:E0] suspended
+<S0:E0> [U0:E0] stopped
+<S0:E0> [U0:E0] check blocked
+<U0:E1> [U7:T1] main sched ULT created
+<U7:E1> [T1] started for [E1]
+<U7:E1> [Master S1] start
+<U7:E1> [U3:E1] popped from P3
+<U7:E1> [U3:T1] start running
+<S1:E1> [S1] start
+<S1:E1> [U5] popped from P2
+<S1:E1> [U5:E1] start running
+inner abt_for call
+<U5:E1> [P5] created
+Creating xstreams from index 0
+<U5:E1> [S3] created
+<U5:E1> [P6] created
+<U5:E1> [Master S3] created
+<U5:E1> [E3] created
+<U0:E2> [U8:T2] main sched ULT created
+<U8:E2> [T2] started for [E2]
+<U8:E2> [Master S2] start
+<U5:E1> [U9:E3] main sched ULT created
+<U5:E1> [U9:E3] pushed to P6 (producer: E3)
+<U8:E2> [U4:E2] popped from P4
+<U8:E2> [U4:T2] start running
+<S2:E2> [S2] start
+<S2:E2> [U6] popped from P2
+<S2:E2> [U6:E2] start running
+inner abt_for call
+<U6:E2> [P7] created
+Creating xstreams from index 0
+[mem/malloc.c:329] mmap a regular page (8388608): 0x7f59e9300000
+<U6:E2> [S4] created
+<U6:E2> [P8] created
+<U6:E2> [Master S4] created
+<U6:E2> [E4] created
+<U6:E2> [U10:E4] main sched ULT created
+<U6:E2> [U10:E4] pushed to P8 (producer: E4)
+<U0:E3> [U11:T3] main sched ULT created
+<U11:E3> [T3] started for [E3]
+<U11:E3> [Master S3] start
+<U11:E3> [U9:E3] popped from P6
+<U11:E3> [U9:T3] start running
+[mem/malloc.c:329] mmap a regular page (8388608): 0x7f59e3800000
+<S3:E3> [S3] start
+<U5:E1> [U12] created
+<U5:E1> [U12] pushed to P5 (producer: E1)
+joining thread 0
+<S3:E3> [U12] popped from P5
+<U5:E1> [U5:E1] blocked
+<U5:E1> [U5:E1] blocked to join U12
+<U5:E1> [U5:E1] suspended
+<S3:E3> [U12:E3] start running
+Hello World
+<S1:E1> [U5:E1] stopped
+<S1:E1> [U5:E1] check blocked
+<U6:E2> [U13] created
+<U6:E2> [U13] pushed to P7 (producer: E2)
+joining thread 0
+<U6:E2> [U6:E2] blocked
+<U6:E2> [U6:E2] blocked to join U13
+<U6:E2> [U6:E2] suspended
+<S2:E2> [U6:E2] stopped
+<S2:E2> [U6:E2] check blocked
+<U0:E4> [U14:T4] main sched ULT created
+<U14:E4> [T4] started for [E4]
+<U14:E4> [Master S4] start
+<U14:E4> [U10:E4] popped from P8
+<U14:E4> [U10:T4] start running
+<S4:E4> [S4] start
+<S4:E4> [U13] popped from P7
+<S4:E4> [U13:E4] start running
+Hello World
+<U13:E4> [U6:E2] set ready
+<U13:E4> [U6:E2] pushed to P2 (producer: E4)
+<S4:E4> [U13:E4] stopped
+<S2:E2> [U6:E2] popped from P2
+<S2:E2> [U6:E2] start running
+<U6:E2> [U6:E2] resumed
+<S4:E4> [U13:E4] finished
+<S4:E4> [U13:E4] terminated
+<U6:E2> [U6:E2] yield
+<S2:E2> [U6:E2] stopped
+<S2:E2> [U6:E2] pushed to P2 (producer: E2)
+<S2:E2> [U6:E2] popped from P2
+<S2:E2> [U6:E2] start running
+<U6:E2> [U6:E2] resume after yield
+<U6:E2> [U13:E4] freed
+<U6:E2> [U6:E2] blocked
+<U6:E2> [U6:E2] suspended
+<S2:E2> [U6:E2] stopped
+<S2:E2> [U6:E2] check blocked
+<S4:E4> [S4] end
+<S4:E4> [U6:E2] set ready
+<S4:E4> [U6:E2] pushed to P2 (producer: E4)
+<S4:E4> [E4] terminated
+<S1:E1> [U6:E2] popped from P2
+<S1:E1> [U6:E1] start running
+<U6:E1> [U6:E1] resumed
+<U12:E3> [U5:E1] set ready
+<U12:E3> [U5:E1] pushed to P2 (producer: E3)
+<U6:E1> [E4] freed
+<S3:E3> [U12:E3] stopped
+<S3:E3> [U12:E3] finished
+<S3:E3> [U12:E3] terminated
+<S2:E2> [U5:E1] popped from P2
+<S2:E2> [U5:E2] start running
+<U5:E2> [U5:E2] resumed
+<U5:E2> [U12:E3] freed
+<U5:E2> [U5:E2] blocked
+<U5:E2> [U5:E2] suspended
+<S2:E2> [U5:E2] stopped
+<S2:E2> [U5:E2] check blocked
+<S3:E3> [S3] end
+<U6:E1> [P7] freed
+<S3:E3> [U5:E2] set ready
+<S3:E3> [U5:E2] pushed to P2 (producer: E3)
+<U6:E1> [U10:E4] main sched ULT freed
+Segmentation fault

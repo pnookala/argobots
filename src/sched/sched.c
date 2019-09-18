@@ -499,6 +499,7 @@ ABT_bool ABTI_sched_has_to_stop(ABTI_sched *p_sched, ABTI_xstream *p_xstream)
                 p_sched->state = ABT_SCHED_STATE_TERMINATED;
                 stop = ABT_TRUE;
             } else {
+           
                 ABTI_spinlock_release(&p_xstream->sched_lock);
             }
         } else if (p_sched->used == ABTI_SCHED_IN_POOL) {
@@ -518,18 +519,18 @@ ABT_bool ABTI_sched_has_to_stop(ABTI_sched *p_sched, ABTI_xstream *p_xstream)
         }
     }
 
-#ifdef ABT_XSTREAM_USE_VIRTUAL
-    if(stop != ABT_TRUE && size - ABTI_sched_get_size(p_sched) != 0) {
+//#ifdef ABT_XSTREAM_USE_VIRTUAL
+  //  if(stop != ABT_TRUE && size - ABTI_sched_get_size(p_sched) != 0) {
 	/* This case means that ULTs are either blocked of migrating, but none are in the pool *
 	 * We need to switch to another scheduler and let the ULT finish so the blcoked ULTs
 	 * can make progress */
-	ABTI_kthread *k_thread;
+/*	ABTI_kthread *k_thread;
 	k_thread = ABTI_local_get_kthread();
 	p_sched->p_thread->request = ABTI_THREAD_REQ_YIELD;	
 	ABTI_thread_context_switch_sched_to_sched(p_sched, k_thread->k_main_sched);
     }
     //else stop = ABT_TRUE;
-#endif
+#endif*/
 
   fn_exit:
     return stop;
@@ -540,23 +541,21 @@ ABT_bool ABTI_master_sched_has_to_stop(ABTI_sched *p_sched, ABTI_kthread *k_thre
 {
     ABT_bool stop = ABT_FALSE;
     size_t size;
-
     /* Check exit request */
     if (p_sched->request & ABTI_SCHED_REQ_EXIT) {
-        //ABTI_spinlock_acquire(&k_thread->sched_lock);
+        ABTI_spinlock_acquire(&k_thread->sched_lock);
         p_sched->state = ABT_SCHED_STATE_TERMINATED;
-        //ABTI_spinlock_release(&k_thread->sched_lock);
-	stop = ABT_TRUE;
+        stop = ABT_TRUE;
         goto fn_exit;
     }
-
+    
     size = ABTI_sched_get_effective_size(p_sched);
     if (size == 0) {
         if (p_sched->request & ABTI_SCHED_REQ_FINISH) {
 	    /* Check join request */
             /* We need to lock in case someone wants to migrate to this
              * scheduler */
-	    ABTI_spinlock_acquire(&k_thread->sched_lock);
+	        ABTI_spinlock_acquire(&k_thread->sched_lock);
             size_t size = ABTI_sched_get_effective_size(p_sched);
             if (size == 0) {
                 p_sched->state = ABT_SCHED_STATE_TERMINATED;
@@ -731,7 +730,6 @@ size_t ABTI_sched_get_effective_size(ABTI_sched *p_sched)
 #ifndef ABT_CONFIG_DISABLE_POOL_CONSUMER_CHECK
     ABTI_xstream *p_xstream = ABTI_local_get_xstream();
 #endif
-
     for (p = 0; p < p_sched->num_pools; p++) {
         ABT_pool pool = p_sched->pools[p];
         ABTI_pool *p_pool = ABTI_pool_get_ptr(pool);
@@ -805,7 +803,6 @@ int ABTI_sched_free(ABTI_sched *p_sched)
     }
 
     LOG_EVENT("[S%" PRIu64 "] freed\n", p_sched->id);
-
     p_sched->free(ABTI_sched_get_handle(p_sched));
     p_sched->data = NULL;
 

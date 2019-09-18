@@ -3,7 +3,7 @@
 #include <abt.h>
 #include <unistd.h>
 
-#define SIZE 5184
+#define SIZE 1024
 
 static int main_num_es = 4;
 static int inner_num_es = 4;
@@ -46,7 +46,7 @@ void abt_for(int num_threads, int loop_count, inner_f inner_func) {
   ABT_pool pool;
   ABT_xstream *xstreams = NULL;
   abt_thread_data_t *threads = NULL;
-  int set_main_sched_err;
+  int set_main_sched_err = ABT_SUCCESS;
 
   int initialized = ABT_initialized() != ABT_ERR_UNINITIALIZED;
   /* initialization */
@@ -57,12 +57,15 @@ void abt_for(int num_threads, int loop_count, inner_f inner_func) {
 
   /* ES creation */
   xstreams = (ABT_xstream *)malloc(sizeof(ABT_xstream) * num_threads);
-  ABT_xstream_self(&xstreams[0]);
-  
+  /*ABT_xstream_self(&xstreams[0]);
+
   set_main_sched_err = ABT_xstream_set_main_sched_basic(xstreams[0],
-                                                          ABT_SCHED_DEFAULT, 1,
-                                                          &pool);
+                                         ABT_SCHED_DEFAULT, 1,
+                                         &pool);
   int start_i = (set_main_sched_err != ABT_SUCCESS) ? 0 : 1;
+ */
+    int start_i = 0;
+//  printf("Creating xstreams from index %d\n", start_i);
   for (i = start_i; i < num_threads; i++) {
     ABT_xstream_create_basic(ABT_SCHED_DEFAULT, 1, &pool, ABT_SCHED_CONFIG_NULL,
                              &xstreams[i]);
@@ -85,7 +88,7 @@ void abt_for(int num_threads, int loop_count, inner_f inner_func) {
   //printf("threads created...joining threads!\n");
   /* join ULTs */
   for (i = 0; i < loop_count; i++) {
-    //printf("joining thread %d\n", i);
+//    printf("joining thread %d\n", i);
     ABT_thread_free(&threads[i].thread);
   }
 
@@ -96,16 +99,18 @@ void abt_for(int num_threads, int loop_count, inner_f inner_func) {
   for (i = 1; i < num_threads; i++)
 #else
     //printf("calling join on xstreams\n");
-    for (i = start_i; i < num_threads; i++)
+    for (i = 0; i < num_threads; i++)
 #endif
-      {
-	ABT_xstream_join(xstreams[i]);
-	ABT_xstream_free(&xstreams[i]);
-      }
+    {
+  //      printf("JOINING XSTREAM %d\n", i);
+	    ABT_xstream_join(xstreams[i]);
+	    ABT_xstream_free(&xstreams[i]);
+    }
 
+  //printf("JOINED XSTREAMS\n");
   free(threads);
   free(xstreams);
-  //printf("call finalize\n");
+  //printf("FINALIZE\n");
   ABT_finalize();
 }
 
@@ -114,8 +119,8 @@ void inner2_par(int i) {
 }
 
 void inner_par(void* data) {
-  //printf("inner abt_for call\n");
-  abt_for(inner_num_es, inner_num_es, empty_f);
+ // printf("INNER ABT_FOR\n");
+    abt_for(inner_num_es, inner_num_es, empty_f);
 }
 
 int main (int argc, char** argv) {

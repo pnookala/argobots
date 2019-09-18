@@ -170,8 +170,10 @@ void ABTI_thread_context_switch_thread_to_sched_internal(ABTI_thread *p_old,
                                                          ABTI_sched *p_new,
                                                          ABT_bool is_finish)
 {
+#ifndef ABT_XSTREAM_USE_VIRTUAL
 #ifndef ABT_CONFIG_DISABLE_STACKABLE_SCHED
     ABTI_ASSERT(!p_old->is_sched);
+#endif
 #endif
     ABTI_LOG_SET_SCHED(p_new);
 #if ABT_CONFIG_THREAD_TYPE == ABT_THREAD_TYPE_DYNAMIC_PROMOTION

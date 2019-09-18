@@ -174,6 +174,7 @@ struct ABTI_global {
     int num_kthreads;
     ABTI_kthread **k_threads;	/* Kernel thread array, has pointers to p_xstreams */
     int kthread_lastidx;
+    ABTI_spinlock kthreads_lock;
 #endif
     ABTI_xstream **p_xstreams;   /* ES array */
     ABTI_spinlock xstreams_lock; /* Spinlock protecting p_xstreams. Any write

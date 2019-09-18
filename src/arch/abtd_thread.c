@@ -80,14 +80,18 @@ void ABTD_thread_func_wrapper(int func_upper, int func_lower,
 
 void ABTD_thread_exit(ABTI_thread *p_thread)
 {
+#ifndef ABT_XSTREAM_USE_VIRTUAL
 #ifndef ABT_CONFIG_DISABLE_STACKABLE_SCHED
     if (p_thread->is_sched) {
         ABTD_thread_terminate_sched(p_thread);
     } else {
 #endif
+#endif
         ABTD_thread_terminate_thread(p_thread);
+#ifndef ABT_XSTREAM_USE_VIRTUAL
 #ifndef ABT_CONFIG_DISABLE_STACKABLE_SCHED
     }
+#endif
 #endif
 }
 
@@ -114,7 +118,6 @@ static inline void ABTDI_thread_terminate(ABTI_thread *p_thread,
              * type ULT would be a joiner (=suspend), no scheduler is available
              * when a running ULT needs suspension. Hence, it always jumps to a
              * non-scheduler-type ULT. */
-
 #ifndef ABT_CONFIG_DISABLE_STACKABLE_SCHED
             if (is_sched) {
                 ABTI_thread_finish_context_sched_to_thread(p_thread->is_sched,
@@ -161,10 +164,13 @@ static inline void ABTDI_thread_terminate(ABTI_thread *p_thread,
     if (p_thread->is_sched) {
 
 #ifdef ABT_XSTREAM_USE_VIRTUAL
-	/* If p_thread is a scheduler ULT, we have to context switch to master scheduler.
-	 * Now will stacked schedulers work? How do we handle this? */
-	ABTI_xstream *p_xstream = p_thread->p_last_xstream;
-	p_sched = p_xstream->p_kthread->k_main_sched;
+        /* If p_thread is a scheduler ULT, we have to context switch to master scheduler.
+	    * Now will stacked schedulers work? How do we handle this? */
+	    //ABTI_xstream *p_xstream = p_thread->p_last_xstream;
+	    //ABTI_ASSERT(p_xstream != NULL);
+        //p_sched = p_xstream->p_kthread->k_main_sched;
+        ABTI_kthread *k_thread = ABTI_local_get_kthread();
+        p_sched = k_thread->k_main_sched;
 #else
         /* If p_thread is a scheduler ULT, we have to context switch to
          * the parent scheduler. */
@@ -188,6 +194,7 @@ static inline void ABTDI_thread_terminate(ABTI_thread *p_thread,
 #else
 #error "Not implemented yet"
 #endif
+    printf("SWITCHED?\n");
 }
 
 static inline void ABTD_thread_terminate_thread(ABTI_thread *p_thread)

@@ -142,21 +142,21 @@ static void sched_run(ABT_sched sched)
         /* Execute one work unit from the scheduler's pool */
         for (i = 0; i < p_data->num_pools; i++) {
             /* Pop one work unit */
-	    ABT_pool pool = pools[i];
+	        ABT_pool pool = pools[i];
             ABTI_pool *p_pool = ABTI_pool_get_ptr(pool);
             /* Pop one work unit */
             ABT_unit unit = ABTI_pool_pop(p_pool);
             if (unit != ABT_UNIT_NULL) {
                 ABTI_kthread_run_unit(k_thread, unit, p_pool);
-		CNT_INC(run_cnt);
+		        CNT_INC(run_cnt);
                 break;
             }
         }
 
         if (++work_count >= event_freq) {
-	    ABTI_kthread_check_events(k_thread, sched);
-	    ABT_bool stop = ABTI_master_sched_has_to_stop(k_thread->k_main_sched, k_thread);
-	    if (stop == ABT_TRUE)
+            ABTI_kthread_check_events(k_thread, sched);
+            ABT_bool stop = ABTI_master_sched_has_to_stop(p_sched, k_thread);
+            if (stop == ABT_TRUE)
                 break;
             work_count = 0;
             SCHED_SLEEP(run_cnt, p_data->sleep_time);
