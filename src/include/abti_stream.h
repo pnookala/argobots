@@ -42,13 +42,14 @@ ABT_xstream ABTI_xstream_get_handle(ABTI_xstream *p_xstream)
 
 static inline
 void ABTI_xstream_set_request(ABTI_xstream *p_xstream, uint32_t req)
-{
+{ 
     ABTD_atomic_fetch_or_uint32(&p_xstream->request, req);
 }
 
 static inline
 void ABTI_xstream_unset_request(ABTI_xstream *p_xstream, uint32_t req)
 {
+    printf("does anybody call this?\n");
     ABTD_atomic_fetch_and_uint32(&p_xstream->request, ~req);
 }
 

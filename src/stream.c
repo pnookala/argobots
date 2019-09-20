@@ -122,7 +122,7 @@ int ABTI_kthread_create_master(ABTI_kthread **k_thread)
 
     ABTI_kthread *k_newthread;
     //Get handle to existing k_thread if we already exhausted all the cores
-/*    if(gp_ABTI_global->num_kthreads == gp_ABTI_global->num_cores)
+    if(gp_ABTI_global->num_kthreads == gp_ABTI_global->num_cores)
     {
 	    ABTI_spinlock_acquire(&gp_ABTI_global->kthreads_lock);
 	    //Get the kthread with minimum virtual ES count
@@ -132,7 +132,7 @@ int ABTI_kthread_create_master(ABTI_kthread **k_thread)
 	    ABTI_spinlock_release(&gp_ABTI_global->kthreads_lock);
 	    goto fn_exit;
     }
-*/
+
     ABTI_sched* sched;
 
     abt_errno = ABTI_sched_create_master(ABT_SCHED_CONFIG_NULL, &sched);
@@ -615,23 +615,22 @@ int ABT_xstream_join(ABT_xstream xstream)
     }
 
     if (ABTD_atomic_load_uint32((uint32_t *)&p_xstream->state)
-        == ABT_XSTREAM_STATE_TERMINATED) {
+            == ABT_XSTREAM_STATE_TERMINATED) {
         goto fn_join;
     }
 
     /* Wait until the target ES terminates */
     if (is_blockable == ABT_TRUE) {
-	ABTI_POOL_SET_CONSUMER(p_thread->p_pool, ABTI_local_get_xstream());
+	    ABTI_POOL_SET_CONSUMER(p_thread->p_pool, ABTI_local_get_xstream());
 
         /* Save the caller ULT to set it ready when the ES is terminated */
         p_xstream->p_req_arg = (void *)p_thread;
         ABTI_thread_set_blocked(p_thread);
-
+        
         /* Set the join request */
         ABTI_xstream_set_request(p_xstream, ABTI_XSTREAM_REQ_JOIN);
-
         /* If the caller is a ULT, it is blocked here */
-	ABTI_thread_suspend(p_thread);
+	    ABTI_thread_suspend(p_thread);
     } else {
         /* Set the join request */
         ABTI_xstream_set_request(p_xstream, ABTI_XSTREAM_REQ_JOIN);
@@ -1309,9 +1308,24 @@ int ABT_xstream_check_events(ABT_sched sched)
 int ABTI_xstream_check_events(ABTI_xstream *p_xstream, ABT_sched sched)
 {
     int abt_errno = ABT_SUCCESS;
-
     ABTI_info_check_print_all_thread_stacks();
+#ifdef ABT_XSTREAM_USE_VIRTUAL
+    if(p_xstream->request & ABTI_XSTREAM_REQ_BLOCK) {
+        ABTI_sched *p_sched = ABTI_sched_get_ptr(sched);
+        ABTI_ASSERT(p_sched != NULL);
+        /* This case is when there are no nested calls to ABT. */
+        /*ABTI_kthread *k_thread = p_xstream->p_kthread;
+        ABTI_sched *k_sched = k_thread->k_main_sched; 
+        int size = ABTI_sched_get_effective_size(k_sched);
+        if(size == 0)  {
+            ABTI_xstream_unset_request(p_xstream, ABTI_XSTREAM_REQ_BLOCK);
+            goto fn_exit;
+        }*/
 
+        abt_errno = ABT_sched_join(sched);
+        ABTI_CHECK_ERROR(abt_errno);
+    } 
+#endif
     if (p_xstream->request & ABTI_XSTREAM_REQ_JOIN) {
         abt_errno = ABT_sched_finish(sched);
         ABTI_CHECK_ERROR(abt_errno);
@@ -1356,6 +1370,15 @@ int ABTI_kthread_check_events(ABTI_kthread *k_thread, ABT_sched sched)
         abt_errno = ABT_sched_exit(sched);
         ABTI_CHECK_ERROR(abt_errno);
     }
+
+    /* This case is when there are no nested calls to ABT. */
+    /*int size = ABTI_sched_get_effective_size(sched);
+    if(size == 0)  {
+        ABTI_xstream *p_xstream = ABTI_local_get_xstream();
+        ABTI_xstream_unset_request(p_xstream, ABTI_XSTREAM_REQ_BLOCK);
+        //Resume xstream execution here may be!
+        goto fn_exit;
+    }*/
 
     // TODO: check event queue
 #ifdef ABT_CONFIG_HANDLE_POWER_EVENT
@@ -1702,7 +1725,7 @@ int ABTI_kthread_schedule_thread(ABTI_kthread *k_thread, ABTI_thread *p_thread)
     	p_thread->is_sched->p_ctx = &p_thread->ctx;  
     	/* Context switch to the virtual ES scheduler */    
 	    p_thread->is_sched->state = ABT_SCHED_STATE_RUNNING;
-	    ABTI_thread_context_switch_sched_to_sched(k_sched, p_thread->is_sched);
+        ABTI_thread_context_switch_sched_to_sched(k_sched, p_thread->is_sched);
 	    p_thread->is_sched->state = ABT_SCHED_STATE_STOPPED;
 
     } else {
@@ -1713,18 +1736,86 @@ int ABTI_kthread_schedule_thread(ABTI_kthread *k_thread, ABTI_thread *p_thread)
     LOG_EVENT("[U%" PRIu64 ":T%d] stopped\n",
               ABTI_thread_get_id(p_thread), k_thread->rank);
 
-    /*if(p_thread->request == ABTI_THREAD_REQ_YIELD) {
-	ABTI_pool *p_pool = k_sched->pools[0];
-	ABTI_xstream *p_xstream = p_thread->p_last_xstream;
-	ABTI_pool_push(p_pool, p_xstream->p_main_sched->p_thread, p_xstream);
-    }*/
+//#ifndef ABT_CONFIG_DISABLE_STACKABLE_SCHED
+    /* Delete the last scheduler if the ULT was a scheduler */
+//    if (p_thread->is_sched != NULL) {
+//        ABTI_xstream_pop_sched(p_xstream);
+        /* If a migration is trying to read the state of the scheduler, we need
+         * to let it finish before freeing the scheduler */
+//        p_thread->is_sched->state = ABT_SCHED_STATE_STOPPED;
+//        ABTI_spinlock_release(&p_xstream->sched_lock);
+//    }
+//#endif
+
+    /* Request handling. */
+    /* We do not need to acquire-load request since all critical requests
+     * (BLOCK, ORPHAN, STOP, and NOPUSH) are written by p_thread. CANCEL might
+     * be delayed. */
+    if (p_thread->request & ABTI_THREAD_REQ_STOP) {
+        /* The ULT has completed its execution or it called the exit request. */
+        LOG_EVENT("[U%" PRIu64 ":T%d] %s\n",
+                  ABTI_thread_get_id(p_thread), k_thread->rank,
+                  (p_thread->request & ABTI_THREAD_REQ_TERMINATE ? "finished" :
+                  ((p_thread->request & ABTI_THREAD_REQ_EXIT) ? "exit called" :
+                  "UNKNOWN")));
+        ABTI_xstream_terminate_thread(p_thread);
+#ifndef ABT_CONFIG_DISABLE_THREAD_CANCEL
+    } else if (p_thread->request & ABTI_THREAD_REQ_CANCEL) {
+        LOG_EVENT("[U%" PRIu64 ":T%d] canceled\n",
+                  ABTI_thread_get_id(p_thread), k_thread->rank);
+        ABTD_thread_cancel(p_thread);
+        ABTI_xstream_terminate_thread(p_thread);
+#endif
+    } else if (!(p_thread->request & ABTI_THREAD_REQ_NON_YIELD)) {
+         /* The ULT did not finish its execution.
+         * Change the state of current running ULT and
+         * add it to the pool again. */
+        //TODO Add it to k_sched's pool
+        //ABTI_POOL_ADD_THREAD(p_thread, p_xstream);
+        //p_thread->state = ABT_THREAD_STATE_READY;
+        ABTI_thread_unset_request(p_thread, ABTI_THREAD_REQ_BLOCK);
+        ABTI_pool *p_pool = k_sched->pools[0];
+        ABTI_xstream *p_xstream = p_thread->p_last_xstream;
+        ABTI_pool_push(p_pool, p_thread->unit, p_xstream);
+    } 
+    else if (p_thread->request & ABTI_THREAD_REQ_BLOCK) {
+        LOG_EVENT("[U%" PRIu64 ":T%d] check blocked\n",
+                  ABTI_thread_get_id(p_thread), k_thread->rank);
+        ABTI_thread_unset_request(p_thread, ABTI_THREAD_REQ_BLOCK);
+        //ABTI_pool *p_pool = k_sched->pools[0];
+        //ABTI_xstream *p_xstream = p_thread->p_last_xstream;
+        //ABTI_pool_push(p_pool, p_thread->unit, p_xstream);
+        //ABTI_xstream_unset_request(p_thread->p_last_xstream, ABTI_XSTREAM_REQ_BLOCK);
+#ifndef ABT_CONFIG_DISABLE_MIGRATION
+    } else if (p_thread->request & ABTI_THREAD_REQ_MIGRATE) {
+        /* This is the case when the ULT requests migration of itself. */
+        abt_errno = ABTI_xstream_migrate_thread(p_thread);
+        ABTI_CHECK_ERROR(abt_errno);
+#endif
+    } else if (p_thread->request & ABTI_THREAD_REQ_ORPHAN) {
+        /* The ULT is not pushed back to the pool and is disconnected from any
+         * pool. */
+        LOG_EVENT("[U%" PRIu64 ":T%d] orphaned\n",
+                  ABTI_thread_get_id(p_thread), k_thread->rank);
+        ABTI_thread_unset_request(p_thread, ABTI_THREAD_REQ_ORPHAN);
+        p_thread->p_pool->u_free(&p_thread->unit);
+        p_thread->p_pool = NULL;
+    } else if (p_thread->request & ABTI_THREAD_REQ_NOPUSH) {
+        /* The ULT is not pushed back to the pool */
+        LOG_EVENT("[U%" PRIu64 ":T%d] not pushed\n",
+                  ABTI_thread_get_id(p_thread), k_thread->rank);
+        ABTI_thread_unset_request(p_thread, ABTI_THREAD_REQ_NOPUSH);
+    } else {
+        abt_errno = ABT_ERR_THREAD;
+        goto fn_fail;
+    }
   
   fn_exit:
     return abt_errno;
 
-  //fn_fail:
-    //HANDLE_ERROR_FUNC_WITH_CODE(abt_errno);
-    //goto fn_exit;
+  fn_fail:
+    HANDLE_ERROR_FUNC_WITH_CODE(abt_errno);
+    goto fn_exit;
 }
 #endif
 
@@ -1781,11 +1872,10 @@ int ABTI_xstream_schedule_thread(ABTI_xstream *p_xstream, ABTI_thread *p_thread)
         /* The scheduler continues from here. */
         /* The previous ULT may not be the same as one to which the
          * context has been switched. */
-	p_thread = ABTI_local_get_thread();
+	    p_thread = ABTI_local_get_thread();
 #ifndef ABT_CONFIG_DISABLE_STACKABLE_SCHED
     }
 #endif
-
     p_xstream = p_thread->p_last_xstream;
     LOG_EVENT("[U%" PRIu64 ":E%d] stopped\n",
               ABTI_thread_get_id(p_thread), p_xstream->rank);
@@ -2095,7 +2185,6 @@ int ABTI_xstream_set_main_sched(ABTI_xstream *p_xstream, ABTI_sched *p_sched)
         ABTI_sched_set_request(p_sched, ABTI_SCHED_REQ_FINISH);
         /* Switch to the current main scheduler */
         ABTI_thread_set_request(p_thread, ABTI_THREAD_REQ_NOPUSH);
-        printf("thread pushed in if else\n");
 	    ABTI_pool *p_pool = p_xstream->p_kthread->k_main_sched->pools[0]; 
         abt_errno = ABTI_pool_push(p_pool, p_sched->p_thread->unit, p_xstream);
         ABTI_CHECK_ERROR(abt_errno);
@@ -2290,7 +2379,9 @@ void *ABTI_xstream_launch_main_sched(void *p_arg)
 
     /* Set the sched ULT as the current ULT */
     ABTI_local_set_thread(p_sched->p_thread);
+#ifdef ABT_XSTREAM_USE_VIRTUAL
     ABTI_local_set_kthread(p_xstream->p_kthread);
+#endif
     /* Execute the main scheduler of this ES */
     LOG_EVENT("[E%d] start\n", p_xstream->rank);
     ABTI_xstream_schedule(p_arg);

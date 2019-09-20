@@ -59,6 +59,11 @@
 #define ABT_THREAD_TYPE_DYNAMIC_PROMOTION  1
 #define ABT_XSTREAM_USE_VIRTUAL            1
 
+#ifdef ABT_XSTREAM_USE_VIRTUAL
+#define ABTI_XSTREAM_REQ_BLOCK       (1 << 4)
+#endif
+
+
 enum ABTI_xstream_type {
     ABTI_XSTREAM_TYPE_PRIMARY,
     ABTI_XSTREAM_TYPE_SECONDARY,
@@ -652,6 +657,10 @@ void  ABTI_thread_free_main(ABTI_thread *p_thread);
 void  ABTI_thread_free_main_sched(ABTI_thread *p_thread);
 int   ABTI_thread_set_blocked(ABTI_thread *p_thread);
 void  ABTI_thread_suspend(ABTI_thread *p_thread);
+#ifdef ABT_XSTREAM_USE_VIRTUAL
+void ABTI_sched_suspend(ABTI_thread *p_thread);
+int ABT_sched_join(ABT_sched sched);
+#endif
 int   ABTI_thread_set_ready(ABTI_thread *p_thread);
 void  ABTI_thread_print(ABTI_thread *p_thread, FILE *p_os, int indent);
 int   ABTI_thread_print_stack(ABTI_thread *p_thread, FILE *p_os);

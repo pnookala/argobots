@@ -130,7 +130,6 @@ static inline void ABTDI_thread_terminate(ABTI_thread *p_thread,
 #endif
             return;
         } else {
-
             /* If the current ULT's associated ES is different from p_joiner's,
              * we can't directly jump to p_joiner.  Instead, we wake up
              * p_joiner here so that p_joiner's scheduler can resume it. */
@@ -142,7 +141,6 @@ static inline void ABTDI_thread_terminate(ABTI_thread *p_thread,
                                      ABTI_THREAD_REQ_TERMINATE);
         }
     } else {
-
         uint32_t req = ABTD_atomic_fetch_or_uint32(&p_thread->request,
                 ABTI_THREAD_REQ_JOIN | ABTI_THREAD_REQ_TERMINATE);
         if (req & ABTI_THREAD_REQ_JOIN) {

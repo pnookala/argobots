@@ -89,7 +89,7 @@ void abt_for(int num_threads, int loop_count, inner_f inner_func, int first) {
   //printf("threads created...joining threads!\n");
   /* join ULTs */
   for (i = 0; i < loop_count; i++) {
-//    printf("joining thread %d\n", i);
+    printf("joining thread %d\n", i);
     ABT_thread_free(&threads[i].thread);
   }
 
@@ -103,7 +103,7 @@ void abt_for(int num_threads, int loop_count, inner_f inner_func, int first) {
     for (i = start_i; i < num_threads; i++)
 #endif
     {
-  //      printf("JOINING XSTREAM %d\n", i);
+        printf("JOINING XSTREAM %d\n", i);
 	    ABT_xstream_join(xstreams[i]);
 	    ABT_xstream_free(&xstreams[i]);
     }
@@ -111,7 +111,7 @@ void abt_for(int num_threads, int loop_count, inner_f inner_func, int first) {
   //printf("JOINED XSTREAMS\n");
   free(threads);
   free(xstreams);
-  //printf("FINALIZE\n");
+  printf("FINALIZE\n");
   ABT_finalize();
 }
 
@@ -120,7 +120,7 @@ void inner2_par(int i) {
 }
 
 void inner_par(void* data) {
- // printf("INNER ABT_FOR\n");
+    printf("INNER ABT_FOR\n");
     abt_for(inner_num_es, inner_num_es, empty_f, 0);
 }
 
@@ -129,7 +129,7 @@ int main (int argc, char** argv) {
 	main_num_es = atoi(argv[1]);
 	inner_num_es = atoi(argv[2]);
   } 
-  abt_for(main_num_es, main_num_es, inner_par, 1);
+  abt_for(main_num_es, main_num_es, empty_f, 1);
   //abt_for(main_num_es, inner_num_es, empty_f);
   return 0;
 }
