@@ -90,7 +90,7 @@ int ABT_init(int argc, char **argv)
     gp_ABTI_global->num_xstreams = 0;
 
 #ifdef ABT_XSTREAM_USE_VIRTUAL
-    gp_ABTI_global->num_cores = 2;
+    //gp_ABTI_global->num_cores = 2;
     gp_ABTI_global->k_threads = (ABTI_kthread **) ABTU_calloc(
 	    gp_ABTI_global->max_xstreams, sizeof(ABTI_xstream *));
     gp_ABTI_global->num_kthreads = 0;

@@ -395,7 +395,6 @@ int ABT_sched_finish(ABT_sched sched)
 
     ABTI_sched_set_request(p_sched, ABTI_SCHED_REQ_FINISH);
 
-    printf("sched req %d\n", p_sched->request);
   fn_exit:
     return abt_errno;
 
@@ -488,13 +487,22 @@ ABT_bool ABTI_sched_has_to_stop(ABTI_sched *p_sched, ABTI_xstream *p_xstream)
         goto fn_exit;
     }
 
+#ifdef ABT_XSTREAM_USE_VIRTUAL
+    if(p_sched->request & ABTI_SCHED_REQ_POSTPONE) {
+        ABTI_spinlock_acquire(&p_xstream->sched_lock);
+        p_sched->state = ABT_SCHED_STATE_READY;
+        stop = ABT_TRUE;
+        goto fn_exit;
+    }
+#endif
+
     size = ABTI_sched_get_effective_size(p_sched);
     if (size == 0) {
         if (p_sched->request & ABTI_SCHED_REQ_FINISH) {
             /* Check join request */
             /* We need to lock in case someone wants to migrate to this
              * scheduler */
-            //ABTI_spinlock_acquire(&p_xstream->sched_lock);
+            ABTI_spinlock_acquire(&p_xstream->sched_lock);
             size_t size = ABTI_sched_get_effective_size(p_sched);
             if (size == 0) {
                 p_sched->state = ABT_SCHED_STATE_TERMINATED;

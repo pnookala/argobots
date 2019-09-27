@@ -34,14 +34,13 @@ void ABTD_thread_func_wrapper_sched(void *p_arg)
 
     /* NOTE: ctx is located in the beginning of ABTI_thread */
     ABTI_thread *p_thread = (ABTI_thread *)p_fctx;
-#ifndef ABT_XSTREAM_USE_VIRTUAL
 #ifndef ABT_CONFIG_DISABLE_STACKABLE_SCHED
     ABTI_ASSERT(p_thread->is_sched != NULL);
-#endif
 #endif
 
     ABTD_thread_terminate_sched(p_thread);
 }
+
 #else
 void ABTD_thread_func_wrapper(int func_upper, int func_lower,
                               int arg_upper, int arg_lower)
@@ -105,14 +104,24 @@ static inline void ABTDI_thread_terminate(ABTI_thread *p_thread,
     if (p_link) {
 	/* If p_link is set, it means that other ULT has called the join. */
         ABTI_thread *p_joiner = (ABTI_thread *)p_link;
+#ifdef ABT_XSTREAM_USE_VIRTUAL
+        /* When using virtal ESs, a single ES can run multiple schedulers due to 
+         * having nested calls. So we can context switch to joiner only when the 
+         * schedulers are same. */
+        if ((p_thread->p_last_xstream == p_joiner->p_last_xstream) && 
+            !(p_joiner->p_last_xstream->p_main_sched->request 
+                & ABTI_SCHED_REQ_POSTPONE)) {
+#else
         if (p_thread->p_last_xstream == p_joiner->p_last_xstream) {
-	    /* Only when the current ULT is on the same ES as p_joiner's,
+#endif 
+       /* Only when the current ULT is on the same ES as p_joiner's,
              * we can jump to the joiner ULT. */
             ABTD_atomic_store_uint32((uint32_t *)&p_thread->state,
                                      ABT_THREAD_STATE_TERMINATED);
             LOG_EVENT("[U%" PRIu64 ":E%d] terminated\n",
                       ABTI_thread_get_id(p_thread),
                       p_thread->p_last_xstream->rank);
+    
 
             /* Note that a scheduler-type ULT cannot be a joiner. If a scheduler
              * type ULT would be a joiner (=suspend), no scheduler is available
@@ -134,7 +143,12 @@ static inline void ABTDI_thread_terminate(ABTI_thread *p_thread,
              * we can't directly jump to p_joiner.  Instead, we wake up
              * p_joiner here so that p_joiner's scheduler can resume it. */
             ABTI_thread_set_ready(p_joiner);
-
+#ifdef ABT_XSTREAM_USE_VIRTUAL
+            /* We need to activate the scheduler as well at this point for 
+             * supporting nested calls to ABT */
+            ABTI_sched *p_sched = p_joiner->p_last_xstream->p_main_sched;
+            ABTI_sched_unset_request(p_sched, ABTI_SCHED_REQ_POSTPONE); 
+#endif
             /* We don't need to use the atomic OR operation here because the ULT
              * will be terminated regardless of other requests. */
             ABTD_atomic_store_uint32(&p_thread->request,
@@ -154,6 +168,7 @@ static inline void ABTDI_thread_terminate(ABTI_thread *p_thread,
         }
     }
 
+    printf("do we come here?\n");
     /* No other ULT is waiting or blocked for this ULT. Since fcontext does
      * not switch to other fcontext when it finishes, we need to explicitly
      * switch to the scheduler. */
@@ -162,11 +177,8 @@ static inline void ABTDI_thread_terminate(ABTI_thread *p_thread,
     if (p_thread->is_sched) {
 
 #ifdef ABT_XSTREAM_USE_VIRTUAL
-        /* If p_thread is a scheduler ULT, we have to context switch to master scheduler.
-	    * Now will stacked schedulers work? How do we handle this? */
-	    //ABTI_xstream *p_xstream = p_thread->p_last_xstream;
-	    //ABTI_ASSERT(p_xstream != NULL);
-        //p_sched = p_xstream->p_kthread->k_main_sched;
+        /* If p_thread is a scheduler ULT, we have to context switch to master 
+        scheduler. Now will stacked schedulers work? How do we handle this? */
         ABTI_kthread *k_thread = ABTI_local_get_kthread();
         p_sched = k_thread->k_main_sched;
 #else
@@ -185,14 +197,21 @@ static inline void ABTDI_thread_terminate(ABTI_thread *p_thread,
         ABTI_thread_finish_context_sched_to_sched(p_thread->is_sched, p_sched);
     } else {
 #endif
+//#ifdef ABT_XSTREAM_USE_VIRTUAL
+        /* If p_thread is not a scheduler, but its scheduler is blocked,
+         * we would need to switch to the master scheduler */
+//        ABTI_kthread *k_thread = ABTI_local_get_kthread();
+//        p_sched = k_thread->k_main_sched;
+//        ABTI_thread_finish_context_thread_to_sched(p_thread, p_sched);
+//#else
         ABTI_thread_finish_context_thread_to_sched(p_thread, p_sched);
+//#endif
 #ifndef ABT_CONFIG_DISABLE_STACKABLE_SCHED
     }
 #endif
 #else
 #error "Not implemented yet"
 #endif
-    printf("SWITCHED?\n");
 }
 
 static inline void ABTD_thread_terminate_thread(ABTI_thread *p_thread)

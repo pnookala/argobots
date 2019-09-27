@@ -27,8 +27,8 @@ static int  sched_free(ABT_sched sched);
 
 typedef struct {
     uint32_t event_freq;
-    int num_pools;
-    ABT_pool *pools;
+    int num_trees;
+    ABTI_tree *tree;
 #ifdef ABT_CONFIG_USE_SCHED_SLEEP
     struct timespec sleep_time;
 #endif
@@ -42,26 +42,31 @@ ABT_sched_config_var ABT_sched_master_freq = {
 int ABTI_sched_create_master(ABT_sched_config config, ABTI_sched **newsched) {
    int abt_errno = ABT_SUCCESS;
    ABTI_sched *p_sched;
-   int p;
 
    p_sched = (ABTI_sched *) ABTU_malloc(sizeof(ABTI_sched));
 
    //Create the array of execution streams
-   p_sched->num_pools = 1;
-   p_sched->pools = (ABT_pool *) ABTU_malloc(p_sched->num_pools * sizeof(ABT_pool));
+   //p_sched->num_pools = 1;
+   //p_sched->pools = (ABT_pool *) ABTU_malloc(p_sched->num_pools * sizeof(ABT_pool));
    /* Create random access pool here */
-   for (p = 0; p < p_sched->num_pools; p++) {
+   /*for (p = 0; p < p_sched->num_pools; p++) {
 	abt_errno = ABT_pool_create_random(ABT_POOL_ACCESS_PRIV, 
 					  ABT_TRUE, &p_sched->pools[p]);
-   }  
- 
+   } */ 
+    
+    ABTI_tree *tree = NULL;
+    abt_errno = ABTI_tree_create(&tree);
+    ABTI_ASSERT(tree != NULL);
+    tree->t_init(tree);
+    p_sched->tree = tree;
+
    p_sched->used	= ABTI_SCHED_NOT_USED;
    p_sched->automatic	= ABT_TRUE;
    p_sched->state	= ABT_SCHED_STATE_READY;
    p_sched->request	= 0;
    p_sched->p_thread 	= NULL;
    p_sched->p_ctx	= NULL;
-
+    
    p_sched->init	= sched_init;
    p_sched->run		= sched_run;
    p_sched->free	= sched_free;
@@ -101,18 +106,18 @@ static int sched_init(ABT_sched sched, ABT_sched_config config)
     /* Set the variables from the config */
     ABT_sched_config_read(config, 1, &p_data->event_freq);
 
-    int num_pools;
+    //int num_pools;
     //p_data->num_pools = sched->num_pools;
-    ABT_sched_get_num_pools(sched, &num_pools);
+    //ABT_sched_get_num_pools(sched, &num_pools);
     //p_data->pools = sched->pools;
-    p_data->num_pools = num_pools;
-    p_data->pools = (ABT_pool *)ABTU_malloc(num_pools * sizeof(ABT_pool));
-    abt_errno = ABT_sched_get_pools(sched, num_pools, 0, p_data->pools);
-    ABTI_CHECK_ERROR(abt_errno);
+    p_data->num_trees = 1;
+    p_data->tree = ((ABTI_sched*)sched)->tree;
+    //abt_errno = ABT_sched_get_pools(sched, num_pools, 0, p_data->pools);
+    //ABTI_CHECK_ERROR(abt_errno);
 
     //sched->data = (void *)p_data;
     abt_errno = ABT_sched_set_data(sched, (void *)p_data);
-
+    
   fn_exit:
     return abt_errno;
 
@@ -126,31 +131,24 @@ static void sched_run(ABT_sched sched)
     uint32_t work_count = 0;
     sched_data *p_data;
     uint32_t event_freq;
-    int i;
     CNT_DECL(run_cnt);
     ABTI_sched *p_sched = ABTI_sched_get_ptr(sched);
     ABTI_kthread *k_thread = ABTI_local_get_kthread();
 
     p_data = sched_data_get_ptr(p_sched->data);
     event_freq = p_data->event_freq;
-    ABT_pool *pools;
-    pools = p_data->pools;
+    ABTI_tree *tree = p_sched->tree;
+    ABTI_node *cur_node = NULL;
 
     while (1) {
         CNT_INIT(run_cnt, 0);
 
-        /* Execute one work unit from the scheduler's pool */
-        for (i = 0; i < p_data->num_pools; i++) {
-            /* Pop one work unit */
-	        ABT_pool pool = pools[i];
-            ABTI_pool *p_pool = ABTI_pool_get_ptr(pool);
-            /* Pop one work unit */
-            ABT_unit unit = ABTI_pool_pop(p_pool);
-            if (unit != ABT_UNIT_NULL) {
-                ABTI_kthread_run_unit(k_thread, unit, p_pool);
-		        CNT_INC(run_cnt);
-                break;
-            }
+        /* Pop one work unit */
+        ABTI_node *node = tree->t_pop(tree, cur_node);
+        if (node != NULL) {
+            ABTI_kthread_run_xstream(k_thread, node);
+		    CNT_INC(run_cnt);
+            break;
         }
 
         if (++work_count >= event_freq) {
@@ -173,7 +171,7 @@ static int sched_free(ABT_sched sched)
     ABT_sched_get_data(sched, &data);
 //    data = sched->data;
     sched_data *p_data = sched_data_get_ptr(data);
-    ABTU_free(p_data->pools);
+    ABTU_free(p_data->tree);
     ABTU_free(p_data);
     return abt_errno;
 }

@@ -58,12 +58,13 @@ void abt_for(int num_threads, int loop_count, inner_f inner_func, int first) {
   /* ES creation */
   xstreams = (ABT_xstream *)malloc(sizeof(ABT_xstream) * num_threads);
   if(first) {
-  ABT_xstream_self(&xstreams[0]);
+    printf("Called xstream self\n");
+    ABT_xstream_self(&xstreams[0]);
 
-  set_main_sched_err = ABT_xstream_set_main_sched_basic(xstreams[0],
+    set_main_sched_err = ABT_xstream_set_main_sched_basic(xstreams[0],
                                          ABT_SCHED_DEFAULT, 1,
                                          &pool);
-  start_i = (set_main_sched_err != ABT_SUCCESS) ? 0 : 1;
+    start_i = (set_main_sched_err != ABT_SUCCESS) ? 0 : 1;
   }
     else start_i = 0;
 //  printf("Creating xstreams from index %d\n", start_i);
@@ -129,7 +130,7 @@ int main (int argc, char** argv) {
 	main_num_es = atoi(argv[1]);
 	inner_num_es = atoi(argv[2]);
   } 
-  abt_for(main_num_es, main_num_es, empty_f, 1);
-  //abt_for(main_num_es, inner_num_es, empty_f);
+  //abt_for(main_num_es, main_num_es, inner_par, 1);
+  abt_for(main_num_es, inner_num_es, empty_f, 1);
   return 0;
 }

@@ -87,6 +87,21 @@ int ABT_pool_create(ABT_pool_def *def, ABT_pool_config config,
     goto fn_exit;
 }
 
+#ifdef ABT_XSTREAM_USE_VIRTUAL
+int ABTI_tree_create(ABTI_tree **t) {
+    ABTI_tree_def def;
+    ABTI_tree_get_def(&def); 
+    ABTI_tree *tree = (ABTI_tree *) malloc(sizeof(ABTI_tree)); 
+    
+    tree->t_init = def.t_init;
+    tree->t_push = def.t_push;
+    tree->t_pop = def.t_pop;
+    
+    *t = tree;
+    return ABT_SUCCESS;
+}
+#endif
+
 /**
  * @ingroup POOL
  * @brief   Create a new pool from a predefined type and return its handle

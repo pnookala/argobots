@@ -479,8 +479,11 @@ int ABT_thread_join(ABT_thread thread)
         /* TODO: Is this the right place to do this? */
         /* Check for the pool size and if it is 0, only then block the virtual ES */
         int size = ABTI_sched_get_effective_size(p_self->p_last_xstream->p_main_sched);
-        if(size == 0) { 
-            ABTI_xstream_set_request(p_self->p_last_xstream, ABTI_XSTREAM_REQ_BLOCK);
+        if(size == 0) {
+            ABTI_sched_set_request(p_self->p_last_xstream->p_main_sched, 
+                                                ABTI_SCHED_REQ_POSTPONE); 
+            ABTI_xstream_set_request(p_self->p_last_xstream, 
+                                                ABTI_XSTREAM_REQ_BLOCK);
         }
         //p_thread->p_last_xstream = ABTI_local_get_xstream();
         //ABTI_thread_set_blocked(p_thread);
@@ -595,29 +598,26 @@ int ABT_sched_join(ABT_sched sched)
                                                    ABTI_THREAD_REQ_JOIN);
         if (req & ABTI_THREAD_REQ_JOIN) goto yield_based;
         
-        //ABTI_kthread *k_thread = p_self->p_last_xstream->p_kthread;
-        //ABTI_sched *k_sched = k_thread->k_main_sched;
-        //int size = ABTI_sched_get_effective_size(k_sched);
-        /* If there are no other schedulers, we don't need to switch to the master *
-        * This case is when there are no nested calls to ABT. */
-        /*if(size == 0 && (p_self->p_last_xstream->request == ABTI_XSTREAM_REQ_BLOCK))  {
-            ABTI_xstream_unset_request(p_self->p_last_xstream, ABTI_XSTREAM_REQ_BLOCK);
-            goto fn_exit;
-        }*/
-    
-        ABTI_thread_set_blocked(p_self);
-        LOG_EVENT("[U%" PRIu64 ":E%d] blocked to join U%" PRIu64 "\n",
-                  ABTI_thread_get_id(p_self), p_self->p_last_xstream->rank,
-                  ABTI_thread_get_id(p_thread));
+        //ABTI_thread_set_blocked(p_self);
+        //LOG_EVENT("[U%" PRIu64 ":E%d] blocked to join U%" PRIu64 "\n",
+        //          ABTI_thread_get_id(p_self), p_self->p_last_xstream->rank,
+        //          ABTI_thread_get_id(p_thread));
 
         /* Set the link in the context of the target ULT */
-        ABTD_thread_context_change_link(&p_thread->ctx, &p_self->ctx);
+        //ABTD_thread_context_change_link(&p_thread->ctx, &p_self->ctx);
         ABTI_ASSERT(p_thread->is_sched != NULL);
         /* We need to set the scheduler ULT as blocked, however existing functions
         * do not support this, so we manually set it here. To be fixed. */ 
-        ABTD_atomic_store_uint32((uint32_t *)&p_thread->request, ABTI_THREAD_REQ_BLOCK);
+        //ABTD_atomic_store_uint32((uint32_t *)&p_thread->request, ABTI_THREAD_REQ_BLOCK);
         /* Suspend the current ULT scheduler */
-        ABTI_sched_suspend(p_thread);
+        /* Push this scheduler back to pool so it can be scheduled later */
+        p_self->state = ABT_THREAD_STATE_BLOCKED;
+        /* Add the current thread to the pool again */
+        //ABTI_POOL_PUSH(k_sched->pools[0], p_thread->unit, p_self->p_last_xstream);
+        /* Switch the context */
+        //ABTI_thread_context_switch_sched_to_sched(p_thread->is_sched, 
+        //                        p_thread->p_last_xstream->p_kthread->k_main_sched);
+        return abt_errno;
     }
 
     /* Resume */
@@ -1811,7 +1811,7 @@ int ABTI_ksched_thread_create(void (*thread_func)(void *),
     p_newthread->state          = ABT_THREAD_STATE_READY;
     p_newthread->request        = 0;
     p_newthread->p_last_xstream = NULL;
-    p_newthread->p_pool         = p_sched->pools[0];
+    //p_newthread->p_pool         = p_sched->pools[0];
     p_newthread->refcount       = refcount;
     p_newthread->type           = thread_type;
     p_newthread->p_req_arg      = NULL;
@@ -2057,8 +2057,8 @@ int ABTI_thread_create_main_ksched(ABTI_kthread *k_thread, ABTI_sched *k_sched, 
     k_sched->p_ctx = &v_newthread->ctx;
 
     ABTI_thread *p_main_thread = ABTI_global_get_main();
-    if(is_primary == ABT_TRUE)
-    	ABTD_thread_context_change_link(&v_newthread->ctx, &p_main_thread->ctx);
+    //if(is_primary == ABT_TRUE)
+    ABTD_thread_context_change_link(&v_newthread->ctx, &p_main_thread->ctx);
 
   fn_exit:
     return abt_errno;
@@ -2074,6 +2074,7 @@ int ABTI_thread_create_main_sched(ABTI_xstream *p_xstream, ABTI_sched *p_sched)
 {
     int abt_errno = ABT_SUCCESS;
     ABTI_thread *p_newthread;
+    ABTI_kthread *k_thread =  p_xstream->p_kthread;
 
     /* Create a ULT context */
     if (p_xstream->type == ABTI_XSTREAM_TYPE_PRIMARY) {
@@ -2089,7 +2090,11 @@ int ABTI_thread_create_main_sched(ABTI_xstream *p_xstream, ABTI_sched *p_sched)
         ABTI_CHECK_ERROR(abt_errno);
         /* When the main scheduler is terminated, the control will jump to the
          * primary ULT. */
-	    ABTD_thread_context_change_link(&p_newthread->ctx, &p_main_thread->ctx);
+#ifdef ABT_XTREAM_USE_VIRTUAL
+        ABTD_thread_context_change_link(&p_newthread->ctx,  &k_thread->ctx);
+#else
+        ABTD_thread_context_change_link(&p_newthread->ctx, &p_main_thread->ctx);
+#endif
     } else {
         /* For secondary ESs, the stack of OS thread is used for the main
          * scheduler's ULT. */
@@ -2105,9 +2110,9 @@ int ABTI_thread_create_main_sched(ABTI_xstream *p_xstream, ABTI_sched *p_sched)
                                        ABTI_THREAD_TYPE_MAIN_SCHED, p_sched, 0,
                                        p_xstream, ABT_FALSE, &p_newthread);
         ABTI_CHECK_ERROR(abt_errno);
-//#ifdef ABT_XSTREAM_USE_VIRTUAL
-//        ABTD_thread_context_change_link(&p_newthread->ctx, &p_xstream->p_kthread->k_main_sched->p_thread->ctx);
-//#endif
+#ifdef ABT_XSTREAM_USE_VIRTUAL
+        ABTD_thread_context_change_link(&p_newthread->ctx, &k_thread->k_main_sched->p_thread->ctx);
+#endif
     }
 
     /* Return value */
@@ -2161,6 +2166,9 @@ int ABTI_thread_create_sched(ABTI_pool *p_pool, ABTI_sched *p_sched)
 static inline
 void ABTI_thread_free_internal(ABTI_thread *p_thread)
 {
+#ifdef ABT_XSTREAM_USE_VIRTUAL
+    if(p_thread->p_pool != NULL)
+#endif
     /* Free the unit */
     p_thread->p_pool->u_free(&p_thread->unit);
 
@@ -2270,30 +2278,10 @@ void ABTI_thread_suspend(ABTI_thread *p_thread)
               ABTI_thread_get_id(p_thread), p_thread->p_last_xstream->rank);
 }
 
-#ifdef ABT_XSTREAM_USE_VIRTUAL
-void ABTI_sched_suspend(ABTI_thread *p_thread)
-{
-    //ABTI_ASSERT(p_thread == ABTI_local_get_thread());
-    ABTI_ASSERT(p_thread->p_last_xstream = ABTI_local_get_xstream());
-
-    ABTI_xstream *p_xstream = ABTI_local_get_xstream();
-    ABTI_kthread *k_thread = ABTI_local_get_kthread();
-    ABTI_sched *k_sched = k_thread->k_main_sched;
-   
-    LOG_EVENT("[U%" PRIu64 ":E%d] suspended\n",
-                   ABTI_thread_get_id(p_thread), p_xstream->rank);
-   
-    ABTI_thread_context_switch_sched_to_sched(p_thread->is_sched, k_sched);
-    /* The suspended scheduler ULT resumes execution from here */
-    LOG_EVENT("[U%" PRIu64 ":E%d] resumed\n",
-               ABTI_thread_get_id(p_thread), p_thread->p_last_xstream->rank);
-}   
-#endif
-
 int ABTI_thread_set_ready(ABTI_thread *p_thread)
 {
     int abt_errno = ABT_SUCCESS;
-   
+  
     /* The ULT should be in BLOCKED state. */
     ABTI_CHECK_TRUE(p_thread->state == ABT_THREAD_STATE_BLOCKED, ABT_ERR_THREAD);
     

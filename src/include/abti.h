@@ -30,6 +30,7 @@
 
 #define ABTI_SCHED_REQ_FINISH       (1 << 0)
 #define ABTI_SCHED_REQ_EXIT         (1 << 1)
+#define ABTI_SCHED_REQ_POSTPONE     (1 << 2)
 
 #define ABTI_THREAD_REQ_JOIN        (1 << 0)
 #define ABTI_THREAD_REQ_EXIT        (1 << 1)
@@ -116,6 +117,10 @@ typedef enum ABTI_sched_used        ABTI_sched_used;
 typedef void *                      ABTI_sched_id;      /* Scheduler id */
 typedef uint64_t                    ABTI_sched_kind;    /* Scheduler kind */
 typedef struct ABTI_pool            ABTI_pool;
+#ifdef ABT_XSTREAM_USE_VIRTUAL
+typedef struct ABTI_tree            ABTI_tree;
+typedef struct ABTI_node            ABTI_node;
+#endif
 typedef struct ABTI_unit            ABTI_unit;
 typedef struct ABTI_thread_attr     ABTI_thread_attr;
 typedef struct ABTI_thread          ABTI_thread;
@@ -227,6 +232,7 @@ struct ABTI_global {
 struct ABTI_local {
 #ifdef ABT_XSTREAM_USE_VIRTUAL
     ABTI_kthread *k_thread;     /* Kernel thread running the current ES */
+    ABTI_node *cur_node;        /* Current virtual ES that is executing */
 #endif
     ABTI_xstream *p_xstream;    /* Current ES */
     ABTI_thread *p_thread;      /* Current running ULT */
@@ -306,7 +312,7 @@ struct ABTI_kthread {
     ABTD_xstream_context ctx; /* Kernel thread context */
     void *k_req_arg;            /* Request argument */
     uint32_t request;           /* Request */
-    ABTI_xstream **v_xstreams;  /* Virtual ESs running on this kernel thread */
+    ABTI_tree *xstream_tree;  /* Virtual ESs running on this kernel thread */
     int num_vxstreams;          /* Number of virtual ESs */
     int rank;
     ABTI_spinlock sched_lock;   /* Lock for the scheduler management */
@@ -327,6 +333,9 @@ struct ABTI_sched {
     ABT_sched_type type;        /* Can yield or not (ULT or task) */
     ABT_sched_state state;      /* State */
     uint32_t request;           /* Request */
+#ifdef ABT_XSTREAM_USE_VIRTUAL
+    ABTI_tree *tree;            /* Scheduler tree used for virtual ESs */
+#endif
     ABT_pool *pools;            /* Work unit pools */
     int num_pools;              /* Number of work unit pools */
     ABTI_thread *p_thread;      /* Associated ULT */
@@ -380,6 +389,38 @@ struct ABTI_pool {
     ABT_pool_free_fn               p_free;
     ABT_pool_print_all_fn          p_print_all;
 };
+
+#ifdef ABT_XSTREAM_USE_VIRTUAL
+typedef struct {
+    int           (*t_init)(ABTI_tree*);
+    void          (*t_push)(ABTI_tree*, ABTI_xstream*, ABTI_node*);
+    ABTI_node*   (*t_pop)(ABTI_tree*, ABTI_node*);
+    int           (*t_free)(ABTI_tree *);
+} ABTI_tree_def;
+
+struct ABTI_tree {
+    ABT_pool_access access;  /* Access mode */
+    ABT_bool automatic;      /* To know if automatic data free */
+    int32_t num_xstreams;      /* Number of associated xstreams */
+                             /* NOTE: int32_t to check if still positive */
+    void *data;              /* Specific data */
+    uint64_t id;             /* ID */
+
+    int           (*t_init)(ABTI_tree*);
+    void          (*t_push)(ABTI_tree*, ABTI_xstream*, ABTI_node*);
+    ABTI_node*    (*t_pop)(ABTI_tree*, ABTI_node*);
+    int           (*t_free)(ABTI_tree*);
+};
+
+struct ABTI_node {
+    ABTI_xstream *p_xstream;
+    ABTI_node **child_nodes;
+    ABTI_node *parent_node;
+    int child_count;
+    int cur_child_idx;
+};
+
+#endif
 
 struct ABTI_unit {
     ABTI_unit *p_prev;
@@ -578,7 +619,7 @@ void ABTI_xstream_schedule(void *p_arg);
 #ifdef ABT_XSTREAM_USE_VIRTUAL
 void ABTI_kthread_schedule(void *p_arg);
 int ABTI_kthread_schedule_thread(ABTI_kthread *k_thread, ABTI_thread *p_thread);
-int ABTI_kthread_run_unit(ABTI_kthread *k_thread, ABT_unit unit, ABTI_pool *p_pool);
+int ABTI_kthread_run_xstream(ABTI_kthread *k_thread, ABTI_node *node);
 #endif
 int ABTI_xstream_run_unit(ABTI_xstream *p_xstream, ABT_unit unit,
                           ABTI_pool *p_pool);
@@ -633,6 +674,8 @@ int ABTI_pool_get_fifo_wait_def(ABT_pool_access access, ABT_pool_def *p_def);
 int ABTI_pool_get_random_def(ABT_pool_access access, ABT_pool_def *p_def);
 int ABT_pool_create_random(ABT_pool_access access,
                           ABT_bool automatic, ABT_pool *newpool);
+int ABTI_tree_create(ABTI_tree **tree);
+int ABTI_tree_get_def(ABTI_tree_def *def);
 #endif
 #ifndef ABT_CONFIG_DISABLE_POOL_CONSUMER_CHECK
 int ABTI_pool_set_consumer(ABTI_pool *p_pool, ABTI_xstream *p_xstream);

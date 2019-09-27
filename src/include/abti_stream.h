@@ -49,7 +49,6 @@ void ABTI_xstream_set_request(ABTI_xstream *p_xstream, uint32_t req)
 static inline
 void ABTI_xstream_unset_request(ABTI_xstream *p_xstream, uint32_t req)
 {
-    printf("does anybody call this?\n");
     ABTD_atomic_fetch_and_uint32(&p_xstream->request, ~req);
 }
 

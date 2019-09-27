@@ -23,6 +23,16 @@ static inline
 void ABTI_local_set_kthread(ABTI_kthread *k_thread) {
     lp_ABTI_local->k_thread = k_thread;
 }
+
+static inline
+ABTI_node *ABTI_local_get_current_node(void) {
+    return lp_ABTI_local->cur_node;
+}
+
+static inline
+void ABTI_local_set_current_node(ABTI_node *node) {
+    lp_ABTI_local->cur_node = node;
+}
 #endif
 
 static inline

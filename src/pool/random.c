@@ -190,7 +190,7 @@ static ABT_unit random_pop_shared(ABT_pool pool)
 
     if (p_data->num_units > 0 && p_data->cur_index < p_data->num_units) {
     	p_unit = p_data->p_units[p_data->cur_index];
-	p_data->cur_index++;
+	    p_data->cur_index++;
     	p_unit->pool = ABT_POOL_NULL;
 
     	h_unit = (ABT_unit)p_unit;
