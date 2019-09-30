@@ -143,12 +143,6 @@ static inline void ABTDI_thread_terminate(ABTI_thread *p_thread,
              * we can't directly jump to p_joiner.  Instead, we wake up
              * p_joiner here so that p_joiner's scheduler can resume it. */
             ABTI_thread_set_ready(p_joiner);
-#ifdef ABT_XSTREAM_USE_VIRTUAL
-            /* We need to activate the scheduler as well at this point for 
-             * supporting nested calls to ABT */
-            ABTI_sched *p_sched = p_joiner->p_last_xstream->p_main_sched;
-            ABTI_sched_unset_request(p_sched, ABTI_SCHED_REQ_POSTPONE); 
-#endif
             /* We don't need to use the atomic OR operation here because the ULT
              * will be terminated regardless of other requests. */
             ABTD_atomic_store_uint32(&p_thread->request,
@@ -168,14 +162,12 @@ static inline void ABTDI_thread_terminate(ABTI_thread *p_thread,
         }
     }
 
-    printf("do we come here?\n");
     /* No other ULT is waiting or blocked for this ULT. Since fcontext does
      * not switch to other fcontext when it finishes, we need to explicitly
      * switch to the scheduler. */
     ABTI_sched *p_sched;
 #ifndef ABT_CONFIG_DISABLE_STACKABLE_SCHED
     if (p_thread->is_sched) {
-
 #ifdef ABT_XSTREAM_USE_VIRTUAL
         /* If p_thread is a scheduler ULT, we have to context switch to master 
         scheduler. Now will stacked schedulers work? How do we handle this? */
@@ -197,15 +189,7 @@ static inline void ABTDI_thread_terminate(ABTI_thread *p_thread,
         ABTI_thread_finish_context_sched_to_sched(p_thread->is_sched, p_sched);
     } else {
 #endif
-//#ifdef ABT_XSTREAM_USE_VIRTUAL
-        /* If p_thread is not a scheduler, but its scheduler is blocked,
-         * we would need to switch to the master scheduler */
-//        ABTI_kthread *k_thread = ABTI_local_get_kthread();
-//        p_sched = k_thread->k_main_sched;
-//        ABTI_thread_finish_context_thread_to_sched(p_thread, p_sched);
-//#else
         ABTI_thread_finish_context_thread_to_sched(p_thread, p_sched);
-//#endif
 #ifndef ABT_CONFIG_DISABLE_STACKABLE_SCHED
     }
 #endif

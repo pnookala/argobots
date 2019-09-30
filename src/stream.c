@@ -55,6 +55,8 @@ int ABT_xstream_create(ABT_sched sched, ABT_xstream *newxstream)
 #ifdef ABT_XSTREAM_USE_VIRTUAL
     /* Load balance with proper kernel thread  */
     p_newxstream->p_kthread = k_newthread;
+    LOG_EVENT("[T%d] assigned for [E%d]\n", k_newthread->rank, 
+                                            p_newxstream->rank);
 #endif
 
     /* Start this ES */
@@ -143,7 +145,7 @@ int ABTI_kthread_create_master(ABTI_kthread **k_thread)
 
     ABTI_spinlock_create(&k_newthread->sched_lock);
 
-    k_newthread->xstream_tree = (ABTI_tree*) ABTU_malloc(sizeof(ABTI_tree));
+    //k_newthread->xstream_tree = (ABTI_tree*) ABTU_malloc(sizeof(ABTI_tree));
     k_newthread->num_vxstreams = 0;
 
     ABTI_spinlock_acquire(&gp_ABTI_global->kthreads_lock);
@@ -378,10 +380,16 @@ int ABTI_xstream_start(ABTI_xstream *p_xstream)
  	/* Push the scheduler to the list of schedulers */
     int num_vxstreams = k_sched->tree->num_xstreams;
     //k_thread->v_xstreams[k_thread->num_vxstreams++] = p_xstream;
-	k_sched->tree->t_push(k_sched->tree, p_xstream, 
+	ABTI_node *node = ABTI_local_get_current_node();
+    if(node != NULL && node->p_xstream != NULL && 
+            node->p_xstream->p_kthread->rank == k_thread->rank)
+        k_sched->tree->t_push(k_sched->tree, p_xstream, 
                     ABTI_local_get_current_node());
+    else 
+        k_sched->tree->t_push(k_sched->tree, p_xstream, NULL);
     ABTI_spinlock_release(&gp_ABTI_global->kthreads_lock);
 
+    LOG_EVENT("[E%d] pushed to [T%d]\n", p_xstream->rank, k_thread->rank);
    	//ABTI_pool *p_pool = k_sched->pools[0];
    	//ABT_thread h_schedthread;
 
@@ -630,12 +638,42 @@ int ABT_xstream_join(ABT_xstream xstream)
 
         /* Save the caller ULT to set it ready when the ES is terminated */
         p_xstream->p_req_arg = (void *)p_thread;
+#ifndef ABT_XSTREAM_USE_VIRTUAL
+        /*  We cannot block because there could be other schedulers yet to run  */
         ABTI_thread_set_blocked(p_thread);
-        
+#endif
         /* Set the join request */
         ABTI_xstream_set_request(p_xstream, ABTI_XSTREAM_REQ_JOIN);
         /* If the caller is a ULT, it is blocked here */
-	    ABTI_thread_suspend(p_thread);
+#ifdef ABT_XSTREAM_USE_VIRTUAL
+        ABTI_kthread *k_thread = ABTI_local_get_kthread();
+        ABTI_node *node = ABTI_local_get_current_node();
+        ABTI_thread *thread = ABTI_local_get_thread();
+        printf("current child node count %d rank %d\n", node->child_count, k_thread->rank);
+        if(node->child_count > 0) {
+            ABTI_tree *tree = k_thread->k_main_sched->tree;
+            ABTI_node *child_node = tree->t_pop(tree, node);
+            if(child_node != NULL) {
+                ABTI_sched *child_sched = child_node->p_xstream->p_main_sched;
+                ABTI_sched_set_request(child_sched, ABTI_SCHED_REQ_FINISH);
+                ABTI_thread_context_switch_thread_to_sched(thread,
+                                        child_sched);
+            }
+        }
+        else {
+            ABTI_node *parent_node = node->parent_node;
+            if(parent_node != NULL) {
+                ABTI_sched *parent_sched = parent_node->p_xstream->p_main_sched;
+                ABTI_local_set_xstream(parent_node->p_xstream);
+                ABTI_thread_context_switch_thread_to_sched(thread, parent_sched);
+            }
+            else ABTI_thread_suspend(p_thread);
+        }
+        printf("returned to check events from sched\n");
+        //ABTI_sched_set_request(ABTI_sched_get_ptr(sched), ABTI_SCHED_REQ_POSTPONE);
+#else
+        ABTI_thread_suspend(p_thread);
+#endif
     } else {
         /* Set the join request */
         ABTI_xstream_set_request(p_xstream, ABTI_XSTREAM_REQ_JOIN);
@@ -1218,6 +1256,8 @@ int ABTI_kthread_run_xstream(ABTI_kthread *k_thread, ABTI_node *node)
     ABTI_sched *p_sched = p_xstream->p_main_sched;
     ABTI_thread *p_thread = p_sched->p_thread;
     ABTI_local_set_xstream(p_xstream);
+
+    ABTI_local_set_current_node(node);
     /* Switch the context */
 	abt_errno = ABTI_kthread_schedule_thread(k_thread, p_thread);
     ABTI_CHECK_ERROR(abt_errno);
@@ -1606,7 +1646,7 @@ void ABTI_xstream_schedule(void *p_arg)
         p_sched->state = ABT_SCHED_STATE_RUNNING;
 
 #ifdef ABT_XSTREAM_USE_VIRTUAL
-        while(1) {
+        //while(1) {
             LOG_EVENT("[S%" PRIu64 "] start\n", p_sched->id);
             p_sched->run(ABTI_sched_get_handle(p_sched));
 
@@ -1617,15 +1657,34 @@ void ABTI_xstream_schedule(void *p_arg)
                 //Context switch to master here, so when we get back to this scheduler,
                 //it resumes execution from here and runs ULTs.
                 ABTI_kthread *k_thread = p_xstream->p_kthread;
-                ABTI_thread_context_switch_sched_to_sched(p_sched, k_thread->k_main_sched); 
+                ABTI_node *node = ABTI_local_get_current_node();
+                ABTI_thread *thread = ABTI_local_get_thread();
+                printf("current child node count %d\n", node->child_count);
+                if(node->child_count > 0) {
+                    ABTI_tree *tree = k_thread->k_main_sched->tree;
+                    ABTI_node *child_node = tree->t_pop(tree, node);
+                    ABTI_local_set_current_node(child_node);
+                    //ABTI_local_set_xstream(child_node->p_xstream);
+                    ABTI_thread_context_switch_thread_to_sched(thread,
+                                        child_node->p_xstream->p_main_sched);
+                }
+                else {
+                    ABTI_node *parent_node = node->parent_node;
+                    if(parent_node != NULL) {
+                    ABTI_sched *parent_sched = parent_node->p_xstream->p_main_sched;
+                    ABTI_local_set_xstream(parent_node->p_xstream);
+                    ABTI_thread_context_switch_thread_to_sched(thread, parent_sched);
+                    }
+                }
                 printf("scheduler returned after postponing\n");
+                ABTI_sched_unset_request(p_sched, ABTI_SCHED_REQ_POSTPONE);
             }
             else {
                 LOG_EVENT("[S%" PRIu64 "] end\n", p_sched->id);
                 p_sched->state = ABT_SCHED_STATE_TERMINATED;
                 break;
             }
-        }
+        //}
 #else	
 	    LOG_EVENT("[S%" PRIu64 "] start\n", p_sched->id);
         
@@ -1820,9 +1879,10 @@ int ABTI_kthread_schedule_thread(ABTI_kthread *k_thread, ABTI_thread *p_thread)
         //ABTI_POOL_ADD_THREAD(p_thread, p_xstream);
         //p_thread->state = ABT_THREAD_STATE_READY;
         ABTI_thread_unset_request(p_thread, ABTI_THREAD_REQ_BLOCK);
-        ABTI_pool *p_pool = k_sched->pools[0];
-        ABTI_xstream *p_xstream = p_thread->p_last_xstream;
-        ABTI_pool_push(p_pool, p_thread->unit, p_xstream);
+        //TODO: Figure out what to do here
+        //ABTI_pool *p_pool = k_sched->pools[0];
+        //ABTI_xstream *p_xstream = p_thread->p_last_xstream;
+        //ABTI_pool_push(p_pool, p_thread->unit, p_xstream);
     } 
     else if (p_thread->request & ABTI_THREAD_REQ_BLOCK) {
         LOG_EVENT("[U%" PRIu64 ":T%d] check blocked\n",

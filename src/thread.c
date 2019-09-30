@@ -2281,7 +2281,6 @@ void ABTI_thread_suspend(ABTI_thread *p_thread)
 int ABTI_thread_set_ready(ABTI_thread *p_thread)
 {
     int abt_errno = ABT_SUCCESS;
-  
     /* The ULT should be in BLOCKED state. */
     ABTI_CHECK_TRUE(p_thread->state == ABT_THREAD_STATE_BLOCKED, ABT_ERR_THREAD);
     

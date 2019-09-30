@@ -1,0 +1,25 @@
+Jobid: 15515
+qsub -n 1 -q thing -t 5:59 --mode interactive
+Fri Sep 27 19:02:40 2019 +0000 (UTC) submitted with cwd set to: /home/poornimans/pnookala-argobots/argobots
+jobid 15515 submitted from terminal /dev/pts/2
+Fri Sep 27 19:02:56 2019 +0000 (UTC) 
+Fri Sep 27 19:02:56 2019 +0000 (UTC) Command: '/usr/bin/ssh' 'thing03' '/usr/libexec/cobalt/cobalt-launcher.py' '--nf' '/var/tmp/cobalt.15515' '--jobid' '15515' '--cwd' '/home/poornimans/pnookala-argobots/argobots' '--env' 'COBALT_JOBID=15515' '/bin/sleep' '21540'
+Fri Sep 27 19:02:56 2019 +0000 (UTC) 
+Fri Sep 27 19:02:56 2019 +0000 (UTC) Environment:
+Fri Sep 27 19:02:56 2019 +0000 (UTC) SHELL=/bin/bash
+Fri Sep 27 19:02:56 2019 +0000 (UTC) COBALT_NODEFILE=/tmp/tmpkPW6hO
+Fri Sep 27 19:02:56 2019 +0000 (UTC) COBALT_PARTNAME=thing03
+Fri Sep 27 19:02:56 2019 +0000 (UTC) COBALT_JOBID=15515
+Fri Sep 27 19:02:56 2019 +0000 (UTC) COBALT_STARTTIME=1569610962
+Fri Sep 27 19:02:56 2019 +0000 (UTC) LOGNAME=poornimans
+Fri Sep 27 19:02:56 2019 +0000 (UTC) USER=poornimans
+Fri Sep 27 19:02:56 2019 +0000 (UTC) COBALT_ENDTIME=1569632502
+Fri Sep 27 19:02:56 2019 +0000 (UTC) COBALT_PARTSIZE=1
+Fri Sep 27 19:02:56 2019 +0000 (UTC) HOME=/home/poornimans
+Fri Sep 27 19:02:56 2019 +0000 (UTC) COBALT_JOBSIZE=1
+Fri Sep 27 19:02:56 2019 +0000 (UTC) 
+Fri Sep 27 19:02:56 2019 +0000 (UTC) Info: stdin received from /dev/null
+Fri Sep 27 19:02:56 2019 +0000 (UTC) Info: stdout sent to /home/poornimans/pnookala-argobots/argobots/15515.output
+Fri Sep 27 19:02:56 2019 +0000 (UTC) Info: stderr sent to /home/poornimans/pnookala-argobots/argobots/15515.error
+Fri Sep 27 19:02:56 2019 +0000 (UTC) 
+Fri Sep 27 20:20:25 2019 +0000 (UTC) Info: user delete requested with signal SIGTERM by user poornimans
