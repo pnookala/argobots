@@ -68,7 +68,7 @@ static void tree_push_shared(ABTI_tree *tree, ABTI_xstream *p_xstream,
     ABTI_spinlock_acquire(&p_data->mutex);
     if(cur_node == NULL)
     {
-        printf("pushing as a parent\n");
+        //printf("pushing as a parent\n");
         ABTI_node *node = (ABTI_node *) ABTU_malloc(sizeof (ABTI_node));
         node->p_xstream = p_xstream;    
         node->parent_node = NULL; 
@@ -77,7 +77,7 @@ static void tree_push_shared(ABTI_tree *tree, ABTI_xstream *p_xstream,
         node->child_nodes = (ABTI_node **)ABTU_malloc(10 * sizeof(ABTI_node*));
         p_data->p_node = node;
     } else {
-        printf("pushing as a child\n");
+        //printf("pushing as a child\n");
         /* Need to make it a child node */
         ABTI_node *node = (ABTI_node *) ABTU_malloc(sizeof(ABTI_node));
         node->p_xstream = p_xstream;
@@ -87,7 +87,7 @@ static void tree_push_shared(ABTI_tree *tree, ABTI_xstream *p_xstream,
         node->child_nodes = (ABTI_node **)ABTU_malloc(10 * sizeof(ABTI_node*));
          
         cur_node->child_nodes[cur_node->child_count++] = node;         
-        printf("child count %d\n", cur_node->child_count);
+        //printf("child count %d\n", cur_node->child_count);
     }
 
     tree->num_xstreams++;

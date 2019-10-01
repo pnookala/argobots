@@ -172,7 +172,16 @@ static inline void ABTDI_thread_terminate(ABTI_thread *p_thread,
         /* If p_thread is a scheduler ULT, we have to context switch to master 
         scheduler. Now will stacked schedulers work? How do we handle this? */
         ABTI_kthread *k_thread = ABTI_local_get_kthread();
-        p_sched = k_thread->k_main_sched;
+        ABTI_node *node = ABTI_local_get_current_node();
+        ABTI_tree *tree = k_thread->k_main_sched->tree;
+        ABTI_node *child_node = tree->t_pop(tree, node);
+        if(child_node != NULL)
+        {
+            p_sched = child_node->p_xstream->p_main_sched;
+        }
+        else {
+            p_sched = k_thread->k_main_sched;
+        }
 #else
         /* If p_thread is a scheduler ULT, we have to context switch to
          * the parent scheduler. */

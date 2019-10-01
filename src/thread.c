@@ -1863,8 +1863,8 @@ int ABTI_thread_create(ABTI_pool *p_pool, void (*thread_func)(void *),
 
     /* Allocate a ULT object and its stack, then create a thread context. */
     p_newthread = ABTI_mem_alloc_thread(p_attr);
-    if ((thread_type == ABTI_THREAD_TYPE_MAIN //||
-	 //thread_type == ABTI_THREAD_TYPE_MAIN_SCHED
+    if ((thread_type == ABTI_THREAD_TYPE_MAIN ||
+	 thread_type == ABTI_THREAD_TYPE_MAIN_SCHED
 	) && p_newthread->attr.p_stack == NULL) {
 
         /* We don't need to initialize the context of 1. the main thread, and
@@ -2074,8 +2074,9 @@ int ABTI_thread_create_main_sched(ABTI_xstream *p_xstream, ABTI_sched *p_sched)
 {
     int abt_errno = ABT_SUCCESS;
     ABTI_thread *p_newthread;
+#ifdef ABT_XSTREAM_USE_VIRTUAL
     ABTI_kthread *k_thread =  p_xstream->p_kthread;
-
+#endif
     /* Create a ULT context */
     if (p_xstream->type == ABTI_XSTREAM_TYPE_PRIMARY) {
 	/* Create a ULT object and its stack */
@@ -2282,6 +2283,10 @@ int ABTI_thread_set_ready(ABTI_thread *p_thread)
 {
     int abt_errno = ABT_SUCCESS;
     /* The ULT should be in BLOCKED state. */
+#ifdef ABT_XSTREAM_USE_VIRTUAL
+    if(p_thread->state != ABT_THREAD_STATE_BLOCKED)
+        goto fn_exit;
+#endif
     ABTI_CHECK_TRUE(p_thread->state == ABT_THREAD_STATE_BLOCKED, ABT_ERR_THREAD);
     
     /* We should wait until the scheduler of the blocked ULT resets the BLOCK

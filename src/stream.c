@@ -646,11 +646,11 @@ int ABT_xstream_join(ABT_xstream xstream)
         ABTI_xstream_set_request(p_xstream, ABTI_XSTREAM_REQ_JOIN);
         /* If the caller is a ULT, it is blocked here */
 #ifdef ABT_XSTREAM_USE_VIRTUAL
-        ABTI_kthread *k_thread = ABTI_local_get_kthread();
+        //ABTI_kthread *k_thread = ABTI_local_get_kthread();
         ABTI_node *node = ABTI_local_get_current_node();
         ABTI_thread *thread = ABTI_local_get_thread();
-        printf("current child node count %d rank %d\n", node->child_count, k_thread->rank);
-        if(node->child_count > 0) {
+        //printf("current child node count %d rank %d\n", node->child_count, k_thread->rank);
+        /*if(node->child_count > 0) {
             ABTI_tree *tree = k_thread->k_main_sched->tree;
             ABTI_node *child_node = tree->t_pop(tree, node);
             if(child_node != NULL) {
@@ -660,7 +660,7 @@ int ABT_xstream_join(ABT_xstream xstream)
                                         child_sched);
             }
         }
-        else {
+        else {*/
             ABTI_node *parent_node = node->parent_node;
             if(parent_node != NULL) {
                 ABTI_sched *parent_sched = parent_node->p_xstream->p_main_sched;
@@ -668,8 +668,8 @@ int ABT_xstream_join(ABT_xstream xstream)
                 ABTI_thread_context_switch_thread_to_sched(thread, parent_sched);
             }
             else ABTI_thread_suspend(p_thread);
-        }
-        printf("returned to check events from sched\n");
+       // }
+        //printf("returned to check events from sched\n");
         //ABTI_sched_set_request(ABTI_sched_get_ptr(sched), ABTI_SCHED_REQ_POSTPONE);
 #else
         ABTI_thread_suspend(p_thread);
@@ -1659,7 +1659,7 @@ void ABTI_xstream_schedule(void *p_arg)
                 ABTI_kthread *k_thread = p_xstream->p_kthread;
                 ABTI_node *node = ABTI_local_get_current_node();
                 ABTI_thread *thread = ABTI_local_get_thread();
-                printf("current child node count %d\n", node->child_count);
+                //printf("current child node count %d\n", node->child_count);
                 if(node->child_count > 0) {
                     ABTI_tree *tree = k_thread->k_main_sched->tree;
                     ABTI_node *child_node = tree->t_pop(tree, node);
@@ -1671,12 +1671,12 @@ void ABTI_xstream_schedule(void *p_arg)
                 else {
                     ABTI_node *parent_node = node->parent_node;
                     if(parent_node != NULL) {
-                    ABTI_sched *parent_sched = parent_node->p_xstream->p_main_sched;
-                    ABTI_local_set_xstream(parent_node->p_xstream);
-                    ABTI_thread_context_switch_thread_to_sched(thread, parent_sched);
+                        ABTI_sched *parent_sched = parent_node->p_xstream->p_main_sched;
+                        ABTI_local_set_xstream(parent_node->p_xstream);
+                        ABTI_thread_context_switch_thread_to_sched(thread, parent_sched);
                     }
                 }
-                printf("scheduler returned after postponing\n");
+                //printf("scheduler returned after postponing\n");
                 ABTI_sched_unset_request(p_sched, ABTI_SCHED_REQ_POSTPONE);
             }
             else {
@@ -1712,8 +1712,8 @@ void ABTI_xstream_schedule(void *p_arg)
 
 #ifdef ABT_XSTREAM_USE_VIRTUAL
         if ((request & ABTI_XSTREAM_REQ_EXIT) ||
-            (request & ABTI_XSTREAM_REQ_CANCEL) ||
-            (request & ABTI_XSTREAM_REQ_BLOCK))
+            (request & ABTI_XSTREAM_REQ_CANCEL))// ||
+            //(request & ABTI_XSTREAM_REQ_BLOCK))
             break;
 #else
 	/* If there is an exit or a cancel request, the ES terminates

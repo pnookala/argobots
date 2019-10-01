@@ -60,7 +60,7 @@ void abt_for(int num_threads, int loop_count, inner_f inner_func, int first) {
   /* ES creation */
   xstreams = (ABT_xstream *)malloc(sizeof(ABT_xstream) * num_threads);
   if(first) {
-    printf("Called xstream self\n");
+    //printf("Called xstream self\n");
     ABT_xstream_self(&xstreams[0]);
 
     set_main_sched_err = ABT_xstream_set_main_sched_basic(xstreams[0],
@@ -106,15 +106,15 @@ void abt_for(int num_threads, int loop_count, inner_f inner_func, int first) {
     for (i = start_i; i < num_threads; i++)
 #endif
     {
-        printf("JOINING XSTREAM %d at level %d\n", i, first);
+        //printf("JOINING XSTREAM %d at level %d\n", i, first);
 	    ABT_xstream_join(xstreams[i]);
 	    ABT_xstream_free(&xstreams[i]);
     }
 
   //printf("JOINED XSTREAMS\n");
   free(threads);
-  free(xstreams);
-  printf("FINALIZE\n");
+  //free(xstreams);
+  //printf("FINALIZE\n");
   ABT_finalize();
 }
 
@@ -123,7 +123,7 @@ void inner2_par(int i) {
 }
 
 void inner_par(void* data) {
-    printf("INNER ABT_FOR\n");
+    //printf("INNER ABT_FOR\n");
     abt_for(inner_num_es, inner_num_threads, empty_f, 0);
 }
 
@@ -134,8 +134,8 @@ int main (int argc, char** argv) {
     main_num_threads = atoi(argv[3]);
     inner_num_threads = atoi(argv[4]);
   } 
-  abt_for(main_num_es, main_num_threads, inner_par, 1);
-  printf("DONE!\n");
-    //abt_for(main_num_es, inner_num_es, empty_f, 1);
+  //abt_for(main_num_es, main_num_threads, inner_par, 1);
+  //printf("DONE!\n");
+  abt_for(main_num_es, inner_num_es, empty_f, 1);
   return 0;
 }
