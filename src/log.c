@@ -41,6 +41,11 @@ void ABTI_log_event(FILE *fh, const char *format, ...)
     ABTI_xstream *p_xstream = NULL;
     ABTI_thread *p_thread = NULL;
     ABTI_task *p_task = NULL;
+#ifdef ABT_XSTREAM_USE_VIRTUAL
+    ABTI_kthread *k_thread = NULL;
+    size_t k_rank;
+    int k_rank_len = 0;
+#endif
     char *prefix_fmt = NULL, *prefix = NULL;
     char *newfmt;
     size_t tid, rank;
@@ -52,22 +57,25 @@ void ABTI_log_event(FILE *fh, const char *format, ...)
         case ABT_UNIT_TYPE_THREAD:
             p_xstream = ABTI_local_get_xstream();
             p_thread = ABTI_local_get_thread();
+            k_thread = ABTI_local_get_kthread();
             if (p_thread == NULL) {
                 if (p_xstream && p_xstream->type != ABTI_XSTREAM_TYPE_PRIMARY) {
-                    prefix_fmt = "<U%" PRIu64 ":E%d> %s";
+                    prefix_fmt = "<U%" PRIu64 ":E%d:T%d> %s";
                     rank = p_xstream->rank;
+                    k_rank = k_thread->rank;
                     tid = 0;
                 } else {
-                    prefix = "<U0:E0> ";
+                    prefix = "<U0:E0:T0> ";
                     prefix_fmt = "%s%s";
                 }
             } else {
                 rank = p_xstream->rank;
+                k_rank = k_thread->rank;
                 if (lp_ABTI_log->p_sched) {
-                    prefix_fmt = "<S%" PRIu64 ":E%d> %s";
+                    prefix_fmt = "<S%" PRIu64 ":E%d:T%d> %s";
                     tid = lp_ABTI_log->p_sched->id;
                 } else {
-                    prefix_fmt = "<U%" PRIu64 ":E%d> %s";
+                    prefix_fmt = "<U%" PRIu64 ":E%d:T%d> %s";
                     tid = ABTI_thread_get_id(p_thread);
                 }
             }
@@ -76,6 +84,7 @@ void ABTI_log_event(FILE *fh, const char *format, ...)
         case ABT_UNIT_TYPE_TASK:
             p_xstream = ABTI_local_get_xstream();
             rank = p_xstream->rank;
+            k_rank = k_thread->rank;
             p_task = ABTI_local_get_task();
             if (lp_ABTI_log->p_sched) {
                 prefix_fmt = "<S%" PRIu64 ":E%d> %s";
@@ -100,9 +109,10 @@ void ABTI_log_event(FILE *fh, const char *format, ...)
     if (prefix == NULL) {
         tid_len = ABTU_get_int_len(tid);
         rank_len = ABTU_get_int_len(rank);
-        newfmt_len = 6 + tid_len + rank_len + strlen(format);
+        k_rank_len = ABTU_get_int_len(k_rank);
+        newfmt_len = 8 + tid_len + rank_len + k_rank_len + strlen(format);
         newfmt = (char *)ABTU_malloc(newfmt_len + 1);
-        sprintf(newfmt, prefix_fmt, tid, rank, format);
+        sprintf(newfmt, prefix_fmt, tid, rank, k_rank, format);
     } else {
         newfmt_len = strlen(prefix) + strlen(format);
         newfmt = (char *)ABTU_malloc(newfmt_len + 1);
@@ -114,7 +124,7 @@ void ABTI_log_event(FILE *fh, const char *format, ...)
     vfprintf(fh, newfmt, list);
     va_end(list);
     fflush(fh);
-
+    
     ABTU_free(newfmt);
 }
 
@@ -136,7 +146,7 @@ void ABTI_log_debug(FILE *fh, char *path, int line, const char *format, ...)
     vfprintf(fh, newfmt, list);
     va_end(list);
     fflush(fh);
-
+    
     ABTU_free(newfmt);
 }
 
