@@ -109,7 +109,6 @@ static inline void ABTDI_thread_terminate(ABTI_thread *p_thread,
             LOG_EVENT("[U%" PRIu64 ":E%d] terminated\n",
                       ABTI_thread_get_id(p_thread),
                       p_thread->p_last_xstream->rank);
-
             /* Note that a scheduler-type ULT cannot be a joiner. If a scheduler
              * type ULT would be a joiner (=suspend), no scheduler is available
              * when a running ULT needs suspension. Hence, it always jumps to a

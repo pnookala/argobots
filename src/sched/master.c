@@ -148,7 +148,7 @@ static void sched_run(ABT_sched sched)
             ABT_unit unit = ABTI_pool_pop(p_pool);
             if (unit != ABT_UNIT_NULL) {
                 ABTI_kthread_run_unit(k_thread, unit, p_pool);
-		CNT_INC(run_cnt);
+		        CNT_INC(run_cnt);
                 break;
             }
         }

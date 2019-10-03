@@ -271,7 +271,6 @@ static ABT_unit pool_pop_shared(ABT_pool pool)
     data_t *p_data = pool_get_data_ptr(data);
     unit_t *p_unit = NULL;
     ABT_unit h_unit = ABT_UNIT_NULL;
-
     ABTI_spinlock_acquire(&p_data->mutex);
     if (p_data->num_units > 0) {
         p_unit = p_data->p_head;

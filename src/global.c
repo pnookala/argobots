@@ -90,6 +90,7 @@ int ABT_init(int argc, char **argv)
     gp_ABTI_global->num_xstreams = 0;
 
 #ifdef ABT_XSTREAM_USE_VIRTUAL
+    gp_ABTI_global->num_cores = 2;
     gp_ABTI_global->k_threads = (ABTI_kthread **) ABTU_calloc(
 	    gp_ABTI_global->max_xstreams, sizeof(ABTI_xstream *));
     gp_ABTI_global->num_kthreads = 0;
@@ -105,6 +106,7 @@ int ABT_init(int argc, char **argv)
 #ifdef ABT_XSTREAM_USE_VIRTUAL
     ABTI_kthread *k_newthread;
     abt_errno = ABTI_kthread_create_master(&k_newthread);
+    k_newthread->type = ABTI_KTHREAD_TYPE_PRIMARY;
     ABTI_CHECK_ERROR_MSG(abt_errno, "ABTI_kthread_create_master");
     ABTI_local_set_kthread(k_newthread);
 #endif
@@ -195,8 +197,9 @@ int ABT_finalize(void)
                         "ABT_finalize must be called by the primary ULT.");
 
     /* Set the join request */
+    ABTI_kthread_set_request(p_xstream->p_kthread, ABTI_XSTREAM_REQ_JOIN);
+    p_xstream->p_kthread->k_req_arg = NULL;
     ABTI_xstream_set_request(p_xstream, ABTI_XSTREAM_REQ_JOIN);
-
     /* We wait for the remaining jobs */
     if (p_xstream->state != ABT_XSTREAM_STATE_TERMINATED) {
         /* Set the orphan request for the primary ULT */
@@ -216,7 +219,7 @@ int ABT_finalize(void)
 
 #ifdef ABT_XSTREAM_USE_VIRTUAL
     /* We have to join all kernel threads */
-    for (int i = 1; i < gp_ABTI_global->num_kthreads; i++) {
+    /*for (int i = 1; i < gp_ABTI_global->num_kthreads; i++) {
 	LOG_EVENT("[U%" PRIu64 ":E%d] yield to master scheduler\n",
                   ABTI_thread_get_id(p_thread), p_thread->p_last_xstream->rank);
     	ABTI_kthread *k_thread = gp_ABTI_global->k_threads[i];
@@ -229,14 +232,14 @@ int ABT_finalize(void)
 
     LOG_EVENT("[U%" PRIu64 ":E%d] yield to primary master scheduler\n",
                   ABTI_thread_get_id(p_thread), p_thread->p_last_xstream->rank);
-    /* After ending the primary virtual ES scheduler */
-    ABTI_kthread *k_thread = ABTI_local_get_kthread();
+    *//* After ending the primary virtual ES scheduler */
+    /*ABTI_kthread *k_thread = ABTI_local_get_kthread();
     ABTI_kthread_set_request(k_thread, ABTI_XSTREAM_REQ_JOIN);
     ABTI_thread_context_switch_thread_to_sched(p_thread, k_thread->k_main_sched);
 
     LOG_EVENT("[U%" PRIu64 ":E%d] resume after yield\n",
                   ABTI_thread_get_id(p_thread), p_thread->p_last_xstream->rank);
-
+    */
 #endif
 
     /* Remove the primary ULT */

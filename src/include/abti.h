@@ -30,6 +30,7 @@
 
 #define ABTI_SCHED_REQ_FINISH       (1 << 0)
 #define ABTI_SCHED_REQ_EXIT         (1 << 1)
+#define ABTI_SCHED_REQ_SUSPEND      (1 << 2)
 
 #define ABTI_THREAD_REQ_JOIN        (1 << 0)
 #define ABTI_THREAD_REQ_EXIT        (1 << 1)
@@ -58,10 +59,16 @@
 #define ABT_THREAD_TYPE_DYNAMIC_PROMOTION  1
 #define ABT_XSTREAM_USE_VIRTUAL            1
 
+#ifdef ABT_XSTREAM_USE_VIRTUAL
+enum ABTI_kthread_type {
+    ABTI_KTHREAD_TYPE_PRIMARY,
+    ABTI_KTHREAD_TYPE_SECONDARY
+};
+#endif
+
 enum ABTI_xstream_type {
     ABTI_XSTREAM_TYPE_PRIMARY,
-    ABTI_XSTREAM_TYPE_SECONDARY,
-    ABTI_XSTREAM_TYPE_VIRTUAL
+    ABTI_XSTREAM_TYPE_SECONDARY
 };
 
 enum ABTI_sched_used {
@@ -104,6 +111,7 @@ typedef struct ABTI_sched           ABTI_sched;
 #ifdef ABT_XSTREAM_USE_VIRTUAL
 typedef struct ABTI_ksched	    ABTI_ksched;
 typedef struct ABTI_kthread	    ABTI_kthread;
+typedef enum ABTI_kthread_type    ABTI_kthread_type;
 #endif
 typedef char *                      ABTI_sched_config;
 typedef enum ABTI_sched_used        ABTI_sched_used;
@@ -172,6 +180,8 @@ struct ABTI_global {
     int max_vxstreams; 		/* Max. number of virtual ESs per kernel thread */
     int num_kthreads;
     ABTI_kthread **k_threads;	/* Kernel thread array, has pointers to p_xstreams */
+    int kthread_lastidx;
+    ABTI_spinlock kthreads_lock;
 #endif
     ABTI_xstream **p_xstreams;   /* ES array */
     ABTI_spinlock xstreams_lock; /* Spinlock protecting p_xstreams. Any write
@@ -294,9 +304,11 @@ struct ABTI_ksched {
 };
 
 struct ABTI_kthread {
+    ABTI_kthread_type type;
     ABTI_sched *k_main_sched;          /* Main scheduler of this kernel thread, schedules virtual ESs */
     ABTD_xstream_context ctx; /* Kernel thread context */
     void *k_req_arg;            /* Request argument */
+    void *p_xstream_req_arg;    /* Virtual ES join request argument */
     uint32_t request;           /* Request */
     ABTI_xstream **v_xstreams;  /* Virtual ESs running on this kernel thread */
     int num_vxstreams;          /* Number of virtual ESs */
@@ -642,6 +654,9 @@ int   ABTI_thread_create_main(ABTI_xstream *p_xstream, ABTI_thread **p_thread);
 int   ABTI_thread_create_main_sched(ABTI_xstream *p_xstream, ABTI_sched *p_sched);
 #ifdef ABT_XSTREAM_USE_VIRTUAL
 int   ABTI_thread_create_main_ksched(ABTI_kthread *k_thread, ABTI_sched *k_sched, ABT_bool is_primary);
+void  ABTI_sched_suspend(ABTI_sched *p_sched);
+void  ABTI_blocked_thread_sched_suspend(ABTI_thread *p_thread);
+int   ABTI_sched_set_ready(ABTI_thread *p_thread);
 #endif
 int   ABTI_thread_create_sched(ABTI_pool *p_pool, ABTI_sched *p_sched);
 void  ABTI_thread_free(ABTI_thread *p_thread);
