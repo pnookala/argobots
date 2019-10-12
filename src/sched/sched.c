@@ -144,7 +144,13 @@ int ABT_sched_create_basic(ABT_sched_predef predef, int num_pools,
 
     /* We set the access to the default one */
     access = ABT_POOL_ACCESS_MPSC;
-    automatic = ABT_TRUE;;
+#ifdef ABT_XSTREAM_USE_VIRTUAL
+    /* Since we suspend schedulers and switch back to them, we cannot 
+     * automatically free them safely, but need to do it in the end */
+    automatic = ABT_FALSE;
+#else
+    automatic = ABT_TRUE;
+#endif
     /* We read the config and set the configured parameters */
     abt_errno = ABTI_sched_config_read_global(config, &access, &automatic);
     ABTI_CHECK_ERROR(abt_errno);
@@ -484,6 +490,7 @@ ABT_bool ABTI_sched_has_to_stop(ABTI_sched *p_sched, ABTI_xstream *p_xstream)
         ABTI_spinlock_acquire(&p_xstream->sched_lock);
         p_sched->state = ABT_SCHED_STATE_TERMINATED;
         stop = ABT_TRUE;
+        ABTI_spinlock_release(&p_xstream->sched_lock);
         goto fn_exit;
     }
 
@@ -498,9 +505,9 @@ ABT_bool ABTI_sched_has_to_stop(ABTI_sched *p_sched, ABTI_xstream *p_xstream)
             if (size == 0) {
                 p_sched->state = ABT_SCHED_STATE_TERMINATED;
                 stop = ABT_TRUE;
-            } else {
-                ABTI_spinlock_release(&p_xstream->sched_lock);
             }
+            ABTI_spinlock_release(&p_xstream->sched_lock);
+            
         } else if (p_sched->used == ABTI_SCHED_IN_POOL) {
             /* If the scheduler is a stacked one, we have to escape from the
              * scheduling function. The scheduler will be stopped if it is a
@@ -530,10 +537,10 @@ ABT_bool ABTI_master_sched_has_to_stop(ABTI_sched *p_sched, ABTI_kthread *k_thre
 
     /* Check exit request */
     if (p_sched->request & ABTI_SCHED_REQ_EXIT) {
-        //ABTI_spinlock_acquire(&k_thread->sched_lock);
+        ABTI_spinlock_acquire(&k_thread->sched_lock);
         p_sched->state = ABT_SCHED_STATE_TERMINATED;
-        //ABTI_spinlock_release(&k_thread->sched_lock);
-	stop = ABT_TRUE;
+        ABTI_spinlock_release(&k_thread->sched_lock);
+	    stop = ABT_TRUE;
         goto fn_exit;
     }
 
@@ -548,9 +555,9 @@ ABT_bool ABTI_master_sched_has_to_stop(ABTI_sched *p_sched, ABTI_kthread *k_thre
             if (size == 0) {
                 p_sched->state = ABT_SCHED_STATE_TERMINATED;
                 stop = ABT_TRUE;
-            } else {
+            } //else {
                 ABTI_spinlock_release(&k_thread->sched_lock);
-            }
+            //}
         }
     }
 
