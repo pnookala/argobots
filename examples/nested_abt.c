@@ -43,7 +43,7 @@ void inner_func_wrapper(void *arg) {
 
 void abt_for(int num_threads, int loop_count, inner_f inner_func, int level) {
   int i;
-  ABT_pool pool;
+  ABT_pool *pools;
   ABT_xstream *xstreams = NULL;
   abt_thread_data_t *threads = NULL;
   int set_main_sched_err;
@@ -53,23 +53,30 @@ void abt_for(int num_threads, int loop_count, inner_f inner_func, int level) {
   ABT_init(0, NULL);
 
   /* shared pool creation */
-  ABT_pool_create_basic(ABT_POOL_FIFO, ABT_POOL_ACCESS_MPMC, ABT_TRUE, &pool);
+  //ABT_pool_create_basic(ABT_POOL_FIFO, ABT_POOL_ACCESS_MPMC, ABT_TRUE, &pool);
 
+  pools = (ABT_pool *)malloc(sizeof(ABT_pool) * num_threads);
   /* ES creation */
   xstreams = (ABT_xstream *)malloc(sizeof(ABT_xstream) * num_threads);
   if(level == 0) {
     printf("called xstream_self\n");
     ABT_xstream_self(&xstreams[0]);
   
-    set_main_sched_err = ABT_xstream_set_main_sched_basic(xstreams[0],
-                                                          ABT_SCHED_DEFAULT, 1,
-                                                          &pool);
-    start_i = (set_main_sched_err != ABT_SUCCESS) ? 0 : 1;
+    //set_main_sched_err = ABT_xstream_set_main_sched_basic(xstreams[0],
+    //                                                      ABT_SCHED_DEFAULT, 1,
+    //                                                      &pool);
+    //start_i = (set_main_sched_err != ABT_SUCCESS) ? 0 : 1;
+    start_i = 1;
   }
     for (i = start_i; i < num_threads; i++) {
-    ABT_xstream_create_basic(ABT_SCHED_DEFAULT, 1, &pool, ABT_SCHED_CONFIG_NULL,
-                             &xstreams[i]);
-    ABT_xstream_start(xstreams[i]);
+    //ABT_xstream_create_basic(ABT_SCHED_DEFAULT, 1, &pool, ABT_SCHED_CONFIG_NULL,
+    //                         &xstreams[i]);
+    //ABT_xstream_start(xstreams[i]);
+    ABT_xstream_create(ABT_SCHED_NULL, &xstreams[i]);
+  }
+
+  for (i = 0; i < num_threads; i++) {
+    ABT_xstream_get_main_pools(xstreams[i], 1, &pools[i]);
   }
 
   /* ULT creation */
@@ -81,7 +88,7 @@ void abt_for(int num_threads, int loop_count, inner_f inner_func, int level) {
     threads[i].arg->start_i = i * each;
     threads[i].arg->end_i = threads[i].arg->start_i + each - 1;
     //printf("start_i %d, end_i %d\n", threads[i].arg->start_i, threads[i].arg->end_i);
-    ABT_thread_create(pool, inner_func_wrapper, &threads[i],
+    ABT_thread_create(pools[i], inner_func_wrapper, &threads[i],
                       ABT_THREAD_ATTR_NULL, &threads[i].thread);
   }
 
@@ -104,7 +111,7 @@ void abt_for(int num_threads, int loop_count, inner_f inner_func, int level) {
       {
         printf("join %d\n", i); 
 	    ABT_xstream_join(xstreams[i]);
-	    ABT_xstream_free(&xstreams[i]);
+	    //ABT_xstream_free(&xstreams[i]);
     }
 
   free(threads);
@@ -127,7 +134,7 @@ int main (int argc, char** argv) {
 	main_num_es = atoi(argv[1]);
 	inner_num_es = atoi(argv[2]);
   } 
-  abt_for(main_num_es, main_num_es, inner_par, 0);
-  //abt_for(main_num_es, main_num_es, empty_f, 0);
+  //abt_for(main_num_es, main_num_es, inner_par, 0);
+  abt_for(main_num_es, main_num_es, empty_f, 0);
   return 0;
 }

@@ -27,6 +27,7 @@
 #define ABTI_XSTREAM_REQ_EXIT       (1 << 1)
 #define ABTI_XSTREAM_REQ_CANCEL     (1 << 2)
 #define ABTI_XSTREAM_REQ_STOP       (1 << 3)
+#define ABTI_XSTREAM_REQ_SUSPEND    (1 << 4)
 
 #define ABTI_SCHED_REQ_FINISH       (1 << 0)
 #define ABTI_SCHED_REQ_EXIT         (1 << 1)
@@ -273,6 +274,7 @@ struct ABTI_xstream {
 #ifdef ABT_XSTREAM_USE_VIRTUAL
     ABTD_thread_context p_ctx;
     ABTI_kthread *p_kthread;    /* Parent kernel thread that this ES is running on */
+    void *k_thread_req_arg;      /* Kernel thread related request argument */
 #else
     ABTD_xstream_context ctx;	/* ES context */
 #endif
@@ -656,7 +658,7 @@ int   ABTI_thread_create_main_sched(ABTI_xstream *p_xstream, ABTI_sched *p_sched
 int   ABTI_thread_create_main_ksched(ABTI_kthread *k_thread, ABTI_sched *k_sched, ABT_bool is_primary);
 void  ABTI_sched_suspend(ABTI_sched *p_sched);
 void  ABTI_blocked_thread_sched_suspend(ABTI_thread *p_thread);
-int   ABTI_sched_set_ready(ABTI_thread *p_thread);
+int   ABTI_sched_set_ready(ABTI_sched *p_sched);
 #endif
 int   ABTI_thread_create_sched(ABTI_pool *p_pool, ABTI_sched *p_sched);
 void  ABTI_thread_free(ABTI_thread *p_thread);

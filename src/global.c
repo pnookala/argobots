@@ -104,6 +104,7 @@ int ABT_init(int argc, char **argv)
     ABTI_CHECK_ERROR_MSG(abt_errno, "ABTI_local_init");
 
 #ifdef ABT_XSTREAM_USE_VIRTUAL
+    ABTI_spinlock_create(&gp_ABTI_global->kthreads_lock);
     ABTI_kthread *k_newthread;
     abt_errno = ABTI_kthread_create_master(&k_newthread);
     k_newthread->type = ABTI_KTHREAD_TYPE_PRIMARY;
