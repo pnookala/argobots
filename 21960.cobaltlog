@@ -1,0 +1,5 @@
+Jobid: 21960
+qsub -q thing -n 1 -t 5:59 --mode interactive
+Tue Oct 15 13:00:08 2019 +0000 (UTC) submitted with cwd set to: /home/poornimans/pnookala-argobots/argobots
+jobid 21960 submitted from terminal /dev/pts/3
+Tue Oct 15 13:08:30 2019 +0000 (UTC) Info: user delete requested; removing job from the queue

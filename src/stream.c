@@ -631,42 +631,28 @@ int ABT_xstream_join(ABT_xstream xstream)
         ABTI_kthread *k_thread = ABTI_local_get_kthread();
         ABTI_pool *p_pool = ABTI_pool_get_ptr(k_thread->k_main_sched->pools[0]);
 
-        /*if (p_pool->u_is_in_pool(sched_thread->unit))
+        //printf("we are not in the pool, notify the OS threadi %d\n", p_xstream->state);
+        ABTI_spinlock_acquire(&gp_ABTI_global->kthreads_lock);
+        ABT_xstream_state state = ABTD_atomic_load_uint32((uint32_t *)&p_xstream->state);
+        printf("xstream req arg set for %d\n", p_xstream->p_kthread->rank);
+        if((state != ABT_XSTREAM_STATE_RUNNING) || 
+                            (state == ABT_XSTREAM_STATE_RUNNING &&
+                            p_xstream->request == ABTI_XSTREAM_REQ_SUSPEND)) 
         {
-            printf("we are in the same pool, suspend current scheduler\n");
-            ABTI_xstream_set_request(p_thread->p_last_xstream, 
-                                                ABTI_XSTREAM_REQ_SUSPEND);
+            //printf("xstream req arg set for %d\n", p_xstream->p_kthread->rank);
+            p_xstream->p_kthread->p_xstream_req_arg = p_xstream; 
         }
-        else
-        {*/
-            //printf("we are not in the pool, notify the OS threadi %d\n", p_xstream->state);
-            ABTI_spinlock_acquire(&gp_ABTI_global->kthreads_lock);
-            ABT_xstream_state state = ABTD_atomic_load_uint32((uint32_t *)&p_xstream->state);
-            if((state != ABT_XSTREAM_STATE_RUNNING) || 
-                                (state == ABT_XSTREAM_STATE_RUNNING &&
-                                p_xstream->request == ABTI_XSTREAM_REQ_SUSPEND)) 
-            {
-                printf("xstream req arg set for %d\n", p_xstream->p_kthread->rank);
-                p_xstream->p_kthread->p_xstream_req_arg = p_xstream; 
-            }
-            ABTI_spinlock_release(&gp_ABTI_global->kthreads_lock);
-        //}
+        ABTI_spinlock_release(&gp_ABTI_global->kthreads_lock);
         
-        if (p_xstream->request == ABTI_XSTREAM_REQ_SUSPEND) {
-            printf("xstream suspended and now set ready\n");
-            ABTI_sched_set_ready(p_xstream->p_main_sched);
-            ABTI_xstream_unset_request(p_xstream, ABTI_XSTREAM_REQ_SUSPEND);
-        }
-       
         if (p_pool->u_is_in_pool(sched_thread->unit))
         {
             ABTI_unit *unit = (ABTI_unit *)sched_thread->unit;
             ABTI_pool *pool = (ABTI_pool *)unit->pool;
             if (p_pool->id == pool->id) {
-            printf("we are in the same pool, suspend current scheduler\n");
-            ABTI_xstream_set_request(p_thread->p_last_xstream,
+                //printf("we are in the same pool, suspend current scheduler\n");
+                ABTI_xstream_set_request(p_thread->p_last_xstream,
                                                 ABTI_XSTREAM_REQ_SUSPEND);
-            }
+            }       
         }
  
     }
@@ -679,13 +665,28 @@ int ABT_xstream_join(ABT_xstream xstream)
         /* Save the caller ULT to set it ready when the ES is terminated */
         p_xstream->p_req_arg = (void *)p_thread;
         ABTI_thread_set_blocked(p_thread);
-        
+       
+#ifdef ABT_XSTREAM_USE_VIRTUAL
+        if (p_xstream->request == ABTI_XSTREAM_REQ_SUSPEND) {
+            //printf("xstream suspended and now set ready\n");
+            ABTI_xstream_unset_request(p_xstream, ABTI_XSTREAM_REQ_SUSPEND);
+            ABTI_sched_set_ready(p_xstream->p_main_sched);
+        }
+#endif 
         /* Set the join request */
         ABTI_xstream_set_request(p_xstream, ABTI_XSTREAM_REQ_JOIN);
-        
+        printf("xstream %d req %d\n", p_xstream->rank, p_xstream->request); 
         /* If the caller is a ULT, it is blocked here */
 	    ABTI_thread_suspend(p_thread);
     } else {
+        
+#ifdef ABT_XSTREAM_USE_VIRTUAL
+        if (p_xstream->request == ABTI_XSTREAM_REQ_SUSPEND) {
+            //printf("xstream suspended and now set ready\n");
+            ABTI_xstream_unset_request(p_xstream, ABTI_XSTREAM_REQ_SUSPEND);
+            ABTI_sched_set_ready(p_xstream->p_main_sched);
+        }
+#endif
         /* Set the join request */
         ABTI_xstream_set_request(p_xstream, ABTI_XSTREAM_REQ_JOIN);
 
@@ -1370,22 +1371,24 @@ int ABTI_xstream_check_events(ABTI_xstream *p_xstream, ABT_sched sched)
     int abt_errno = ABT_SUCCESS;
     ABTI_info_check_print_all_thread_stacks();
    
-    if (p_xstream->request == ABTI_XSTREAM_REQ_JOIN) {
-        printf("join request\n");
+    if (p_xstream->request == ABTI_XSTREAM_REQ_JOIN ||
+            (p_xstream->request == (ABTI_XSTREAM_REQ_JOIN | 
+                                ABTI_XSTREAM_REQ_SUSPEND))) {
+        //printf("join request\n");
         abt_errno = ABT_sched_finish(sched);
         ABTI_CHECK_ERROR(abt_errno);
         goto fn_exit;
     }
 #ifdef ABT_XSTREAM_USE_VIRTUAL
     if (p_xstream->request == ABTI_XSTREAM_REQ_SUSPEND) {
-        printf("suspend request\n");
+        //printf("suspend request\n");
         ABTI_sched_suspend(sched);
         goto fn_exit;
     }
 #endif
     if ((p_xstream->request & ABTI_XSTREAM_REQ_EXIT) ||
         (p_xstream->request & ABTI_XSTREAM_REQ_CANCEL)) {
-        printf("exit request\n");
+        //printf("exit request\n");
         abt_errno = ABT_sched_exit(sched);
         ABTI_CHECK_ERROR(abt_errno);
     }
@@ -1403,11 +1406,13 @@ int ABTI_xstream_check_events(ABTI_xstream *p_xstream, ABT_sched sched)
      * on join request, so we need to suspend after running some ULTs
      * or finish it.  */
     ABTI_kthread *k_thread = ABTI_local_get_kthread();
+    
     if(k_thread->p_xstream_req_arg != NULL) {
+        //printf("does suspend request get set here\n");
         ABTI_xstream_set_request(p_xstream, ABTI_XSTREAM_REQ_SUSPEND);
-        ABTI_spinlock_acquire(&gp_ABTI_global->kthreads_lock);
-        k_thread->p_xstream_req_arg = NULL;
-        ABTI_spinlock_release(&gp_ABTI_global->kthreads_lock);
+        //ABTI_spinlock_acquire(&gp_ABTI_global->kthreads_lock);
+        //k_thread->p_xstream_req_arg = NULL;
+        //ABTI_spinlock_release(&gp_ABTI_global->kthreads_lock);
     }
 #endif
 
@@ -1689,6 +1694,9 @@ void ABTI_xstream_schedule(void *p_arg)
                 /* If a ULT has been blocked on the join call, we make it ready */
                 if (p_xstream->p_req_arg) {
                     ABTI_thread_set_ready((ABTI_thread *)p_xstream->p_req_arg);
+                    ABTI_spinlock_acquire(&gp_ABTI_global->kthreads_lock);
+                    p_xstream->p_kthread->p_xstream_req_arg = NULL;
+                    ABTI_spinlock_release(&gp_ABTI_global->kthreads_lock);
                     p_xstream->p_req_arg = NULL;
                 }
                 break;

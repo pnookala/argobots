@@ -1,0 +1,5 @@
+Jobid: 21977
+qsub -q skylake_8180 -n 1 -t 5:59 --mode interactive
+Tue Oct 15 13:09:24 2019 +0000 (UTC) submitted with cwd set to: /home/poornimans/pnookala-argobots/argobots
+jobid 21977 submitted from terminal /dev/pts/3
+Tue Oct 15 13:18:00 2019 +0000 (UTC) Info: user delete requested; removing job from the queue

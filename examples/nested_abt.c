@@ -59,7 +59,7 @@ void abt_for(int num_threads, int loop_count, inner_f inner_func, int level) {
   /* ES creation */
   xstreams = (ABT_xstream *)malloc(sizeof(ABT_xstream) * num_threads);
   if(level == 0) {
-    printf("called xstream_self\n");
+    //printf("called xstream_self\n");
     ABT_xstream_self(&xstreams[0]);
   
     //set_main_sched_err = ABT_xstream_set_main_sched_basic(xstreams[0],
@@ -92,7 +92,7 @@ void abt_for(int num_threads, int loop_count, inner_f inner_func, int level) {
                       ABT_THREAD_ATTR_NULL, &threads[i].thread);
   }
 
-  printf("threads created...joining threads!\n");
+  //printf("threads created...joining threads!\n");
   /* join ULTs */
   for (i = 0; i < loop_count; i++) {
     printf("joining thread %d\n", i);
@@ -105,7 +105,7 @@ void abt_for(int num_threads, int loop_count, inner_f inner_func, int level) {
   // main ULT might be scheduled by a secondary execuntion stream.
   for (i = 1; i < num_threads; i++)
 #else
-    printf("calling join on xstreams\n");
+    //printf("calling join on xstreams\n");
     for (i = start_i; i < num_threads; i++)
 #endif
       {
@@ -116,7 +116,7 @@ void abt_for(int num_threads, int loop_count, inner_f inner_func, int level) {
 
   free(threads);
   free(xstreams);
-  printf("call finalize\n");
+  //printf("call finalize\n");
   ABT_finalize();
 }
 
