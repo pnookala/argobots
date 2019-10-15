@@ -51,7 +51,7 @@ int ABTI_sched_create_master(ABT_sched_config config, ABTI_sched **newsched) {
    p_sched->pools = (ABT_pool *) ABTU_malloc(p_sched->num_pools * sizeof(ABT_pool));
    /* Create random access pool here */
    for (p = 0; p < p_sched->num_pools; p++) {
-	abt_errno = ABT_pool_create_random(ABT_POOL_ACCESS_PRIV, 
+	abt_errno = ABT_pool_create_random(ABT_POOL_ACCESS_MPMC, 
 					  ABT_TRUE, &p_sched->pools[p]);
    }  
  
