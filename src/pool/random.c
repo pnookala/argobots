@@ -32,10 +32,11 @@ static void unit_free(ABT_unit *unit);
 struct data {
     ABTI_spinlock mutex;
     size_t num_units;
+    size_t size;
     unit_t **p_units;
-    int cur_index;
-    int last_index;
-};
+    size_t cur_index;
+    size_t last_index;
+}; //__attribute__ ((aligned (64)));
 typedef struct data data_t;
 
 static inline data_t *pool_get_data_ptr(void *p_data)
@@ -116,7 +117,8 @@ int random_init(ABT_pool pool, ABT_pool_config config)
     p_data->cur_index = 0;
     p_data->last_index = 0;
 
-    p_data->p_units = (unit_t**) ABTU_malloc(sizeof(unit_t*) * gp_ABTI_global->max_vxstreams);
+    p_data->size = gp_ABTI_global->max_xstreams;
+    p_data->p_units = (unit_t**) ABTU_malloc(sizeof(unit_t*) * p_data->size);
     ABT_pool_set_data(pool, p_data);
 
     return abt_errno;
@@ -148,6 +150,21 @@ static size_t random_get_size(ABT_pool pool)
     return p_data->num_units - p_data->cur_index;
 }
 
+void ABTI_update_pool_size(data_t *p_data)
+{
+    if(p_data->num_units < p_data->size) return;
+
+    ABTI_spinlock_acquire(&p_data->mutex);
+
+    size_t new_size = p_data->size * 2;
+    p_data->size = new_size;
+    p_data->p_units = (unit_t **)ABTU_realloc(
+            p_data->p_units, new_size * sizeof(unit_t *));
+
+    printf("random pool size updated %ld\n", new_size);
+    ABTI_spinlock_release(&p_data->mutex);
+}
+
 static void random_push_shared(ABT_pool pool, ABT_unit unit)
 {
     ABTI_pool *p_pool = ABTI_pool_get_ptr(pool);
@@ -155,9 +172,12 @@ static void random_push_shared(ABT_pool pool, ABT_unit unit)
     data_t *p_data = pool_get_data_ptr(data);
     unit_t *p_unit = (unit_t *)unit;
 
-    ABTI_spinlock_acquire(&p_data->mutex);
-    p_data->p_units[p_data->num_units++] = p_unit;
+    if(p_data->num_units == p_data->size) {
+        ABTI_update_pool_size(p_data);
+    }
 
+    ABTI_spinlock_acquire(&p_data->mutex);
+    p_data->p_units[p_data->num_units++] = p_unit;    
     p_unit->pool = pool;
     ABTI_spinlock_release(&p_data->mutex);
 }
@@ -191,8 +211,6 @@ static ABT_unit random_pop_shared(ABT_pool pool)
     if (p_data->num_units > 0 && p_data->cur_index < p_data->num_units) {
     	p_unit = p_data->p_units[p_data->cur_index];
 	    p_data->cur_index++;
-        //if(p_data->cur_index == p_data->num_units)
-            //p_data->cur_index = 0;
     	p_unit->pool = ABT_POOL_NULL;
 
     	h_unit = (ABT_unit)p_unit;

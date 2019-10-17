@@ -231,7 +231,7 @@ void ABTI_thread_context_switch_sched_to_thread_internal(ABTI_sched *p_old,
                 /* The scheduler may not use a bypass mechanism, so just makes
                  * p_joiner ready. */
                 ABTI_thread_set_ready(p_joiner);
-
+        
                 /* We don't need to use the atomic OR operation here because
                  * the ULT will be terminated regardless of other requests. */
                 ABTD_atomic_store_uint32(&p_prev->request,
@@ -558,16 +558,16 @@ void ABTI_xstream_yield(ABTI_thread *p_thread)
               ||  (ABTD_atomic_load_uint32((uint32_t *)&p_thread->request) & ABT_THREAD_STATE_BLOCKED))
     {
             ABTI_sched *p_sched = p_thread->p_last_xstream->p_main_sched;
-            ABTI_spinlock_acquire(&gp_ABTI_global->kthreads_lock);
+            //ABTI_spinlock_acquire(&gp_ABTI_global->kthreads_lock);
             k_thread->k_req_arg = p_sched->p_thread;
-            ABTI_spinlock_release(&gp_ABTI_global->kthreads_lock);
+            //ABTI_spinlock_release(&gp_ABTI_global->kthreads_lock);
             ABTI_sched_suspend(p_sched);
         return;
     }
     else {
-        ABTI_spinlock_acquire(&gp_ABTI_global->kthreads_lock); 
+        //ABTI_spinlock_acquire(&gp_ABTI_global->kthreads_lock); 
         k_thread->p_xstream_req_arg = (void *)p_thread;
-        ABTI_spinlock_release(&gp_ABTI_global->kthreads_lock);
+        //ABTI_spinlock_release(&gp_ABTI_global->kthreads_lock);
         if(ABTD_atomic_load_uint32((uint32_t *)&p_thread->state)
                                     != ABT_THREAD_STATE_TERMINATED)
         {    

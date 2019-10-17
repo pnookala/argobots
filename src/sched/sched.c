@@ -144,13 +144,8 @@ int ABT_sched_create_basic(ABT_sched_predef predef, int num_pools,
 
     /* We set the access to the default one */
     access = ABT_POOL_ACCESS_MPSC;
-#ifdef ABT_XSTREAM_USE_VIRTUAL
-    /* Since we suspend schedulers and switch back to them, we cannot 
-     * automatically free them safely, but need to do it in the end */
-    automatic = ABT_FALSE;
-#else
     automatic = ABT_TRUE;
-#endif
+    
     /* We read the config and set the configured parameters */
     abt_errno = ABTI_sched_config_read_global(config, &access, &automatic);
     ABTI_CHECK_ERROR(abt_errno);

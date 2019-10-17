@@ -90,10 +90,12 @@ int ABT_init(int argc, char **argv)
     gp_ABTI_global->num_xstreams = 0;
 
 #ifdef ABT_XSTREAM_USE_VIRTUAL
-    gp_ABTI_global->num_cores = 2;
+    //printf("Number of cores %d\n", gp_ABTI_global->num_cores);
+    //gp_ABTI_global->num_cores = 2;
     gp_ABTI_global->k_threads = (ABTI_kthread **) ABTU_calloc(
 	    gp_ABTI_global->max_xstreams, sizeof(ABTI_xstream *));
     gp_ABTI_global->num_kthreads = 0;
+    gp_ABTI_global->kthread_lastidx = 0;
 #endif
 
     /* Create a spinlock */
@@ -261,7 +263,7 @@ int ABT_finalize(void)
     ABTU_free(gp_ABTI_global->p_xstreams);
 
     /* Finalize the memory pool */
-    ABTI_mem_finalize(gp_ABTI_global);
+    //ABTI_mem_finalize(gp_ABTI_global);
 
     /* Free the spinlock */
     ABTI_spinlock_free(&gp_ABTI_global->xstreams_lock);

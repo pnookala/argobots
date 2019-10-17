@@ -3,7 +3,7 @@
 #include <abt.h>
 #include <unistd.h>
 
-#define SIZE 1024
+#define SIZE 2592//5184
 
 static int main_num_es = 4;
 static int inner_num_es = 4;
@@ -19,14 +19,14 @@ typedef struct {
 typedef void (*inner_f)(void*);
 
 void empty_f(void* args) {
-	printf("Hello World\n");
-/*	threadData* data = (threadData*)args;
+//	printf("Hello World\n");
+	threadData* data = (threadData*)args;
   
     for (int i = data->start_i; i < data->end_i; i++)  
          for (int j = 0; j < SIZE; j++)  
                 for (int k = 0; k < SIZE; k++)  
     	          matC[i][j] += matA[i][k] * matB[k][j];
-*/
+
 }
 
 
@@ -77,12 +77,13 @@ void abt_for(int num_threads, int loop_count, inner_f inner_func, int level) {
 
   for (i = 0; i < num_threads; i++) {
     ABT_xstream_get_main_pools(xstreams[i], 1, &pools[i]);
-  }
+   }
 
   /* ULT creation */
   threads = (abt_thread_data_t *)malloc(sizeof(abt_thread_data_t) * loop_count);
   int each = SIZE/loop_count;
-  for (i = 0; i < loop_count; i++) {
+  //printf("Each thread processes %d size matrix\n", each);
+  for (i = 0; i < num_threads; i++) {
     threads[i].inner_func = inner_func;
     threads[i].arg = (threadData*)malloc(sizeof(threadData));
     threads[i].arg->start_i = i * each;
@@ -92,10 +93,10 @@ void abt_for(int num_threads, int loop_count, inner_f inner_func, int level) {
                       ABT_THREAD_ATTR_NULL, &threads[i].thread);
   }
 
-  //printf("threads created...joining threads!\n");
+//  printf("threads created...joining threads!\n");
   /* join ULTs */
   for (i = 0; i < loop_count; i++) {
-    printf("joining thread %d\n", i);
+  //  printf("joining thread %d\n", i);
     ABT_thread_free(&threads[i].thread);
   }
 
@@ -109,13 +110,11 @@ void abt_for(int num_threads, int loop_count, inner_f inner_func, int level) {
     for (i = start_i; i < num_threads; i++)
 #endif
       {
-        printf("join %d\n", i); 
+    //    printf("join %d\n", i); 
 	    ABT_xstream_join(xstreams[i]);
 	    //ABT_xstream_free(&xstreams[i]);
     }
 
-  free(threads);
-  free(xstreams);
   //printf("call finalize\n");
   ABT_finalize();
 }
@@ -130,10 +129,14 @@ void inner_par(void* data) {
 }
 
 int main (int argc, char** argv) {
-  if(argc == 3) {
+  if(argc == 2) {
 	main_num_es = atoi(argv[1]);
-	inner_num_es = atoi(argv[2]);
+	inner_num_es = main_num_es;
   } 
+  else if(argc == 3) {
+    main_num_es = atoi(argv[1]);
+    inner_num_es = atoi(argv[2]);
+  }
   //abt_for(main_num_es, main_num_es, inner_par, 0);
   abt_for(main_num_es, main_num_es, empty_f, 0);
   return 0;

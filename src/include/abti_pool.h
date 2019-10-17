@@ -36,6 +36,7 @@ ABT_pool ABTI_pool_get_handle(ABTI_pool *p_pool)
     } else {
         h_pool = (ABT_pool)p_pool;
     }
+    //printf("pool handle %p\n", h_pool);
     return h_pool;
 #else
     return (ABT_pool)p_pool;

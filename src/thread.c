@@ -462,6 +462,11 @@ int ABT_thread_join(ABT_thread thread)
         /* Set the suspend request */
         ABTI_xstream *target_es = p_thread->p_pool->consumer;
         ABTI_kthread *k_thread = target_es->p_kthread;//ABTI_local_get_kthread();
+        //It is possible for the target ES to be suspended by this time.
+        //So we need to check and un-suspend to be able to progress.
+        //if (ABTD_atomic_load_uint32(&target_es->request) == ABTI_XSTREAM_REQ_SUSPEND)
+        //    ABTI_sched_set_ready(target_es->p_main_sched);
+        
         size_t size = ABTI_sched_get_effective_size(k_thread->k_main_sched);
         if (size > 0 && k_thread->k_main_sched->state == ABT_SCHED_STATE_RUNNING) {
            k_thread->p_xstream_req_arg = p_self->p_last_xstream;
@@ -491,11 +496,13 @@ int ABT_thread_join(ABT_thread thread)
          
         /* Set the suspend request */
         ABTI_kthread *k_thread = target_es->p_kthread;//ABTI_local_get_kthread();
-        //ABTI_pool *k_pool = k_thread->k_main_sched->pools[0];
-        //if (k_pool->u_is_in_pool(target_es->p_main_sched->p_thread->unit)) {
-        //    printf("es %d is in same pool\n", target_es->rank);
-        //} else printf("es in in a different pool\n");
-        
+       
+        //printf("target es is %d k_thread %d\n", target_es->rank, k_thread->rank); 
+        //It is possible for the target ES to be suspended by this time.
+        //So we need to check and un-suspend to be able to progress.
+        //if (ABTD_atomic_load_uint32(&target_es->request) == ABTI_XSTREAM_REQ_SUSPEND)
+        //    ABTI_sched_set_ready(target_es->p_main_sched);
+
         size_t size = ABTI_sched_get_effective_size(k_thread->k_main_sched);
         if (size > 0 && k_thread->k_main_sched->state == ABT_SCHED_STATE_RUNNING) {
             k_thread->p_xstream_req_arg = p_self->p_last_xstream;
@@ -1757,8 +1764,8 @@ int ABTI_thread_create(ABTI_pool *p_pool, void (*thread_func)(void *),
 
     /* Allocate a ULT object and its stack, then create a thread context. */
     p_newthread = ABTI_mem_alloc_thread(p_attr);
-    if ((thread_type == ABTI_THREAD_TYPE_MAIN //||
-	 //thread_type == ABTI_THREAD_TYPE_MAIN_SCHED
+    if ((thread_type == ABTI_THREAD_TYPE_MAIN ||
+	 thread_type == ABTI_THREAD_TYPE_MAIN_SCHED
 	) && p_newthread->attr.p_stack == NULL) {
 
         /* We don't need to initialize the context of 1. the main thread, and
@@ -1940,8 +1947,11 @@ int ABTI_thread_create_main_ksched(ABTI_kthread *k_thread, ABTI_sched *k_sched,
     ABTI_thread *v_newthread;
 
     ABTI_thread_attr attr;
-    ABTI_thread_attr_init(&attr, NULL, ABTI_global_get_sched_stacksize(),
+    if (is_primary == ABT_TRUE)
+        ABTI_thread_attr_init(&attr, NULL, ABTI_global_get_sched_stacksize(),
 		                                  ABTI_STACK_TYPE_MALLOC, ABT_FALSE);
+    else 
+        ABTI_thread_attr_init(&attr, NULL, 0, ABTI_STACK_TYPE_MAIN, ABT_FALSE);
     abt_errno = ABTI_ksched_thread_create(ABTI_kthread_schedule, 
                         (void*)k_thread, &attr, ABTI_THREAD_TYPE_MAIN_SCHED, 
                         k_sched, 0, k_thread, &v_newthread);
@@ -1950,9 +1960,9 @@ int ABTI_thread_create_main_ksched(ABTI_kthread *k_thread, ABTI_sched *k_sched,
     k_sched->p_thread = v_newthread;
     k_sched->p_ctx = &v_newthread->ctx;
 
-    ABTI_thread *p_main_thread = ABTI_global_get_main();
-    if(is_primary == ABT_TRUE)
-    	ABTD_thread_context_change_link(&v_newthread->ctx, &p_main_thread->ctx);
+    //ABTI_thread *p_main_thread = ABTI_global_get_main();
+    //if(is_primary == ABT_TRUE)
+    //	ABTD_thread_context_change_link(&v_newthread->ctx, &p_main_thread->ctx);
 
   fn_exit:
     return abt_errno;
@@ -1999,6 +2009,8 @@ int ABTI_thread_create_main_sched(ABTI_xstream *p_xstream, ABTI_sched *p_sched)
                                        ABTI_THREAD_TYPE_MAIN_SCHED, p_sched, 0,
                                        p_xstream, ABT_FALSE, &p_newthread);
         ABTI_CHECK_ERROR(abt_errno);
+        //ABTD_thread_context_change_link(&p_newthread->ctx, 
+        //                        &p_xstream->p_kthread->k_main_sched->p_thread->ctx);
     }
 
     /* Return value */
@@ -2173,7 +2185,7 @@ void ABTI_sched_suspend(ABTI_sched *p_sched)
               p_sched->id, p_xstream->rank);
     p_sched->p_thread->state = ABT_THREAD_STATE_BLOCKED;
     ABTI_pool_inc_num_blocked(k_sched->pools[0]);
-   
+  
     ABTI_thread_context_switch_sched_to_sched(p_sched, k_sched);
 
     /* The suspended ULT resumes its execution from here. */
@@ -2257,16 +2269,6 @@ int ABTI_thread_set_ready(ABTI_thread *p_thread)
     ABTI_pool_dec_num_blocked(p_pool);
     
 #ifdef ABT_XSTREAM_USE_VIRTUAL
-    /*ABTI_thread *blocked_sched_thread = p_thread->p_last_xstream->p_main_sched->p_thread;
-    if((p_thread == p_thread->p_last_xstream->p_kthread->k_req_arg) ||
-        (blocked_sched_thread->state == ABT_THREAD_STATE_BLOCKED)) {
-        ABTI_sched_set_ready(blocked_sched_thread);
-        printf("set the scheduler to ready \n");
-        p_thread->p_last_xstream->p_kthread->k_req_arg = NULL;
-    }
-    else if (blocked_sched_thread->state == ABT_THREAD_STATE_RUNNING)
-        printf("currently running\n");
-    */
     if (ABTD_atomic_load_uint32((uint32_t *)&p_thread->p_last_xstream->request)
                                          == ABTI_XSTREAM_REQ_SUSPEND) {
         /* Scheduler was suspended since a ULT was blocked 
@@ -2276,11 +2278,6 @@ int ABTI_thread_set_ready(ABTI_thread *p_thread)
                                             ABTI_XSTREAM_REQ_SUSPEND);
         ABTI_sched_set_ready(p_thread->p_last_xstream->p_main_sched);
     }
-    //else 
-    //{  
-    //    ABTI_sched_set_request(p_thread->p_last_xstream->p_main_sched, 
-    //                                        ABTI_SCHED_REQ_FINISH);
-    //}
 #endif
 
   fn_exit:

@@ -34,7 +34,8 @@ int main(int argc, const char *argv[]){
     ctx[1].uc_stack.ss_size = sizeof st1;
     //ctx[1].uc_link = &ctx[0];
     makecontext(&ctx[1], f1, 0);
-        
+    
+    printf("size of ctx %u\n", sizeof(ctx[1]));    
     getcontext(&ctx[2]);
     ctx[2].uc_stack.ss_sp = st2;
     ctx[2].uc_stack.ss_size = sizeof st2;

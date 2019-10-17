@@ -27,7 +27,7 @@ static int  sched_free(ABT_sched sched);
 
 typedef struct {
     uint32_t event_freq;
-    int num_pools;
+    int *num_pools;
     ABT_pool *pools;
 #ifdef ABT_CONFIG_USE_SCHED_SLEEP
     struct timespec sleep_time;
@@ -101,11 +101,11 @@ static int sched_init(ABT_sched sched, ABT_sched_config config)
     /* Set the variables from the config */
     ABT_sched_config_read(config, 1, &p_data->event_freq);
 
-    int num_pools;
-    //p_data->num_pools = sched->num_pools;
+    int num_pools = 0;
+    p_data->num_pools = (int *)malloc(sizeof(int));
     ABT_sched_get_num_pools(sched, &num_pools);
     //p_data->pools = sched->pools;
-    p_data->num_pools = num_pools;
+    *p_data->num_pools = num_pools;
     p_data->pools = (ABT_pool *)ABTU_malloc(num_pools * sizeof(ABT_pool));
     abt_errno = ABT_sched_get_pools(sched, num_pools, 0, p_data->pools);
     ABTI_CHECK_ERROR(abt_errno);
@@ -133,16 +133,15 @@ static void sched_run(ABT_sched sched)
 
     p_data = sched_data_get_ptr(p_sched->data);
     event_freq = p_data->event_freq;
-    ABT_pool *pools;
-    pools = p_data->pools;
+    ABT_pool *pools = p_data->pools;
 
     while (1) {
         CNT_INIT(run_cnt, 0);
 
         /* Execute one work unit from the scheduler's pool */
-        for (i = 0; i < p_data->num_pools; i++) {
+        for (i = 0; i < *p_data->num_pools; i++) {
             /* Pop one work unit */
-	    ABT_pool pool = pools[i];
+	        ABT_pool pool = pools[0];
             ABTI_pool *p_pool = ABTI_pool_get_ptr(pool);
             /* Pop one work unit */
             ABT_unit unit = ABTI_pool_pop(p_pool);
@@ -155,7 +154,7 @@ static void sched_run(ABT_sched sched)
 
         if (++work_count >= event_freq) {
 	    ABTI_kthread_check_events(k_thread, sched);
-	    ABT_bool stop = ABTI_master_sched_has_to_stop(k_thread->k_main_sched, k_thread);
+	    ABT_bool stop = ABTI_master_sched_has_to_stop(sched, k_thread);
 	    if (stop == ABT_TRUE)
                 break;
             work_count = 0;
