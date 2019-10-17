@@ -312,7 +312,7 @@ struct ABTI_kthread {
     void *k_req_arg;            /* Request argument */
     void *p_xstream_req_arg;    /* Virtual ES join request argument */
     uint32_t request;           /* Request */
-    ABTI_xstream **v_xstreams;  /* Virtual ESs running on this kernel thread */
+    //ABTI_xstream **v_xstreams;  /* Virtual ESs running on this kernel thread */
     int num_vxstreams;          /* Number of virtual ESs */
     int rank;
     ABTI_spinlock sched_lock;   /* Lock for the scheduler management */

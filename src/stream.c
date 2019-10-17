@@ -123,7 +123,7 @@ int ABTI_kthread_create_master(ABTI_kthread **k_thread)
     ABTI_kthread *k_newthread;
         
     //Get handle to existing k_thread if we already exhausted all the cores
-    /*if(gp_ABTI_global->num_kthreads == gp_ABTI_global->num_cores)
+    if(gp_ABTI_global->num_kthreads == gp_ABTI_global->num_cores)
     {
         ABTI_spinlock_acquire(&gp_ABTI_global->kthreads_lock);
         //Get the kthread with minimum virtual ES count
@@ -136,7 +136,7 @@ int ABTI_kthread_create_master(ABTI_kthread **k_thread)
         ABTI_spinlock_release(&gp_ABTI_global->kthreads_lock);
         *k_thread = k_newthread;
         goto fn_exit;
-    }*/
+    }
 
     ABTI_sched* sched;
 
@@ -146,7 +146,7 @@ int ABTI_kthread_create_master(ABTI_kthread **k_thread)
     k_newthread = (ABTI_kthread*) ABTU_malloc(sizeof(ABTI_kthread));
     k_newthread->k_main_sched = sched;
 
-    k_newthread->v_xstreams = (ABTI_xstream**) ABTU_malloc(sizeof(ABTI_xstream*));
+    //k_newthread->v_xstreams = (ABTI_xstream**) ABTU_malloc(sizeof(ABTI_xstream*));
     k_newthread->num_vxstreams = 0;
     k_newthread->p_xstream_req_arg = NULL;
     k_newthread->request = 0;
@@ -386,7 +386,7 @@ int ABTI_xstream_start(ABTI_xstream *p_xstream)
         int num_vxstreams = ABTD_atomic_fetch_add_int32(
                                         &k_thread->num_vxstreams, 1); 
  	    /* Push the scheduler to the list of schedulers */
-    	k_thread->v_xstreams[num_vxstreams] = p_xstream;
+    	//k_thread->v_xstreams[num_vxstreams] = p_xstream;
 
     	ABTI_pool *p_pool = k_sched->pools[0];
     	ABT_thread h_schedthread;
@@ -482,7 +482,7 @@ int ABTI_xstream_start_primary(ABTI_xstream *p_xstream, ABTI_thread *p_thread)
 
 #ifdef ABT_XSTREAM_USE_VIRTUAL
     /* Push the scheduler to the list of schedulers */
-    p_kthread->v_xstreams[p_kthread->num_vxstreams++] = p_xstream;
+    //p_kthread->v_xstreams[p_kthread->num_vxstreams++] = p_xstream;
 
     ABTI_pool *p_pool = k_sched->pools[0];
     ABT_thread h_schedthread;

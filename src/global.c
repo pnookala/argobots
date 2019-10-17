@@ -95,7 +95,7 @@ int ABT_init(int argc, char **argv)
     gp_ABTI_global->k_threads = (ABTI_kthread **) ABTU_calloc(
 	    gp_ABTI_global->max_xstreams, sizeof(ABTI_xstream *));
     gp_ABTI_global->num_kthreads = 0;
-    gp_ABTI_global->kthread_lastidx = 0;
+    gp_ABTI_global->kthread_lastidx = 1;
 #endif
 
     /* Create a spinlock */

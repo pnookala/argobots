@@ -3,7 +3,7 @@
 #include <abt.h>
 #include <unistd.h>
 
-#define SIZE 2592//5184
+#define SIZE 2592 //5184
 
 static int main_num_es = 4;
 static int inner_num_es = 4;
@@ -77,7 +77,7 @@ void abt_for(int num_threads, int loop_count, inner_f inner_func, int level) {
 
   for (i = 0; i < num_threads; i++) {
     ABT_xstream_get_main_pools(xstreams[i], 1, &pools[i]);
-   }
+  }
 
   /* ULT creation */
   threads = (abt_thread_data_t *)malloc(sizeof(abt_thread_data_t) * loop_count);
@@ -96,7 +96,7 @@ void abt_for(int num_threads, int loop_count, inner_f inner_func, int level) {
 //  printf("threads created...joining threads!\n");
   /* join ULTs */
   for (i = 0; i < loop_count; i++) {
-  //  printf("joining thread %d\n", i);
+    //printf("joining thread %d\n", i);
     ABT_thread_free(&threads[i].thread);
   }
 
@@ -110,7 +110,7 @@ void abt_for(int num_threads, int loop_count, inner_f inner_func, int level) {
     for (i = start_i; i < num_threads; i++)
 #endif
       {
-    //    printf("join %d\n", i); 
+        //printf("join %d\n", i); 
 	    ABT_xstream_join(xstreams[i]);
 	    //ABT_xstream_free(&xstreams[i]);
     }
