@@ -551,7 +551,8 @@ void ABTI_xstream_yield(ABTI_sched *p_sched, ABTI_xstream *p_xstream)
               ABTI_thread_get_id(p_thread), p_xstream->rank);
    
     ABTI_thread_context_switch_sched_to_sched(p_sched, k_thread->k_main_sched);
- 
+
+    ABTI_local_set_xstream(p_xstream); 
     /* Back to the original thread */
     LOG_EVENT("[U%" PRIu64 ":E%d] scheduler resumed after join\n",
               ABTI_thread_get_id(p_thread), p_thread->p_last_xstream->rank);

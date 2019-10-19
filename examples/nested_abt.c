@@ -3,7 +3,7 @@
 #include <abt.h>
 #include <unistd.h>
 
-#define SIZE 2592 //5184
+#define SIZE 512 //2592 //5184
 
 static int main_num_es = 4;
 static int inner_num_es = 4;
