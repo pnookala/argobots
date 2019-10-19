@@ -127,11 +127,11 @@ int pool_init(ABT_pool pool, ABT_pool_config config)
 
     if (access != ABT_POOL_ACCESS_PRIV) {
         /* Initialize the mutex */
-        p_data->mutex = (ABTI_spinlock*)malloc(sizeof(ABTI_spinlock));
+        p_data->mutex = (ABTI_spinlock*)ABTU_malloc(sizeof(ABTI_spinlock));
         ABTI_spinlock_create(p_data->mutex);
 
     }
-    p_data->num_units = (int*) malloc(sizeof(int));
+    p_data->num_units = (int*) ABTU_malloc(sizeof(int));
     *p_data->num_units = 0;
     p_data->p_head = NULL;
     p_data->p_tail = NULL;

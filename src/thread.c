@@ -458,22 +458,22 @@ int ABT_thread_join(ABT_thread thread)
         /* FIXME: once we change the suspend/resume mechanism (i.e., asking the
          * scheduler to wake up the blocked ULT), we will be able to handle all
          * access modes. */
-#ifdef ABT_XSTREAM_USE_VIRTUAL
+//#ifdef ABT_XSTREAM_USE_VIRTUAL
         /* Set the suspend request */
-        ABTI_xstream *target_es = p_thread->p_pool->consumer;
-        ABTI_kthread *k_thread = target_es->p_kthread;//ABTI_local_get_kthread();
+//        ABTI_xstream *target_es = p_thread->p_pool->consumer;
+//        ABTI_kthread *k_thread = target_es->p_kthread;//ABTI_local_get_kthread();
         //It is possible for the target ES to be suspended by this time.
         //So we need to check and un-suspend to be able to progress.
         //if (ABTD_atomic_load_uint32(&target_es->request) == ABTI_XSTREAM_REQ_SUSPEND)
         //    ABTI_sched_set_ready(target_es->p_main_sched);
         
-        size_t size = ABTI_sched_get_effective_size(k_thread->k_main_sched);
-        if (size > 0 && k_thread->k_main_sched->state == ABT_SCHED_STATE_RUNNING) {
-           k_thread->p_xstream_req_arg = p_self->p_last_xstream;
-            ABTI_xstream_set_request(p_self->p_last_xstream, 
-                                        ABTI_XSTREAM_REQ_SUSPEND);
-        }
-#endif
+//        size_t size = ABTI_sched_get_effective_size(k_thread->k_main_sched);
+//        if (size > 0 && k_thread->k_main_sched->state == ABT_SCHED_STATE_RUNNING) {
+//           k_thread->p_xstream_req_arg = p_self->p_last_xstream;
+//            ABTI_xstream_set_request(p_self->p_last_xstream, 
+//                                        ABTI_XSTREAM_REQ_SUSPEND);
+//      }
+//#endif
         goto yield_based;
 
     } else {
@@ -491,11 +491,11 @@ int ABT_thread_join(ABT_thread thread)
 
         /* Set the link in the context of the target ULT */
         ABTD_thread_context_change_link(&p_thread->ctx, &p_self->ctx);
-#ifdef ABT_XSTREAM_USE_VIRTUAL
-        ABTI_xstream *target_es = p_thread->p_pool->consumer;
+//#ifdef ABT_XSTREAM_USE_VIRTUAL
+//        ABTI_xstream *target_es = p_thread->p_pool->consumer;
          
         /* Set the suspend request */
-        ABTI_kthread *k_thread = target_es->p_kthread;//ABTI_local_get_kthread();
+//        ABTI_kthread *k_thread = target_es->p_kthread;//ABTI_local_get_kthread();
        
         //printf("target es is %d k_thread %d\n", target_es->rank, k_thread->rank); 
         //It is possible for the target ES to be suspended by this time.
@@ -503,13 +503,13 @@ int ABT_thread_join(ABT_thread thread)
         //if (ABTD_atomic_load_uint32(&target_es->request) == ABTI_XSTREAM_REQ_SUSPEND)
         //    ABTI_sched_set_ready(target_es->p_main_sched);
 
-        size_t size = ABTI_sched_get_effective_size(k_thread->k_main_sched);
-        if (size > 0 && k_thread->k_main_sched->state == ABT_SCHED_STATE_RUNNING) {
-            k_thread->p_xstream_req_arg = p_self->p_last_xstream;
-            ABTI_xstream_set_request(p_self->p_last_xstream, 
-                                    ABTI_XSTREAM_REQ_SUSPEND);
-        }
-#endif
+ //       size_t size = ABTI_sched_get_effective_size(k_thread->k_main_sched);
+ //       if (size > 0 && k_thread->k_main_sched->state == ABT_SCHED_STATE_RUNNING) {
+ //           k_thread->p_xstream_req_arg = p_self->p_last_xstream;
+ //           ABTI_xstream_set_request(p_self->p_last_xstream, 
+ //                                   ABTI_XSTREAM_REQ_SUSPEND);
+ //       }
+//#endif
 
         /* Suspend the current ULT */
         ABTI_thread_suspend(p_self);
@@ -992,7 +992,7 @@ int ABT_thread_yield(void)
 
     ABTI_CHECK_TRUE(p_thread->p_last_xstream == ABTI_local_get_xstream(),
                     ABT_ERR_THREAD);
-
+    
     ABTI_thread_yield(p_thread);
 
   fn_exit:
@@ -2175,9 +2175,8 @@ void ABTI_thread_suspend(ABTI_thread *p_thread)
 }
 
 #ifdef ABT_XSTREAM_USE_VIRTUAL
-void ABTI_sched_suspend(ABTI_sched *p_sched)
+void ABTI_sched_suspend(ABTI_sched *p_sched, ABTI_xstream *p_xstream)
 {
-    ABTI_xstream *p_xstream = ABTI_local_get_xstream();
     ABTI_kthread *k_thread = p_xstream->p_kthread;
     ABTI_sched *k_sched = k_thread->k_main_sched;
     
@@ -2268,17 +2267,17 @@ int ABTI_thread_set_ready(ABTI_thread *p_thread)
     /* Decrease the number of blocked threads */
     ABTI_pool_dec_num_blocked(p_pool);
     
-#ifdef ABT_XSTREAM_USE_VIRTUAL
-    if (ABTD_atomic_load_uint32((uint32_t *)&p_thread->p_last_xstream->request)
-                                         == ABTI_XSTREAM_REQ_SUSPEND) {
+//#ifdef ABT_XSTREAM_USE_VIRTUAL
+//    if (ABTD_atomic_load_uint32((uint32_t *)&p_thread->p_last_xstream->request)
+//                                         == ABTI_XSTREAM_REQ_SUSPEND) {
         /* Scheduler was suspended since a ULT was blocked 
          * Now since the thread is being set to ready, scheduler should
          * be resumed as well! */
-        ABTI_xstream_unset_request(p_thread->p_last_xstream, 
-                                            ABTI_XSTREAM_REQ_SUSPEND);
-        ABTI_sched_set_ready(p_thread->p_last_xstream->p_main_sched);
-    }
-#endif
+//        ABTI_xstream_unset_request(p_thread->p_last_xstream, 
+//                                            ABTI_XSTREAM_REQ_SUSPEND);
+//        ABTI_sched_set_ready(p_thread->p_last_xstream->p_main_sched);
+//    }
+//#endif
 
   fn_exit:
     return abt_errno;

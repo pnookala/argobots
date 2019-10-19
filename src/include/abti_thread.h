@@ -523,7 +523,7 @@ void ABTI_thread_yield(ABTI_thread *p_thread)
     /* Switch to the top scheduler */
     p_sched = ABTI_xstream_get_top_sched(p_thread->p_last_xstream);
     ABTI_thread_context_switch_thread_to_sched(p_thread, p_sched);
-
+    
     /* Back to the original thread */
     LOG_EVENT("[U%" PRIu64 ":E%d] resume after yield\n",
               ABTI_thread_get_id(p_thread), p_thread->p_last_xstream->rank);
@@ -531,63 +531,25 @@ void ABTI_thread_yield(ABTI_thread *p_thread)
     
 #ifdef ABT_XSTREAM_USE_VIRTUAL
 static inline
-void ABTI_xstream_yield(ABTI_thread *p_thread)
+void ABTI_xstream_yield(ABTI_sched *p_sched, ABTI_xstream *p_xstream)
 {
     //ABTI_sched *k_sched;
     ABTI_kthread *k_thread;
-    k_thread = p_thread->p_last_xstream->p_kthread;
+    ABTI_thread *p_thread;
+    k_thread = p_xstream->p_kthread;
+    p_thread = p_sched->p_thread;
 
+    /* Now we will push the scheduelr back to the pool so it can be scheduled
+     * again */
+    ABTI_pool *p_pool = k_thread->k_main_sched->pools[0];
+
+    ABTI_pool_push(p_pool, p_thread->unit, p_xstream);
+ 
     LOG_EVENT("[U%" PRIu64 ":E%d] yielding to master\n",
-              ABTI_thread_get_id(p_thread), p_thread->p_last_xstream->rank);
-
-    /* Change the state of current running thread */
-    /* We do not set the thread to ready when yielding from an xstream
-     * since this thread is blocked for another xstream to run and needs to 
-     * unblocked by the other xstream */
-    
-    /* Below are hacks to make things work with multiple schedulers  */
-
-    //p_thread->state = ABT_THREAD_STATE_READY;
-    /*if (p_thread->request & ABTI_THREAD_REQ_BLOCK) {
-        LOG_EVENT("[U%" PRIu64 ":E%d] check blocked\n",
-                  ABTI_thread_get_id(p_thread), k_thread->rank);
-        ABTI_thread_unset_request(p_thread, ABTI_THREAD_REQ_BLOCK);
-    }*/
-    
-    if ((ABTD_atomic_load_uint32((uint32_t *)&p_thread->request) & ABTI_THREAD_REQ_JOIN) 
-              ||  (ABTD_atomic_load_uint32((uint32_t *)&p_thread->request) & ABT_THREAD_STATE_BLOCKED))
-    {
-            ABTI_sched *p_sched = p_thread->p_last_xstream->p_main_sched;
-            //ABTI_spinlock_acquire(&gp_ABTI_global->kthreads_lock);
-            k_thread->k_req_arg = p_sched->p_thread;
-            //ABTI_spinlock_release(&gp_ABTI_global->kthreads_lock);
-            ABTI_sched_suspend(p_sched);
-        return;
-    }
-    else {
-        //ABTI_spinlock_acquire(&gp_ABTI_global->kthreads_lock); 
-        k_thread->p_xstream_req_arg = (void *)p_thread;
-        //ABTI_spinlock_release(&gp_ABTI_global->kthreads_lock);
-        if(ABTD_atomic_load_uint32((uint32_t *)&p_thread->state)
-                                    != ABT_THREAD_STATE_TERMINATED)
-        {    
-            ABTI_thread_set_blocked(p_thread);
-    
-            ABTI_blocked_thread_sched_suspend(p_thread); 
-        }
-        else if (p_thread->is_sched)
-            ABTI_sched_suspend(p_thread->is_sched);
-        //else
-            //ABTI_thread_suspend(p_thread);
-    }
-    //int current_rank = p_thread->p_last_xstream->rank; 
-    //k_thread->k_req_arg = (void *)&current_rank;
-    
-    /* Switch to the top scheduler */
-    //k_sched = k_thread->k_main_sched;;
-    //ABTI_thread_context_switch_thread_to_sched(p_thread, k_sched);
-
-    //ABTI_local_set_xstream(gp_ABTI_global->p_xstreams[current_rank]);
+              ABTI_thread_get_id(p_thread), p_xstream->rank);
+   
+    ABTI_thread_context_switch_sched_to_sched(p_sched, k_thread->k_main_sched);
+ 
     /* Back to the original thread */
     LOG_EVENT("[U%" PRIu64 ":E%d] scheduler resumed after join\n",
               ABTI_thread_get_id(p_thread), p_thread->p_last_xstream->rank);

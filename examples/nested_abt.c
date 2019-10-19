@@ -10,6 +10,7 @@ static int inner_num_es = 4;
 int matA[SIZE][SIZE]; 
 int matB[SIZE][SIZE]; 
 int matC[SIZE][SIZE];
+int result[SIZE][SIZE];
 
 typedef struct {
 	int start_i;
@@ -18,8 +19,8 @@ typedef struct {
 
 typedef void (*inner_f)(void*);
 
-void empty_f(void* args) {
-//	printf("Hello World\n");
+void work_f(void* args) {
+	//printf("Hello World\n");
 	threadData* data = (threadData*)args;
   
     for (int i = data->start_i; i < data->end_i; i++)  
@@ -27,6 +28,21 @@ void empty_f(void* args) {
                 for (int k = 0; k < SIZE; k++)  
     	          matC[i][j] += matA[i][k] * matB[k][j];
 
+}
+
+void multiply() 
+{ 
+    int i, j, k; 
+    for (i = 0; i < SIZE; i++) 
+    { 
+        for (j = 0; j < SIZE; j++) 
+        { 
+            result[i][j] = 0; 
+            for (k = 0; k < SIZE; k++) 
+                result[i][j] += matA[i][k] *  
+                             matB[k][j]; 
+        } 
+    } 
 }
 
 
@@ -44,6 +60,7 @@ void inner_func_wrapper(void *arg) {
 void abt_for(int num_threads, int loop_count, inner_f inner_func, int level) {
   int i;
   ABT_pool *pools;
+  //ABT_pool pool;
   ABT_xstream *xstreams = NULL;
   abt_thread_data_t *threads = NULL;
   int set_main_sched_err;
@@ -83,7 +100,7 @@ void abt_for(int num_threads, int loop_count, inner_f inner_func, int level) {
   threads = (abt_thread_data_t *)malloc(sizeof(abt_thread_data_t) * loop_count);
   int each = SIZE/loop_count;
   //printf("Each thread processes %d size matrix\n", each);
-  for (i = 0; i < num_threads; i++) {
+  for (i = 0; i < loop_count; i++) {
     threads[i].inner_func = inner_func;
     threads[i].arg = (threadData*)malloc(sizeof(threadData));
     threads[i].arg->start_i = i * each;
@@ -120,12 +137,12 @@ void abt_for(int num_threads, int loop_count, inner_f inner_func, int level) {
 }
 
 void inner2_par(int i) {
-  abt_for(inner_num_es, inner_num_es, empty_f, 1);
+  abt_for(inner_num_es, inner_num_es, work_f, 1);
 }
 
 void inner_par(void* data) {
-  printf("inner abt_for\n");
-  abt_for(inner_num_es, inner_num_es, empty_f, 1);
+  //printf("inner abt_for\n");
+  abt_for(inner_num_es, inner_num_es, work_f, 1);
 }
 
 int main (int argc, char** argv) {
@@ -137,7 +154,24 @@ int main (int argc, char** argv) {
     main_num_es = atoi(argv[1]);
     inner_num_es = atoi(argv[2]);
   }
-  //abt_for(main_num_es, main_num_es, inner_par, 0);
-  abt_for(main_num_es, main_num_es, empty_f, 0);
-  return 0;
+  ///abt_for(main_num_es, main_num_es, inner_par, 0);
+  abt_for(main_num_es, main_num_es, work_f, 0);
+    printf("Done...verifying the result...\n");
+    
+    multiply();
+    int i, j, k; 
+    for (i = 0; i < SIZE; i++) 
+    { 
+        for (j = 0; j < SIZE; j++) 
+        { 
+            if(result[i][j] != matC[i][j])
+            {
+                printf("Wrong result!\n");
+                break;
+            } 
+        } 
+    }
+    printf("Finished!\n"); 
+    return 0;
+    
 }

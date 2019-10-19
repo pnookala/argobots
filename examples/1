@@ -1,0 +1,2673 @@
+<U0:E0:T0> [P0] created
+<U0:E0:T0> [Master S0] created
+<U0:E0:T0> [P1] created
+<U0:E0:T0> [S0] created
+<U0:E0:T0> [E0] created
+<U0:E0:T0> [U0:E0] main ULT created
+<U0:E0:T0> [U0] pushed to P1 (producer: E0)
+<U0:E0:T0> [E0] start
+<U0:E0:T0> [T0] started for [E0]
+<U0:E0:T0> [U1:T0] main sched ULT created
+<U0:E0:T0> [U2:E0] main sched ULT created
+<U0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<U0:E0:T0> [U0:E0] yield
+<S0:E0:T0> [Master S0] start
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [S0] start
+<S0:E0:T0> [U0:E0] popped from P1
+<S0:E0:T0> [U0:E0] start running
+<U0:E0:T0> [U0:E0] resume
+<U0:E0:T0> [P2] created
+<U0:E0:T0> [Master S1] created
+<U0:E0:T0> [P3] created
+<U0:E0:T0> [S1] created
+<U0:E0:T0> [E1] created
+<U0:E0:T0> [U3:E1] main sched ULT created
+<U0:E0:T0> [U3:E1] pushed to P2 (producer: E1)
+<U0:E0:T0> [P4] created
+<U0:E0:T0> [S2] created
+<U0:E0:T0> [E2] created
+<U0:E0:T0> [U4:E2] main sched ULT created
+<U0:E0:T0> [U4:E2] pushed to P2 (producer: E2)
+<U0:E0:T0> [P5] created
+<U0:E0:T0> [S3] created
+<U0:E0:T0> [E3] created
+<U0:E0:T0> [U6:E3] main sched ULT created
+<U0:E0:T0> [U6:E3] pushed to P2 (producer: E3)
+<U0:E1:T1> [U5:T1] main sched ULT created
+<U5:E1:T1> [T1] started for [E1]
+[mem/malloc.c:345] mmap a hugepage (8388608): 0x2aaaaac00000
+<U5:E1:T1> [Master S1] start
+<U5:E1:T1> [U3:E1] popped from P2
+<U5:E1:T1> [U3:T1] start running
+<S1:E1:T1> [S1] start
+<S1:E1:T1> [U3:E1] pushed to P2 (producer: E1)
+<S1:E1:T1> [U3:E1] yielding to master
+<S1:E1:T1> [U3:T1] stopped
+<S1:E1:T1> [U4:E2] popped from P2
+<S1:E1:T1> [U4:T1] start running
+<S2:E2:T1> [S2] start
+<S2:E2:T1> [U4:E2] pushed to P2 (producer: E2)
+<S2:E2:T1> [U4:E2] yielding to master
+<S1:E2:T1> [U4:T1] stopped
+<S1:E2:T1> [U6:E3] popped from P2
+<S1:E2:T1> [U6:T1] start running
+<S3:E3:T1> [S3] start
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S1:E3:T1> [U3:E1] popped from P2
+<S1:E3:T1> [U3:T1] start running
+<S1:E3:T1> [U3:E1] scheduler resumed after join
+<S1:E3:T1> [U3:E1] pushed to P2 (producer: E1)
+<S1:E3:T1> [U3:E1] yielding to master
+<S1:E3:T1> [U3:T1] stopped
+<S1:E3:T1> [U4:E2] popped from P2
+<S1:E3:T1> [U4:T1] start running
+<S2:E3:T1> [U4:E2] scheduler resumed after join
+<S2:E3:T1> [U4:E2] pushed to P2 (producer: E2)
+<S2:E3:T1> [U4:E2] yielding to master
+<S1:E3:T1> [U4:T1] stopped
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S1:E3:T1> [U3:E1] popped from P2
+<S1:E3:T1> [U3:T1] start running
+<S1:E3:T1> [U3:E1] scheduler resumed after join
+<S1:E3:T1> [U3:E1] pushed to P2 (producer: E1)
+<S1:E3:T1> [U3:E1] yielding to master
+<S1:E3:T1> [U3:T1] stopped
+<S1:E3:T1> [U4:E2] popped from P2
+<S1:E3:T1> [U4:T1] start running
+<S2:E3:T1> [U4:E2] scheduler resumed after join
+<S2:E3:T1> [U4:E2] pushed to P2 (producer: E2)
+<S2:E3:T1> [U4:E2] yielding to master
+<S1:E3:T1> [U4:T1] stopped
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S1:E3:T1> [U3:E1] popped from P2
+<S1:E3:T1> [U3:T1] start running
+<S1:E3:T1> [U3:E1] scheduler resumed after join
+<S1:E3:T1> [U3:E1] pushed to P2 (producer: E1)
+<S1:E3:T1> [U3:E1] yielding to master
+<S1:E3:T1> [U3:T1] stopped
+<S1:E3:T1> [U4:E2] popped from P2
+<S1:E3:T1> [U4:T1] start running
+<S2:E3:T1> [U4:E2] scheduler resumed after join
+<S2:E3:T1> [U4:E2] pushed to P2 (producer: E2)
+<S2:E3:T1> [U4:E2] yielding to master
+<S1:E3:T1> [U4:T1] stopped
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S1:E3:T1> [U3:E1] popped from P2
+<S1:E3:T1> [U3:T1] start running
+<S1:E3:T1> [U3:E1] scheduler resumed after join
+<S1:E3:T1> [U3:E1] pushed to P2 (producer: E1)
+<S1:E3:T1> [U3:E1] yielding to master
+<S1:E3:T1> [U3:T1] stopped
+<S1:E3:T1> [U4:E2] popped from P2
+<S1:E3:T1> [U4:T1] start running
+<S2:E3:T1> [U4:E2] scheduler resumed after join
+<S2:E3:T1> [U4:E2] pushed to P2 (producer: E2)
+<S2:E3:T1> [U4:E2] yielding to master
+<S1:E3:T1> [U4:T1] stopped
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S1:E3:T1> [U3:E1] popped from P2
+<S1:E3:T1> [U3:T1] start running
+<S1:E3:T1> [U3:E1] scheduler resumed after join
+<S1:E3:T1> [U3:E1] pushed to P2 (producer: E1)
+<S1:E3:T1> [U3:E1] yielding to master
+<S1:E3:T1> [U3:T1] stopped
+<S1:E3:T1> [U4:E2] popped from P2
+<S1:E3:T1> [U4:T1] start running
+<S2:E3:T1> [U4:E2] scheduler resumed after join
+<S2:E3:T1> [U4:E2] pushed to P2 (producer: E2)
+<S2:E3:T1> [U4:E2] yielding to master
+<S1:E3:T1> [U4:T1] stopped
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S1:E3:T1> [U3:E1] popped from P2
+<S1:E3:T1> [U3:T1] start running
+<S1:E3:T1> [U3:E1] scheduler resumed after join
+<S1:E3:T1> [U3:E1] pushed to P2 (producer: E1)
+<S1:E3:T1> [U3:E1] yielding to master
+<S1:E3:T1> [U3:T1] stopped
+<S1:E3:T1> [U4:E2] popped from P2
+<S1:E3:T1> [U4:T1] start running
+<U0:E0:T0> [U7] created
+<U0:E0:T0> [U7] pushed to P1 (producer: E0)
+<U0:E0:T0> [U8] created
+<U0:E0:T0> [U8] pushed to P3 (producer: E0)
+<U0:E0:T0> [U9] created
+<U0:E0:T0> [U9] pushed to P4 (producer: E0)
+<S2:E3:T1> [U4:E2] scheduler resumed after join
+<S2:E3:T1> [U9] popped from P4
+<U0:E0:T0> [U10] created
+<U0:E0:T0> [U10] pushed to P5 (producer: E0)
+<S2:E3:T1> [U9:E2] start running
+<U0:E0:T0> [U7] removed from P1 (consumer: E0)
+<U0:E0:T0> [U0:E0] blocked to join U7
+<U0:E0:T0> [U7:E0] start running
+<U7:E0:T0> [U7:E0] terminated
+<U0:E0:T0> [U0:E0] resume after join
+<U0:E0:T0> [U7:E0] freed
+<U0:E0:T0> [U0:E0] blocked
+<U0:E0:T0> [U0:E0] blocked to join U8
+<U0:E0:T0> [U0:E0] suspended
+<S0:E0:T0> [U0:E0] stopped
+<S2:E3:T1> [U9:E2] stopped
+<S2:E3:T1> [U9:E2] finished
+<S2:E3:T1> [U9:E2] terminated
+<S2:E3:T1> [U4:E2] pushed to P2 (producer: E2)
+<S2:E3:T1> [U4:E2] yielding to master
+<S0:E0:T0> [U0:E0] check blocked
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S1:E3:T1> [U4:T1] stopped
+<S1:E3:T1> [U6:E3] popped from P2
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S3:E3:T1> [U10] popped from P5
+<S3:E3:T1> [U10:E3] start running
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S3:E3:T1> [U10:E3] stopped
+<S3:E3:T1> [U10:E3] finished
+<S3:E3:T1> [U10:E3] terminated
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S1:E3:T1> [U3:E1] popped from P2
+<S1:E3:T1> [U3:T1] start running
+<S1:E3:T1> [U3:E1] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S1:E3:T1> [U8] popped from P3
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S1:E3:T1> [U8:E1] start running
+<U8:E3:T1> [U0:E0] set ready
+<U8:E3:T1> [U0:E0] pushed to P1 (producer: E3)
+<U8:E3:T1> [U2:E0] set ready
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<U8:E3:T1> [U2:E0] pushed to P0 (producer: E3)
+<S1:E3:T1> [U8:E1] stopped
+<S1:E3:T1> [U8:E1] finished
+<S0:E0:T0> [U0:E0] popped from P1
+<S0:E0:T0> [U0:E0] start running
+<U0:E0:T0> [U0:E0] resumed
+<U0:E0:T0> [U0:E0] yield
+<S0:E0:T0> [U0:E0] stopped
+<S1:E3:T1> [U8:E1] terminated
+<S1:E3:T1> [U3:E1] pushed to P2 (producer: E1)
+<S0:E0:T0> [U0:E0] pushed to P1 (producer: E0)
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S1:E3:T1> [U3:E1] yielding to master
+<S1:E3:T1> [U3:T1] stopped
+<S1:E3:T1> [U4:E2] popped from P2
+<S1:E3:T1> [U4:T1] start running
+<S2:E3:T1> [U4:E2] scheduler resumed after join
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S2:E3:T1> [U4:E2] pushed to P2 (producer: E2)
+<S2:E3:T1> [U4:E2] yielding to master
+<S1:E3:T1> [U4:T1] stopped
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U0:E0] popped from P1
+<S0:E0:T0> [U0:E0] start running
+<U0:E0:T0> [U0:E0] resume after yield
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<U0:E0:T0> [U8:E1] freed
+<U0:E0:T0> [U9:E2] freed
+<U0:E0:T0> [U10:E3] freed
+<S1:E3:T1> [U3:E1] popped from P2
+<S1:E3:T1> [U3:T1] start running
+<S1:E3:T1> [U3:E1] scheduler resumed after join
+<U0:E0:T0> [U0:E0] blocked
+<U0:E0:T0> [U0:E0] suspended
+<S0:E0:T0> [U0:E0] stopped
+<S1:E3:T1> [U3:E1] pushed to P2 (producer: E1)
+<S1:E3:T1> [U3:E1] yielding to master
+<S1:E3:T1> [U3:T1] stopped
+<S1:E3:T1> [U4:E2] popped from P2
+<S1:E3:T1> [U4:T1] start running
+<S2:E3:T1> [U4:E2] scheduler resumed after join
+<S0:E0:T0> [U0:E0] check blocked
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S2:E3:T1> [U4:E2] pushed to P2 (producer: E2)
+<S2:E3:T1> [U4:E2] yielding to master
+<S1:E3:T1> [U4:T1] stopped
+<S1:E3:T1> [U6:E3] popped from P2
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S1:E3:T1> [U6:T1] stopped
+<S1:E3:T1> [U3:E1] popped from P2
+<S1:E3:T1> [U3:T1] start running
+<S1:E3:T1> [U3:E1] scheduler resumed after join
+<S1:E3:T1> [U3:E1] pushed to P2 (producer: E1)
+<S1:E3:T1> [U3:E1] yielding to master
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S1:E3:T1> [U3:T1] stopped
+<S1:E3:T1> [U4:E2] popped from P2
+<S1:E3:T1> [U4:T1] start running
+<S2:E3:T1> [U4:E2] scheduler resumed after join
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S2:E3:T1> [U4:E2] pushed to P2 (producer: E2)
+<S2:E3:T1> [U4:E2] yielding to master
+<S1:E3:T1> [U4:T1] stopped
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S1:E3:T1> [U3:E1] popped from P2
+<S1:E3:T1> [U3:T1] start running
+<S1:E3:T1> [U3:E1] scheduler resumed after join
+<S0:E0:T0> [U2:T0] stopped
+<S1:E3:T1> [U3:E1] pushed to P2 (producer: E1)
+<S1:E3:T1> [U3:E1] yielding to master
+<S1:E3:T1> [U3:T1] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S1:E3:T1> [U4:E2] popped from P2
+<S1:E3:T1> [U4:T1] start running
+<S2:E3:T1> [U4:E2] scheduler resumed after join
+<S2:E3:T1> [U4:E2] pushed to P2 (producer: E2)
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S2:E3:T1> [U4:E2] yielding to master
+<S1:E3:T1> [U4:T1] stopped
+<S1:E3:T1> [U6:E3] popped from P2
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S1:E3:T1> [U3:E1] popped from P2
+<S1:E3:T1> [U3:T1] start running
+<S1:E3:T1> [U3:E1] scheduler resumed after join
+<S1:E3:T1> [U3:E1] pushed to P2 (producer: E1)
+<S1:E3:T1> [U3:E1] yielding to master
+<S1:E3:T1> [U3:T1] stopped
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S1:E3:T1> [U4:E2] popped from P2
+<S1:E3:T1> [U4:T1] start running
+<S2:E3:T1> [U4:E2] scheduler resumed after join
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S2:E3:T1> [U4:E2] pushed to P2 (producer: E2)
+<S2:E3:T1> [U4:E2] yielding to master
+<S1:E3:T1> [U4:T1] stopped
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S1:E3:T1> [U3:E1] popped from P2
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S1:E3:T1> [U3:T1] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S1:E3:T1> [U3:E1] scheduler resumed after join
+<S1:E3:T1> [U3:E1] pushed to P2 (producer: E1)
+<S1:E3:T1> [U3:E1] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S1:E3:T1> [U3:T1] stopped
+<S1:E3:T1> [U4:E2] popped from P2
+<S1:E3:T1> [U4:T1] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S2:E3:T1> [U4:E2] scheduler resumed after join
+<S2:E3:T1> [U4:E2] pushed to P2 (producer: E2)
+<S2:E3:T1> [U4:E2] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S1:E3:T1> [U4:T1] stopped
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S1:E3:T1> [U3:E1] popped from P2
+<S1:E3:T1> [U3:T1] start running
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S1:E3:T1> [U3:E1] scheduler resumed after join
+<S1:E3:T1> [U3:E1] pushed to P2 (producer: E1)
+<S1:E3:T1> [U3:E1] yielding to master
+<S1:E3:T1> [U3:T1] stopped
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S1:E3:T1> [U4:E2] popped from P2
+<S1:E3:T1> [U4:T1] start running
+<S2:E3:T1> [U4:E2] scheduler resumed after join
+<S2:E3:T1> [U4:E2] pushed to P2 (producer: E2)
+<S2:E3:T1> [U4:E2] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S1:E3:T1> [U4:T1] stopped
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S1:E3:T1> [U6:T1] stopped
+<S1:E3:T1> [U3:E1] popped from P2
+<S1:E3:T1> [U3:T1] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S1:E3:T1> [U3:E1] scheduler resumed after join
+<S1:E3:T1> [U3:E1] pushed to P2 (producer: E1)
+<S1:E3:T1> [U3:E1] yielding to master
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S1:E3:T1> [U3:T1] stopped
+<S1:E3:T1> [U4:E2] popped from P2
+<S1:E3:T1> [U4:T1] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S2:E3:T1> [U4:E2] scheduler resumed after join
+<S2:E3:T1> [U4:E2] pushed to P2 (producer: E2)
+<S2:E3:T1> [U4:E2] yielding to master
+<S1:E3:T1> [U4:T1] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S1:E3:T1> [U3:E1] popped from P2
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S1:E3:T1> [U3:T1] start running
+<S1:E3:T1> [U3:E1] scheduler resumed after join
+<S1:E3:T1> [U3:E1] pushed to P2 (producer: E1)
+<S1:E3:T1> [U3:E1] yielding to master
+<S1:E3:T1> [U3:T1] stopped
+<S1:E3:T1> [U4:E2] popped from P2
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S1:E3:T1> [U4:T1] start running
+<S2:E3:T1> [U4:E2] scheduler resumed after join
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S2:E3:T1> [U4:E2] pushed to P2 (producer: E2)
+<S2:E3:T1> [U4:E2] yielding to master
+<S1:E3:T1> [U4:T1] stopped
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S1:E3:T1> [U3:E1] popped from P2
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S1:E3:T1> [U3:T1] start running
+<S1:E3:T1> [U3:E1] scheduler resumed after join
+<S1:E3:T1> [U3:E1] pushed to P2 (producer: E1)
+<S1:E3:T1> [U3:E1] yielding to master
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S1:E3:T1> [U3:T1] stopped
+<S1:E3:T1> [U4:E2] popped from P2
+<S1:E3:T1> [U4:T1] start running
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S2:E3:T1> [U4:E2] scheduler resumed after join
+<S2:E3:T1> [U4:E2] pushed to P2 (producer: E2)
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S2:E3:T1> [U4:E2] yielding to master
+<S1:E3:T1> [U4:T1] stopped
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S1:E3:T1> [U3:E1] popped from P2
+<S1:E3:T1> [U3:T1] start running
+<S1:E3:T1> [U3:E1] scheduler resumed after join
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S1:E3:T1> [U3:E1] pushed to P2 (producer: E1)
+<S1:E3:T1> [U3:E1] yielding to master
+<S1:E3:T1> [U3:T1] stopped
+<S1:E3:T1> [U4:E2] popped from P2
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S1:E3:T1> [U4:T1] start running
+<S2:E3:T1> [U4:E2] scheduler resumed after join
+<S2:E3:T1> [U4:E2] pushed to P2 (producer: E2)
+<S2:E3:T1> [U4:E2] yielding to master
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S1:E3:T1> [U4:T1] stopped
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S1:E3:T1> [U6:T1] stopped
+<S1:E3:T1> [U3:E1] popped from P2
+<S1:E3:T1> [U3:T1] start running
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S1:E3:T1> [U3:E1] scheduler resumed after join
+<S1:E3:T1> [U3:E1] pushed to P2 (producer: E1)
+<S1:E3:T1> [U3:E1] yielding to master
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S1:E3:T1> [U3:T1] stopped
+<S1:E3:T1> [U4:E2] popped from P2
+<S1:E3:T1> [U4:T1] start running
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S2:E3:T1> [U4:E2] scheduler resumed after join
+<S2:E3:T1> [U4:E2] pushed to P2 (producer: E2)
+<S2:E3:T1> [U4:E2] yielding to master
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S1:E3:T1> [U4:T1] stopped
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S1:E3:T1> [U6:T1] stopped
+<S1:E3:T1> [U3:E1] popped from P2
+<S1:E3:T1> [U3:T1] start running
+<S1:E3:T1> [U3:E1] scheduler resumed after join
+<S1:E3:T1> [U3:E1] pushed to P2 (producer: E1)
+<S1:E3:T1> [U3:E1] yielding to master
+<S1:E3:T1> [U3:T1] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S1:E3:T1> [U4:E2] popped from P2
+<S1:E3:T1> [U4:T1] start running
+<S2:E3:T1> [U4:E2] scheduler resumed after join
+<S2:E3:T1> [U4:E2] pushed to P2 (producer: E2)
+<S2:E3:T1> [U4:E2] yielding to master
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S1:E3:T1> [U4:T1] stopped
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S1:E3:T1> [U6:T1] stopped
+<S1:E3:T1> [U3:E1] popped from P2
+<S1:E3:T1> [U3:T1] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S1:E3:T1> [U3:E1] scheduler resumed after join
+<S1:E3:T1> [U3:E1] pushed to P2 (producer: E1)
+<S1:E3:T1> [U3:E1] yielding to master
+<S1:E3:T1> [U3:T1] stopped
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S1:E3:T1> [U4:E2] popped from P2
+<S1:E3:T1> [U4:T1] start running
+<S2:E3:T1> [U4:E2] scheduler resumed after join
+<S2:E3:T1> [U4:E2] pushed to P2 (producer: E2)
+<S2:E3:T1> [U4:E2] yielding to master
+<S1:E3:T1> [U4:T1] stopped
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S1:E3:T1> [U3:E1] popped from P2
+<S1:E3:T1> [U3:T1] start running
+<S1:E3:T1> [U3:E1] scheduler resumed after join
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S1:E3:T1> [U3:E1] pushed to P2 (producer: E1)
+<S1:E3:T1> [U3:E1] yielding to master
+<S1:E3:T1> [U3:T1] stopped
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S1:E3:T1> [U4:E2] popped from P2
+<S1:E3:T1> [U4:T1] start running
+<S2:E3:T1> [U4:E2] scheduler resumed after join
+<S2:E3:T1> [U4:E2] pushed to P2 (producer: E2)
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S2:E3:T1> [U4:E2] yielding to master
+<S1:E3:T1> [U4:T1] stopped
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S1:E3:T1> [U3:E1] popped from P2
+<S1:E3:T1> [U3:T1] start running
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S1:E3:T1> [U3:E1] scheduler resumed after join
+<S1:E3:T1> [U3:E1] pushed to P2 (producer: E1)
+<S1:E3:T1> [U3:E1] yielding to master
+<S1:E3:T1> [U3:T1] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S1:E3:T1> [U4:E2] popped from P2
+<S1:E3:T1> [U4:T1] start running
+<S2:E3:T1> [U4:E2] scheduler resumed after join
+<S2:E3:T1> [U4:E2] pushed to P2 (producer: E2)
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S2:E3:T1> [U4:E2] yielding to master
+<S1:E3:T1> [U4:T1] stopped
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S1:E3:T1> [U3:E1] popped from P2
+<S1:E3:T1> [U3:T1] start running
+<S1:E3:T1> [U3:E1] scheduler resumed after join
+<S1:E3:T1> [U3:E1] pushed to P2 (producer: E1)
+<S0:E0:T0> [U2:E0] popped from P0
+<S1:E3:T1> [U3:E1] yielding to master
+<S1:E3:T1> [U3:T1] stopped
+<S1:E3:T1> [U4:E2] popped from P2
+<S1:E3:T1> [U4:T1] start running
+<S2:E3:T1> [U4:E2] scheduler resumed after join
+<S2:E3:T1> [U4:E2] pushed to P2 (producer: E2)
+<S2:E3:T1> [U4:E2] yielding to master
+<S1:E3:T1> [U4:T1] stopped
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S1:E3:T1> [U3:E1] popped from P2
+<S1:E3:T1> [U3:T1] start running
+<S1:E3:T1> [U3:E1] scheduler resumed after join
+<S1:E3:T1> [U3:E1] pushed to P2 (producer: E1)
+<S1:E3:T1> [U3:E1] yielding to master
+<S1:E3:T1> [U3:T1] stopped
+<S1:E3:T1> [U4:E2] popped from P2
+<S1:E3:T1> [U4:T1] start running
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S2:E3:T1> [U4:E2] scheduler resumed after join
+<S2:E3:T1> [U4:E2] pushed to P2 (producer: E2)
+<S2:E3:T1> [U4:E2] yielding to master
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S1:E3:T1> [U4:T1] stopped
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S1:E3:T1> [U3:E1] popped from P2
+<S1:E3:T1> [U3:T1] start running
+<S1:E3:T1> [U3:E1] scheduler resumed after join
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S1:E3:T1> [U3:E1] pushed to P2 (producer: E1)
+<S1:E3:T1> [U3:E1] yielding to master
+<S1:E3:T1> [U3:T1] stopped
+<S1:E3:T1> [U4:E2] popped from P2
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S1:E3:T1> [U4:T1] start running
+<S2:E3:T1> [U4:E2] scheduler resumed after join
+<S2:E3:T1> [U4:E2] pushed to P2 (producer: E2)
+<S2:E3:T1> [U4:E2] yielding to master
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S1:E3:T1> [U4:T1] stopped
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S1:E3:T1> [U3:E1] popped from P2
+<S1:E3:T1> [U3:T1] start running
+<S1:E3:T1> [U3:E1] scheduler resumed after join
+<S1:E3:T1> [U3:E1] pushed to P2 (producer: E1)
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S1:E3:T1> [U3:E1] yielding to master
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S1:E3:T1> [U3:T1] stopped
+<S1:E3:T1> [U4:E2] popped from P2
+<S1:E3:T1> [U4:T1] start running
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S2:E3:T1> [U4:E2] scheduler resumed after join
+<S2:E3:T1> [U4:E2] pushed to P2 (producer: E2)
+<S2:E3:T1> [U4:E2] yielding to master
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S1:E3:T1> [U4:T1] stopped
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S1:E3:T1> [U6:T1] stopped
+<S1:E3:T1> [U3:E1] popped from P2
+<S1:E3:T1> [U3:T1] start running
+<S1:E3:T1> [U3:E1] scheduler resumed after join
+<S1:E3:T1> [U3:E1] pushed to P2 (producer: E1)
+<S1:E3:T1> [U3:E1] yielding to master
+<S1:E3:T1> [U3:T1] stopped
+<S1:E3:T1> [U4:E2] popped from P2
+<S1:E3:T1> [U4:T1] start running
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S2:E3:T1> [U4:E2] scheduler resumed after join
+<S2:E3:T1> [U4:E2] pushed to P2 (producer: E2)
+<S2:E3:T1> [U4:E2] yielding to master
+<S1:E3:T1> [U4:T1] stopped
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S1:E3:T1> [U3:E1] popped from P2
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S1:E3:T1> [U3:T1] start running
+<S1:E3:T1> [U3:E1] scheduler resumed after join
+<S1:E3:T1> [U3:E1] pushed to P2 (producer: E1)
+<S1:E3:T1> [U3:E1] yielding to master
+<S1:E3:T1> [U3:T1] stopped
+<S1:E3:T1> [U4:E2] popped from P2
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S1:E3:T1> [U4:T1] start running
+<S2:E3:T1> [U4:E2] scheduler resumed after join
+<S2:E3:T1> [U4:E2] pushed to P2 (producer: E2)
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S2:E3:T1> [U4:E2] yielding to master
+<S1:E3:T1> [U4:T1] stopped
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S1:E3:T1> [U3:E1] popped from P2
+<S1:E3:T1> [U3:T1] start running
+<S1:E3:T1> [U3:E1] scheduler resumed after join
+<S1:E3:T1> [U3:E1] pushed to P2 (producer: E1)
+<S1:E3:T1> [U3:E1] yielding to master
+<S1:E3:T1> [U3:T1] stopped
+<S1:E3:T1> [U4:E2] popped from P2
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S1:E3:T1> [U4:T1] start running
+<S2:E3:T1> [U4:E2] scheduler resumed after join
+<S2:E3:T1> [U4:E2] pushed to P2 (producer: E2)
+<S2:E3:T1> [U4:E2] yielding to master
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S1:E3:T1> [U4:T1] stopped
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S1:E3:T1> [U3:E1] popped from P2
+<S1:E3:T1> [U3:T1] start running
+<S1:E3:T1> [U3:E1] scheduler resumed after join
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S1:E3:T1> [U3:E1] pushed to P2 (producer: E1)
+<S1:E3:T1> [U3:E1] yielding to master
+<S1:E3:T1> [U3:T1] stopped
+<S1:E3:T1> [U4:E2] popped from P2
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S1:E3:T1> [U4:T1] start running
+<S2:E3:T1> [U4:E2] scheduler resumed after join
+<S2:E3:T1> [U4:E2] pushed to P2 (producer: E2)
+<S2:E3:T1> [U4:E2] yielding to master
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S1:E3:T1> [U4:T1] stopped
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S1:E3:T1> [U3:E1] popped from P2
+<S1:E3:T1> [U3:T1] start running
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S1:E3:T1> [U3:E1] scheduler resumed after join
+<S1:E3:T1> [U3:E1] pushed to P2 (producer: E1)
+<S1:E3:T1> [U3:E1] yielding to master
+<S1:E3:T1> [U3:T1] stopped
+<S1:E3:T1> [U4:E2] popped from P2
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S1:E3:T1> [U4:T1] start running
+<S2:E3:T1> [U4:E2] scheduler resumed after join
+<S2:E3:T1> [U4:E2] pushed to P2 (producer: E2)
+<S2:E3:T1> [U4:E2] yielding to master
+<S1:E3:T1> [U4:T1] stopped
+<S1:E3:T1> [U6:E3] popped from P2
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S1:E3:T1> [U3:E1] popped from P2
+<S1:E3:T1> [U3:T1] start running
+<S1:E3:T1> [U3:E1] scheduler resumed after join
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S1:E3:T1> [U3:E1] pushed to P2 (producer: E1)
+<S1:E3:T1> [U3:E1] yielding to master
+<S1:E3:T1> [U3:T1] stopped
+<S1:E3:T1> [U4:E2] popped from P2
+<S1:E3:T1> [U4:T1] start running
+<S2:E3:T1> [U4:E2] scheduler resumed after join
+<S2:E3:T1> [U4:E2] pushed to P2 (producer: E2)
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S2:E3:T1> [U4:E2] yielding to master
+<S1:E3:T1> [U4:T1] stopped
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S1:E3:T1> [U3:E1] popped from P2
+<S1:E3:T1> [U3:T1] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S1:E3:T1> [U3:E1] scheduler resumed after join
+<S1:E3:T1> [U3:E1] pushed to P2 (producer: E1)
+<S1:E3:T1> [U3:E1] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S1:E3:T1> [U3:T1] stopped
+<S1:E3:T1> [U4:E2] popped from P2
+<S1:E3:T1> [U4:T1] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S2:E3:T1> [U4:E2] scheduler resumed after join
+<S2:E3:T1> [U4:E2] pushed to P2 (producer: E2)
+<S2:E3:T1> [U4:E2] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S1:E3:T1> [U4:T1] stopped
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S1:E3:T1> [U3:E1] popped from P2
+<S1:E3:T1> [U3:T1] start running
+<S1:E3:T1> [U3:E1] scheduler resumed after join
+<S1:E3:T1> [U3:E1] pushed to P2 (producer: E1)
+<S1:E3:T1> [U3:E1] yielding to master
+<S1:E3:T1> [U3:T1] stopped
+<S1:E3:T1> [U4:E2] popped from P2
+<S1:E3:T1> [U4:T1] start running
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S2:E3:T1> [U4:E2] scheduler resumed after join
+<S2:E3:T1> [U4:E2] pushed to P2 (producer: E2)
+<S2:E3:T1> [U4:E2] yielding to master
+<S1:E3:T1> [U4:T1] stopped
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S1:E3:T1> [U3:E1] popped from P2
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S1:E3:T1> [U3:T1] start running
+<S1:E3:T1> [U3:E1] scheduler resumed after join
+<S1:E3:T1> [U3:E1] pushed to P2 (producer: E1)
+<S1:E3:T1> [U3:E1] yielding to master
+<S1:E3:T1> [U3:T1] stopped
+<S1:E3:T1> [U4:E2] popped from P2
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S1:E3:T1> [U4:T1] start running
+<S2:E3:T1> [U4:E2] scheduler resumed after join
+<S2:E3:T1> [U4:E2] pushed to P2 (producer: E2)
+<S2:E3:T1> [U4:E2] yielding to master
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S1:E3:T1> [U4:T1] stopped
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S1:E3:T1> [U3:E1] popped from P2
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S1:E3:T1> [U3:T1] start running
+<S1:E3:T1> [U3:E1] scheduler resumed after join
+<S1:E3:T1> [U3:E1] pushed to P2 (producer: E1)
+<S1:E3:T1> [U3:E1] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S1:E3:T1> [U3:T1] stopped
+<S1:E3:T1> [U4:E2] popped from P2
+<S1:E3:T1> [U4:T1] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S2:E3:T1> [U4:E2] scheduler resumed after join
+<S2:E3:T1> [U4:E2] pushed to P2 (producer: E2)
+<S2:E3:T1> [U4:E2] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S1:E3:T1> [U4:T1] stopped
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S1:E3:T1> [U6:T1] stopped
+<S1:E3:T1> [U3:E1] popped from P2
+<S1:E3:T1> [U3:T1] start running
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S1:E3:T1> [U3:E1] scheduler resumed after join
+<S1:E3:T1> [U3:E1] pushed to P2 (producer: E1)
+<S1:E3:T1> [U3:E1] yielding to master
+<S1:E3:T1> [U3:T1] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S1:E3:T1> [U4:E2] popped from P2
+<S1:E3:T1> [U4:T1] start running
+<S2:E3:T1> [U4:E2] scheduler resumed after join
+<S2:E3:T1> [U4:E2] pushed to P2 (producer: E2)
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S2:E3:T1> [U4:E2] yielding to master
+<S1:E3:T1> [U4:T1] stopped
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S1:E3:T1> [U3:E1] popped from P2
+<S1:E3:T1> [U3:T1] start running
+<S1:E3:T1> [U3:E1] scheduler resumed after join
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S1:E3:T1> [U3:E1] pushed to P2 (producer: E1)
+<S1:E3:T1> [U3:E1] yielding to master
+<S1:E3:T1> [U3:T1] stopped
+<S1:E3:T1> [U4:E2] popped from P2
+<S1:E3:T1> [U4:T1] start running
+<S2:E3:T1> [U4:E2] scheduler resumed after join
+<S2:E3:T1> [U4:E2] pushed to P2 (producer: E2)
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S2:E3:T1> [U4:E2] yielding to master
+<S1:E3:T1> [U4:T1] stopped
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S1:E3:T1> [U6:T1] stopped
+<S1:E3:T1> [U3:E1] popped from P2
+<S1:E3:T1> [U3:T1] start running
+<S1:E3:T1> [U3:E1] scheduler resumed after join
+<S1:E3:T1> [U3:E1] pushed to P2 (producer: E1)
+<S1:E3:T1> [U3:E1] yielding to master
+<S1:E3:T1> [U3:T1] stopped
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S1:E3:T1> [U4:E2] popped from P2
+<S1:E3:T1> [U4:T1] start running
+<S2:E3:T1> [U4:E2] scheduler resumed after join
+<S2:E3:T1> [U4:E2] pushed to P2 (producer: E2)
+<S2:E3:T1> [U4:E2] yielding to master
+<S1:E3:T1> [U4:T1] stopped
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S1:E3:T1> [U3:E1] popped from P2
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S1:E3:T1> [U3:T1] start running
+<S1:E3:T1> [U3:E1] scheduler resumed after join
+<S1:E3:T1> [U3:E1] pushed to P2 (producer: E1)
+<S1:E3:T1> [U3:E1] yielding to master
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S1:E3:T1> [U3:T1] stopped
+<S1:E3:T1> [U4:E2] popped from P2
+<S1:E3:T1> [U4:T1] start running
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S2:E3:T1> [U4:E2] scheduler resumed after join
+<S2:E3:T1> [U4:E2] pushed to P2 (producer: E2)
+<S2:E3:T1> [U4:E2] yielding to master
+<S1:E3:T1> [U4:T1] stopped
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S1:E3:T1> [U3:E1] popped from P2
+<S1:E3:T1> [U3:T1] start running
+<S1:E3:T1> [U3:E1] scheduler resumed after join
+<S1:E3:T1> [U3:E1] pushed to P2 (producer: E1)
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S1:E3:T1> [U3:E1] yielding to master
+<S1:E3:T1> [U3:T1] stopped
+<S1:E3:T1> [U4:E2] popped from P2
+<S1:E3:T1> [U4:T1] start running
+<S2:E3:T1> [U4:E2] scheduler resumed after join
+<S2:E3:T1> [U4:E2] pushed to P2 (producer: E2)
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S2:E3:T1> [U4:E2] yielding to master
+<S1:E3:T1> [U4:T1] stopped
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S1:E3:T1> [U3:E1] popped from P2
+<S1:E3:T1> [U3:T1] start running
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S1:E3:T1> [U3:E1] scheduler resumed after join
+<S1:E3:T1> [U3:E1] pushed to P2 (producer: E1)
+<S1:E3:T1> [U3:E1] yielding to master
+<S1:E3:T1> [U3:T1] stopped
+<S1:E3:T1> [U4:E2] popped from P2
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S1:E3:T1> [U4:T1] start running
+<S2:E3:T1> [U4:E2] scheduler resumed after join
+<S2:E3:T1> [U4:E2] pushed to P2 (producer: E2)
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S2:E3:T1> [U4:E2] yielding to master
+<S1:E3:T1> [U4:T1] stopped
+<S1:E3:T1> [U6:E3] popped from P2
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S1:E3:T1> [U3:E1] popped from P2
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S1:E3:T1> [U3:T1] start running
+<S1:E3:T1> [U3:E1] scheduler resumed after join
+<S1:E3:T1> [U3:E1] pushed to P2 (producer: E1)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S1:E3:T1> [U3:E1] yielding to master
+<S1:E3:T1> [U3:T1] stopped
+<S1:E3:T1> [U4:E2] popped from P2
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S1:E3:T1> [U4:T1] start running
+<S2:E3:T1> [U4:E2] scheduler resumed after join
+<S2:E3:T1> [U4:E2] pushed to P2 (producer: E2)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S2:E3:T1> [U4:E2] yielding to master
+<S1:E3:T1> [U4:T1] stopped
+<S1:E3:T1> [U6:E3] popped from P2
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S1:E3:T1> [U3:E1] popped from P2
+<S1:E3:T1> [U3:T1] start running
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S1:E3:T1> [U3:E1] scheduler resumed after join
+<S1:E3:T1> [U3:E1] pushed to P2 (producer: E1)
+<S1:E3:T1> [U3:E1] yielding to master
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S1:E3:T1> [U3:T1] stopped
+<S1:E3:T1> [U4:E2] popped from P2
+<S1:E3:T1> [U4:T1] start running
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S2:E3:T1> [U4:E2] scheduler resumed after join
+<S2:E3:T1> [U4:E2] pushed to P2 (producer: E2)
+<S2:E3:T1> [U4:E2] yielding to master
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S1:E3:T1> [U4:T1] stopped
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S1:E3:T1> [U3:E1] popped from P2
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S1:E3:T1> [U3:T1] start running
+<S1:E3:T1> [U3:E1] scheduler resumed after join
+<S1:E3:T1> [U3:E1] pushed to P2 (producer: E1)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S1:E3:T1> [U3:E1] yielding to master
+<S1:E3:T1> [U3:T1] stopped
+<S1:E3:T1> [U4:E2] popped from P2
+<S1:E3:T1> [U4:T1] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S2:E3:T1> [U4:E2] scheduler resumed after join
+<S2:E3:T1> [U4:E2] pushed to P2 (producer: E2)
+<S2:E3:T1> [U4:E2] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S1:E3:T1> [U4:T1] stopped
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S1:E3:T1> [U3:E1] popped from P2
+<S1:E3:T1> [U3:T1] start running
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S1:E3:T1> [U3:E1] scheduler resumed after join
+<S1:E3:T1> [U3:E1] pushed to P2 (producer: E1)
+<S1:E3:T1> [U3:E1] yielding to master
+<S1:E3:T1> [U3:T1] stopped
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S1:E3:T1> [U4:E2] popped from P2
+<S1:E3:T1> [U4:T1] start running
+<S2:E3:T1> [U4:E2] scheduler resumed after join
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S2:E3:T1> [U4:E2] pushed to P2 (producer: E2)
+<S2:E3:T1> [U4:E2] yielding to master
+<S1:E3:T1> [U4:T1] stopped
+<S1:E3:T1> [U6:E3] popped from P2
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S1:E3:T1> [U3:E1] popped from P2
+<S1:E3:T1> [U3:T1] start running
+<S1:E3:T1> [U3:E1] scheduler resumed after join
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S1:E3:T1> [U3:E1] pushed to P2 (producer: E1)
+<S1:E3:T1> [U3:E1] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S1:E3:T1> [U3:T1] stopped
+<S1:E3:T1> [U4:E2] popped from P2
+<S1:E3:T1> [U4:T1] start running
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S2:E3:T1> [U4:E2] scheduler resumed after join
+<S2:E3:T1> [U4:E2] pushed to P2 (producer: E2)
+<S2:E3:T1> [U4:E2] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S1:E3:T1> [U4:T1] stopped
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S1:E3:T1> [U3:E1] popped from P2
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S1:E3:T1> [U3:T1] start running
+<S1:E3:T1> [U3:E1] scheduler resumed after join
+<S1:E3:T1> [U3:E1] pushed to P2 (producer: E1)
+<S1:E3:T1> [U3:E1] yielding to master
+<S1:E3:T1> [U3:T1] stopped
+<S1:E3:T1> [U4:E2] popped from P2
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S1:E3:T1> [U4:T1] start running
+<S2:E3:T1> [U4:E2] scheduler resumed after join
+<S2:E3:T1> [U4:E2] pushed to P2 (producer: E2)
+<S2:E3:T1> [U4:E2] yielding to master
+<S1:E3:T1> [U4:T1] stopped
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S1:E3:T1> [U3:E1] popped from P2
+<S0:E0:T0> [U2:E0] yielding to master
+<S1:E3:T1> [U3:T1] start running
+<S1:E3:T1> [U3:E1] scheduler resumed after join
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S1:E3:T1> [S1] end
+<S1:E3:T1> [U0:E0] set ready
+<S1:E3:T1> [U0:E0] pushed to P1 (producer: E3)
+<S1:E3:T1> [E1] terminated
+<S0:E0:T0> [U0:E0] popped from P1
+<S0:E0:T0> [U0:E0] start running
+<U0:E0:T0> [U0:E0] resumed
+<U0:E0:T0> [U0:E0] blocked
+<U0:E0:T0> [U0:E0] suspended
+<S0:E0:T0> [U0:E0] stopped
+<S1:E3:T1> [U3:T1] stopped
+<S1:E3:T1> [U3:T1] finished
+<S0:E0:T0> [U0:E0] check blocked
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S1:E3:T1> [U4:E2] popped from P2
+<S1:E3:T1> [U4:T1] start running
+<S2:E3:T1> [U4:E2] scheduler resumed after join
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S2:E3:T1> [S2] end
+<S2:E3:T1> [U0:E0] set ready
+<S2:E3:T1> [U0:E0] pushed to P1 (producer: E3)
+<S2:E3:T1> [U2:E0] set ready
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S2:E3:T1> [U2:E0] pushed to P0 (producer: E3)
+<S2:E3:T1> [E2] terminated
+<S1:E3:T1> [U4:T1] stopped
+<S1:E3:T1> [U4:T1] finished
+<S1:E3:T1> [U6:E3] popped from P2
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U0:E0] popped from P1
+<S0:E0:T0> [U0:E0] start running
+<U0:E0:T0> [U0:E0] resumed
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<U0:E0:T0> [U0:E0] blocked
+<U0:E0:T0> [U6:E3] set ready
+<U0:E0:T0> [U6:E3] pushed to P2 (producer: E0)
+<U0:E0:T0> [U0:E0] suspended
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S0:E0:T0> [U0:E0] stopped
+<S0:E0:T0> [U0:E0] check blocked
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S1:E3:T1> [U6:E3] popped from P2
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S1:E3:T1> [U6:E3] popped from P2
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S1:E3:T1> [U6:E3] popped from P2
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S1:E3:T1> [U6:E3] popped from P2
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S1:E3:T1> [U6:T1] stopped
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S1:E3:T1> [U6:E3] popped from P2
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S1:E3:T1> [U6:E3] popped from P2
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S1:E3:T1> [U6:E3] popped from P2
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S1:E3:T1> [U6:E3] popped from P2
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S1:E3:T1> [U6:E3] popped from P2
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S1:E3:T1> [U6:E3] popped from P2
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S1:E3:T1> [U6:E3] popped from P2
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S1:E3:T1> [U6:E3] popped from P2
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S1:E3:T1> [U6:T1] stopped
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S1:E3:T1> [U6:E3] popped from P2
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S1:E3:T1> [U6:E3] popped from P2
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S1:E3:T1> [U6:T1] stopped
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S1:E3:T1> [U6:T1] stopped
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S1:E3:T1> [U6:T1] stopped
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S1:E3:T1> [U6:E3] popped from P2
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S1:E3:T1> [U6:E3] popped from P2
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S1:E3:T1> [U6:T1] stopped
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S1:E3:T1> [U6:T1] stopped
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S1:E3:T1> [U6:T1] stopped
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S3:E3:T1> [U6:E3] pushed to P2 (producer: E3)
+<S3:E3:T1> [U6:E3] yielding to master
+<S1:E3:T1> [U6:T1] stopped
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S3:E3:T1> [U6:E3] scheduler resumed after join
+<S3:E3:T1> [S3] end
+<S3:E3:T1> [U0:E0] set ready
+<S3:E3:T1> [U0:E0] pushed to P1 (producer: E3)
+<S3:E3:T1> [E3] terminated
+<S1:E3:T1> [U6:T1] stopped
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U0:E0] popped from P1
+<S0:E0:T0> [U0:E0] start running
+<S1:E3:T1> [U6:T1] finished
+<S1:E3:T1> [U6:E3] popped from P2
+<S1:E3:T1> [U6:T1] start running
+<U0:E0:T0> [U0:E0] resumed
+<U0:E0:T0> [U0:E0] yield to scheduler
+<S0:E0:T0> [U0:E0] stopped
+<S0:E0:T0> [U0:E0] orphaned
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running
+<S0:E0:T0> [U2:E0] scheduler resumed after join
+<S0:E0:T0> [U2:E0] pushed to P0 (producer: E0)
+<S0:E0:T0> [U2:E0] yielding to master
+<S0:E0:T0> [U2:T0] stopped
+<S0:E0:T0> [U2:E0] popped from P0
+<S0:E0:T0> [U2:T0] start running

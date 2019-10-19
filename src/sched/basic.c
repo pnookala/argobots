@@ -129,6 +129,12 @@ static void sched_run(ABT_sched sched)
             work_count = 0;
             SCHED_SLEEP(run_cnt, p_data->sleep_time);
         }
+#ifdef ABT_XSTREAM_USE_VIRTUAL
+        else {
+            /* Switch back to the master scheduler */
+            ABTI_xstream_yield(p_sched, p_xstream);
+        }
+#endif
     }
 }
 

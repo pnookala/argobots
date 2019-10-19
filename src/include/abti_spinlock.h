@@ -22,7 +22,6 @@ static inline void ABTI_spinlock_free(ABTI_spinlock *p_lock)
 
 static inline void ABTI_spinlock_acquire(ABTI_spinlock *p_lock)
 {
-    //printf("lock val %" PRIu8 "\n", p_lock->val);
     while (ABTD_atomic_test_and_set_uint8((uint8_t *)&p_lock->val)) {
         while (ABTD_atomic_load_uint8((uint8_t *)&p_lock->val) != 0);
     }

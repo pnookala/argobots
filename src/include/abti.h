@@ -656,7 +656,7 @@ int   ABTI_thread_create_main(ABTI_xstream *p_xstream, ABTI_thread **p_thread);
 int   ABTI_thread_create_main_sched(ABTI_xstream *p_xstream, ABTI_sched *p_sched);
 #ifdef ABT_XSTREAM_USE_VIRTUAL
 int   ABTI_thread_create_main_ksched(ABTI_kthread *k_thread, ABTI_sched *k_sched, ABT_bool is_primary);
-void  ABTI_sched_suspend(ABTI_sched *p_sched);
+void  ABTI_sched_suspend(ABTI_sched *p_sched, ABTI_xstream *p_xstream);
 void  ABTI_blocked_thread_sched_suspend(ABTI_thread *p_thread);
 int   ABTI_sched_set_ready(ABTI_sched *p_sched);
 #endif

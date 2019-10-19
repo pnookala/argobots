@@ -223,20 +223,20 @@ int ABT_finalize(void)
 #ifdef ABT_XSTREAM_USE_VIRTUAL
     /* We have to join all kernel threads */
     /*for (int i = 1; i < gp_ABTI_global->num_kthreads; i++) {
-	LOG_EVENT("[U%" PRIu64 ":E%d] yield to master scheduler\n",
+	    LOG_EVENT("[U%" PRIu64 ":E%d] joining all k threads\n",
                   ABTI_thread_get_id(p_thread), p_thread->p_last_xstream->rank);
     	ABTI_kthread *k_thread = gp_ABTI_global->k_threads[i];
-    	ABTI_sched_set_request(k_thread->k_main_sched, ABTI_SCHED_REQ_FINISH);
-	//ABTI_thread_context_switch_thread_to_sched(p_thread, k_thread->k_main_sched);
+        k_thread->k_req_arg = (void *)p_thread;
+	    ABTI_kthread_set_request(p_xstream->p_kthread, ABTI_XSTREAM_REQ_JOIN);
+        //ABTI_thread_context_switch_thread_to_sched(p_thread, k_thread->k_main_sched);
     	abt_errno = ABTD_xstream_context_join(k_thread->ctx);
-	LOG_EVENT("[U%" PRIu64 ":E%d] resume after yield\n",
-                  ABTI_thread_get_id(p_thread), p_thread->p_last_xstream->rank);
     }
 
     LOG_EVENT("[U%" PRIu64 ":E%d] yield to primary master scheduler\n",
                   ABTI_thread_get_id(p_thread), p_thread->p_last_xstream->rank);
     *//* After ending the primary virtual ES scheduler */
     /*ABTI_kthread *k_thread = ABTI_local_get_kthread();
+    k_thread->k_req_arg = (void *)p_thread;
     ABTI_kthread_set_request(k_thread, ABTI_XSTREAM_REQ_JOIN);
     ABTI_thread_context_switch_thread_to_sched(p_thread, k_thread->k_main_sched);
 
@@ -263,7 +263,7 @@ int ABT_finalize(void)
     ABTU_free(gp_ABTI_global->p_xstreams);
 
     /* Finalize the memory pool */
-    //ABTI_mem_finalize(gp_ABTI_global);
+    ABTI_mem_finalize(gp_ABTI_global);
 
     /* Free the spinlock */
     ABTI_spinlock_free(&gp_ABTI_global->xstreams_lock);
