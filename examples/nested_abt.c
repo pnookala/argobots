@@ -156,7 +156,7 @@ int main (int argc, char** argv) {
   }
   ///abt_for(main_num_es, main_num_es, inner_par, 0);
   abt_for(main_num_es, main_num_es, work_f, 0);
-    printf("Done...verifying the result...\n");
+/*    printf("Done...verifying the result...\n");
     
     multiply();
     int i, j, k; 
@@ -170,7 +170,7 @@ int main (int argc, char** argv) {
                 break;
             } 
         } 
-    }
+    }*/
     printf("Finished!\n"); 
     return 0;
     

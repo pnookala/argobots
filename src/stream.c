@@ -698,11 +698,11 @@ int ABT_xstream_join(ABT_xstream xstream)
   fn_join:
 #ifdef ABT_XSTREAM_USE_VIRTUAL
     /* Join only if master scheduler's pool is empty. */
-    //if(p_xstream->p_kthread->type == ABTI_KTHREAD_TYPE_SECONDARY) {
-    //    ABTI_kthread_set_request(p_xstream->p_kthread, ABTI_XSTREAM_REQ_JOIN);
+    if(p_xstream->p_kthread->type == ABTI_KTHREAD_TYPE_SECONDARY) {
+        ABTI_kthread_set_request(p_xstream->p_kthread, ABTI_XSTREAM_REQ_JOIN);
         /* We need to manually context switch to scheduler here  */
     //    abt_errno = ABTD_xstream_context_join(p_xstream->p_kthread->ctx);
-    //}
+    }
 #else
     /* Normal join request */
     abt_errno = ABTD_xstream_context_join(p_xstream->ctx);
