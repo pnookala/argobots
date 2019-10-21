@@ -6,7 +6,7 @@
 num_ess=(72 144 216 288)
 num_threads=(72 144 216 288)
 cpus=$(nproc)
-test_name=(barrier-abt-ves)
+test_name=(barrier-abt-no-ves) #(mm-abt-no-ves)
 hostname='haswell-72'
 out_dir='out'
 #$(awk '{print $1}' /etc/hostname)

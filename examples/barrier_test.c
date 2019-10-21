@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <abt.h>
 #include <unistd.h>
-
+#include <sys/time.h>
 #define NUM_ES  1
 ABT_barrier global_barrier;
 
@@ -12,24 +12,34 @@ typedef struct {
 
 void run(void* arg) {
     threadData* td = (threadData*)arg;
-    printf("Entered %d\n", td->id);
+    //printf("Entered %d\n", td->id);
     ABT_barrier_wait(global_barrier);
-    printf("Exiting %d\n", td->id);
+    //printf("Exiting %d\n", td->id);
 }
 
 int main(int argc, char** argv) {
   int i;
   ABT_pool *pools;
   int num_threads, loop_count, ret;
+    char* summary_file = NULL;
 
-    if(argc == 3) {
+    if(argc == 4) {
+        num_threads = atoi(argv[1]);
+        loop_count = atoi(argv[2]);
+        summary_file = argv[3];
+    }
+    else {
         num_threads = atoi(argv[1]);
         loop_count = atoi(argv[2]);
     }
-    else {
-        num_threads = NUM_ES;
-        loop_count = NUM_ES;
-    }
+    
+  if(loop_count % num_threads != 0) {
+    printf("Error: #ULTs must be a multiple of #ESs for this test.\n");
+    exit(-1);
+  }
+  
+  struct timeval start;
+  struct timeval stop;
   //ABT_pool pool;
   ABT_xstream *xstreams = NULL;
   ABT_thread *threads = NULL;
@@ -37,6 +47,7 @@ int main(int argc, char** argv) {
   int start_i = 0;
   int initialized = ABT_initialized() != ABT_ERR_UNINITIALIZED;
   /* initialization */
+  gettimeofday(&start, NULL);
   ABT_init(0, NULL);
 
   /* shared pool creation */
@@ -71,7 +82,7 @@ int main(int argc, char** argv) {
     for(int j = 0; j < each; j++) {
         threadData* arg = (threadData*)malloc(sizeof(threadData));
         arg->id = i * each + j;
-        printf("thread id %d\n", arg->id);
+        //printf("thread id %d\n", arg->id);
     
         ret = ABT_thread_create(pools[i], run, (void *)arg,
                                         ABT_THREAD_ATTR_NULL, &threads[arg->id]);
@@ -103,5 +114,15 @@ int main(int argc, char** argv) {
 
   //printf("call finalize\n");
   ABT_finalize();
+  gettimeofday(&stop, NULL);
+  float elapsed_time = (float)(stop.tv_sec - start.tv_sec +
+                (stop.tv_usec - start.tv_usec)/(float)1000000);
+    
+  if(summary_file != NULL) {
+    FILE *afp = fopen(summary_file, "a");
+    printf("%d %d %f\n", num_threads, loop_count, elapsed_time);
+    fprintf(afp, "%d %d %f\n", num_threads, loop_count, elapsed_time);
+    fclose(afp);
+  }
 }
 

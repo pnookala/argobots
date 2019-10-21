@@ -2,8 +2,9 @@
 #include <stdlib.h>
 #include <abt.h>
 #include <unistd.h>
+#include <sys/time.h>
 
-#define SIZE 512 //2592 //5184
+#define SIZE 5184
 
 static int main_num_es = 4;
 static int inner_num_es = 4;
@@ -19,7 +20,7 @@ typedef struct {
 
 typedef void (*inner_f)(void*);
 
-void work_f(void* args) {
+void matrix_mul(void* args) {
 	//printf("Hello World\n");
 	threadData* data = (threadData*)args;
   
@@ -99,14 +100,15 @@ void abt_for(int num_threads, int loop_count, inner_f inner_func, int level) {
   /* ULT creation */
   threads = (abt_thread_data_t *)malloc(sizeof(abt_thread_data_t) * loop_count);
   int each = SIZE/loop_count;
+  //int num_ult_per_pool = loop_count/num_threads;
   //printf("Each thread processes %d size matrix\n", each);
   for (i = 0; i < loop_count; i++) {
-    threads[i].inner_func = inner_func;
-    threads[i].arg = (threadData*)malloc(sizeof(threadData));
-    threads[i].arg->start_i = i * each;
-    threads[i].arg->end_i = threads[i].arg->start_i + each - 1;
-    //printf("start_i %d, end_i %d\n", threads[i].arg->start_i, threads[i].arg->end_i);
-    ABT_thread_create(pools[i], inner_func_wrapper, &threads[i],
+        threads[i].inner_func = inner_func;
+        threads[i].arg = (threadData*)malloc(sizeof(threadData));
+        threads[i].arg->start_i = i * each;
+        threads[i].arg->end_i = threads[i].arg->start_i + each - 1;
+        //printf("start_i %d, end_i %d\n", threads[i].arg->start_i, threads[i].arg->end_i);
+        ABT_thread_create(pools[i], inner_func_wrapper, &threads[i],
                       ABT_THREAD_ATTR_NULL, &threads[i].thread);
   }
 
@@ -137,25 +139,34 @@ void abt_for(int num_threads, int loop_count, inner_f inner_func, int level) {
 }
 
 void inner2_par(int i) {
-  abt_for(inner_num_es, inner_num_es, work_f, 1);
+  abt_for(inner_num_es, inner_num_es, matrix_mul, 1);
 }
 
 void inner_par(void* data) {
   //printf("inner abt_for\n");
-  abt_for(inner_num_es, inner_num_es, work_f, 1);
+  abt_for(inner_num_es, inner_num_es, matrix_mul, 1);
 }
 
 int main (int argc, char** argv) {
-  if(argc == 2) {
-	main_num_es = atoi(argv[1]);
-	inner_num_es = main_num_es;
+  char* summary_file = NULL;
+  if(argc != 4) {
+    printf("Usage: <#ESs> <#ULTs> <Summary File>\n");
+    exit(-1);
   } 
-  else if(argc == 3) {
+  else {
     main_num_es = atoi(argv[1]);
     inner_num_es = atoi(argv[2]);
+    summary_file = argv[3];
   }
-  ///abt_for(main_num_es, main_num_es, inner_par, 0);
-  abt_for(main_num_es, main_num_es, work_f, 0);
+  struct timeval start;
+  struct timeval stop;
+  gettimeofday(&start, NULL);
+  abt_for(main_num_es, inner_num_es, matrix_mul, 0);
+  gettimeofday(&stop, NULL);
+
+  float elapsed_time = (float)(stop.tv_sec - start.tv_sec + 
+                (stop.tv_usec - start.tv_usec)/(float)1000000);  
+//  abt_for(main_num_es, main_num_es, matrix_mul, 0);
 /*    printf("Done...verifying the result...\n");
     
     multiply();
@@ -171,7 +182,11 @@ int main (int argc, char** argv) {
             } 
         } 
     }*/
-    printf("Finished!\n"); 
+    FILE *afp = fopen(summary_file, "a"); 
+    printf("%d %d %f\n", main_num_es, inner_num_es, elapsed_time);
+    fprintf(afp, "%d %d %f\n", main_num_es, inner_num_es, elapsed_time);
+    fclose(afp);
+    //printf("Finished!\n"); 
     return 0;
     
 }
