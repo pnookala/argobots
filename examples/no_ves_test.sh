@@ -6,7 +6,7 @@
 num_ess=(72 144 216 288)
 num_threads=(72 144 216 288)
 cpus=$(nproc)
-test_name=(barrier-abt-no-ves) #(mm-abt-no-ves)
+test_name=(mm-abt-no-ves) #(mm-abt-no-ves)
 hostname='haswell-72'
 out_dir='out'
 #$(awk '{print $1}' /etc/hostname)
@@ -24,15 +24,15 @@ for type in "${test_name[@]}"
         touch out/${rawfilename}.dat
         for ess in "${num_ess[@]}"
         do
-            for threads in "${num_threads[@]}"
-            do
+            #for threads in "${num_threads[@]}"
+            #do
                 for i in {1..10}
                 do
-                    echo "[$i] Benchmarking ${type} with $ess ES(s) and $threads thread(s)"
-                    ./barrier_test $ess $threads out/${rawfilename}.dat
+                    echo "[$i] Benchmarking ${type} with $ess ES(s) and $ess thread(s)"
+                    ./nested_abt $ess $ess out/${rawfilename}.dat
                     echo ""
                 done
-            done
+            #done
         done
     done
 
