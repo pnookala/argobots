@@ -6,7 +6,7 @@
 num_ess=(72 144 216 288)
 num_threads=(72 144 216 288)
 cpus=$(nproc)
-test_name=(noop-shared-abt-ves)  #(barrier-abt-ves mm-abt-ves)
+test_name=(noop-private-abt-ves)  #(barrier-abt-ves mm-abt-ves)
 exec_name=(noop) #(nested_abt barrier_test)
 hostname='haswell-72'
 out_dir='out'
