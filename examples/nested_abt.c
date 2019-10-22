@@ -4,7 +4,7 @@
 #include <unistd.h>
 #include <sys/time.h>
 
-#define SIZE 10386
+#define SIZE 5184 //10368
 
 static int main_num_es = 4;
 static int inner_num_es = 4;
