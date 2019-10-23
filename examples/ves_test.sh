@@ -29,8 +29,8 @@ for type in "${test_name[@]}"
             #do
                 for i in {1..10}
                 do
-                    echo "[$i] Benchmarking ${type} with $ess ES(s) and $ess thread(s)"
-                    ./${exec_name} $ess $ess out/${rawfilename}.dat
+                    echo "[$i] Benchmarking ${type} with $ess ES(s) and 10368 thread(s)"
+                    ./${exec_name} $ess 10368 out/${rawfilename}.dat
                     echo ""
                 done
             #done

@@ -4,9 +4,12 @@
 #include <unistd.h>
 #include <sys/time.h>
 #define NUM_ES  1
+#define NUM_ITERATIONS 100000000
 
 void noop(void* arg) {
-    asm volatile("");
+    for(int i=0; i<NUM_ITERATIONS; i++) {
+        asm volatile("");
+    }
 }
 
 int main(int argc, char** argv) {
