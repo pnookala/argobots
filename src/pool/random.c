@@ -189,6 +189,10 @@ static void random_push_private(ABT_pool pool, ABT_unit unit)
     data_t *p_data = pool_get_data_ptr(data);
     unit_t *p_unit = (unit_t *)unit;
 
+    if(p_data->num_units == p_data->size) {
+        ABTI_update_pool_size(p_data);
+    }
+
     p_data->p_units[p_data->num_units++] = p_unit;
     p_unit->pool = pool;
 }

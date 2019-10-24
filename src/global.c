@@ -91,11 +91,14 @@ int ABT_init(int argc, char **argv)
 
 #ifdef ABT_XSTREAM_USE_VIRTUAL
     //printf("Number of cores %d\n", gp_ABTI_global->num_cores);
-    //gp_ABTI_global->num_cores = 2;
+    //gp_ABTI_global->num_cores = 1;
     gp_ABTI_global->k_threads = (ABTI_kthread **) ABTU_calloc(
 	    gp_ABTI_global->max_xstreams, sizeof(ABTI_xstream *));
     gp_ABTI_global->num_kthreads = 0;
-    gp_ABTI_global->kthread_lastidx = 1;
+    if (gp_ABTI_global->num_cores > 1) 
+        gp_ABTI_global->kthread_lastidx = 1;
+    else
+        gp_ABTI_global->kthread_lastidx = 0;
 #endif
 
     /* Create a spinlock */

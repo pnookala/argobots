@@ -1960,9 +1960,9 @@ int ABTI_thread_create_main_ksched(ABTI_kthread *k_thread, ABTI_sched *k_sched,
     k_sched->p_thread = v_newthread;
     k_sched->p_ctx = &v_newthread->ctx;
 
-    //ABTI_thread *p_main_thread = ABTI_global_get_main();
-    //if(is_primary == ABT_TRUE)
-    //	ABTD_thread_context_change_link(&v_newthread->ctx, &p_main_thread->ctx);
+    ABTI_thread *p_main_thread = ABTI_global_get_main();
+    if(is_primary == ABT_TRUE)
+    	ABTD_thread_context_change_link(&v_newthread->ctx, &p_main_thread->ctx);
 
   fn_exit:
     return abt_errno;

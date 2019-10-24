@@ -131,7 +131,7 @@ int ABTI_kthread_create_master(ABTI_kthread **k_thread)
         gp_ABTI_global->kthread_lastidx += 1;
         if(gp_ABTI_global->kthread_lastidx == gp_ABTI_global->num_cores)
         {
-            gp_ABTI_global->kthread_lastidx = 1;
+            gp_ABTI_global->kthread_lastidx = 0;
         }
         ABTI_spinlock_release(&gp_ABTI_global->kthreads_lock);
         *k_thread = k_newthread;
@@ -396,7 +396,7 @@ int ABTI_xstream_start(ABTI_xstream *p_xstream)
     	p_sched->p_thread->unit = p_pool->u_create_from_thread(h_schedthread);
     	abt_errno = ABTI_pool_push(p_pool, p_sched->p_thread->unit, p_xstream);
     	ABTI_CHECK_ERROR(abt_errno);	
-       
+      
         if(num_vxstreams == 0) { 
 	        abt_errno = ABTD_xstream_context_create(
 		        ABTI_kthread_launch_main_sched, (void *)p_xstream,
@@ -447,7 +447,8 @@ int ABTI_xstream_start_primary(ABTI_xstream *p_xstream, ABTI_thread *p_thread)
     /* Assign main kernel thread of the program to a kernel thread struct here since this is the primary ES */
     ABTI_kthread *p_kthread = p_xstream->p_kthread;
     if (p_kthread == NULL) goto fn_exit;
-    
+   
+    ABTD_atomic_fetch_add_int32(&p_kthread->num_vxstreams, 1); 
     LOG_EVENT("[T%d] started for [E%d]\n", p_kthread->rank, p_xstream->rank);
     abt_errno = ABTD_xstream_context_self(&p_kthread->ctx);
 

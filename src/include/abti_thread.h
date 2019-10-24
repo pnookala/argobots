@@ -541,22 +541,26 @@ void ABTI_xstream_yield(ABTI_sched *p_sched, ABTI_xstream *p_xstream)
     k_thread = p_xstream->p_kthread;
     p_thread = p_sched->p_thread;
 
-    /* Now we will push the scheduelr back to the pool so it can be scheduled
-     * again */
-    ABTI_pool *p_pool = k_thread->k_main_sched->pools[0];
+    if (ABTI_sched_get_effective_size(k_thread->k_main_sched) > 0) {
+        //printf("yielding from %d\n", k_thread->rank);
+        //printf("yield called by %d\n", p_xstream->rank); 
+       /* Now we will push the scheduelr back to the pool so it can be scheduled
+        * again */
+        ABTI_pool *p_pool = k_thread->k_main_sched->pools[0];
 
-    ABTI_pool_push(p_pool, p_thread->unit, p_xstream);
- 
-    LOG_EVENT("[U%" PRIu64 ":E%d] yielding to master\n",
+        ABTI_pool_push(p_pool, p_thread->unit, p_xstream);
+        //printf("pushed es %d to pool on kt %d\n", p_xstream->rank, k_thread->rank); 
+        LOG_EVENT("[U%" PRIu64 ":E%d] yielding to master\n",
               ABTI_thread_get_id(p_thread), p_xstream->rank);
    
-    ABTI_thread_context_switch_sched_to_sched(p_sched, k_thread->k_main_sched);
+        ABTI_thread_context_switch_sched_to_sched(p_sched, k_thread->k_main_sched);
 
-    ABTI_local_set_xstream(p_xstream); 
-    /* Back to the original thread */
-    LOG_EVENT("[U%" PRIu64 ":E%d] scheduler resumed after join\n",
+        ABTI_local_set_xstream(p_xstream); 
+        
+        /* Back to the original thread */
+        LOG_EVENT("[U%" PRIu64 ":E%d] scheduler resumed after yield\n",
               ABTI_thread_get_id(p_thread), p_thread->p_last_xstream->rank);
-    
+    }
 }    
 #endif
 

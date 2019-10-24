@@ -4,14 +4,8 @@
 #include <unistd.h>
 #include <sys/time.h>
 
-#define SIZE 5184 //10368
-
 static int main_num_es = 4;
 static int inner_num_es = 4;
-int matA[SIZE][SIZE]; 
-int matB[SIZE][SIZE]; 
-int matC[SIZE][SIZE];
-int result[SIZE][SIZE];
 
 typedef struct {
 	int start_i;
@@ -20,32 +14,16 @@ typedef struct {
 
 typedef void (*inner_f)(void*);
 
-void matrix_mul(void* args) {
-	//printf("Hello World\n");
-	threadData* data = (threadData*)args;
+void work_f(void* args) {
+	printf("Hello World\n");
+	/*threadData* data = (threadData*)args;
   
     for (int i = data->start_i; i < data->end_i; i++)  
          for (int j = 0; j < SIZE; j++)  
                 for (int k = 0; k < SIZE; k++)  
     	          matC[i][j] += matA[i][k] * matB[k][j];
-
+*/
 }
-
-void multiply() 
-{ 
-    int i, j, k; 
-    for (i = 0; i < SIZE; i++) 
-    { 
-        for (j = 0; j < SIZE; j++) 
-        { 
-            result[i][j] = 0; 
-            for (k = 0; k < SIZE; k++) 
-                result[i][j] += matA[i][k] *  
-                             matB[k][j]; 
-        } 
-    } 
-}
-
 
 typedef struct {
   ABT_thread thread;
@@ -99,17 +77,18 @@ void abt_for(int num_threads, int loop_count, inner_f inner_func, int level) {
 
   /* ULT creation */
   threads = (abt_thread_data_t *)malloc(sizeof(abt_thread_data_t) * loop_count);
-  int each = SIZE/loop_count;
-  //int num_ult_per_pool = loop_count/num_threads;
+  int num_ult_per_pool = loop_count/num_threads;
   //printf("Each thread processes %d size matrix\n", each);
-  for (i = 0; i < loop_count; i++) {
-        threads[i].inner_func = inner_func;
-        threads[i].arg = (threadData*)malloc(sizeof(threadData));
-        threads[i].arg->start_i = i * each;
-        threads[i].arg->end_i = threads[i].arg->start_i + each - 1;
+  for (i = 0; i < num_threads; i++) {
+     for(int j = 0; j < num_ult_per_pool; j++) {
+  //      threads[i].inner_func = inner_func;
+  //      threads[i].arg = (threadData*)malloc(sizeof(threadData));
+  //      threads[i].arg->start_i = i * each;
+  //      threads[i].arg->end_i = threads[i].arg->start_i + each - 1;
         //printf("start_i %d, end_i %d\n", threads[i].arg->start_i, threads[i].arg->end_i);
-        ABT_thread_create(pools[i], inner_func_wrapper, &threads[i],
-                      ABT_THREAD_ATTR_NULL, &threads[i].thread);
+        ABT_thread_create(pools[i], work_f, NULL,
+                      ABT_THREAD_ATTR_NULL, &threads[i*num_ult_per_pool+j].thread);
+    }
   }
 
 //  printf("threads created...joining threads!\n");
@@ -139,12 +118,12 @@ void abt_for(int num_threads, int loop_count, inner_f inner_func, int level) {
 }
 
 void inner2_par(int i) {
-  abt_for(inner_num_es, inner_num_es, matrix_mul, 1);
+  abt_for(inner_num_es, inner_num_es, work_f, 1);
 }
 
 void inner_par(void* data) {
   //printf("inner abt_for\n");
-  abt_for(inner_num_es, inner_num_es, matrix_mul, 1);
+  abt_for(inner_num_es, inner_num_es, work_f, 1);
 }
 
 int main (int argc, char** argv) {
@@ -161,32 +140,17 @@ int main (int argc, char** argv) {
   struct timeval start;
   struct timeval stop;
   gettimeofday(&start, NULL);
-  abt_for(main_num_es, inner_num_es, matrix_mul, 0);
+  abt_for(main_num_es, inner_num_es, work_f, 0);
   gettimeofday(&stop, NULL);
 
   float elapsed_time = (float)(stop.tv_sec - start.tv_sec + 
                 (stop.tv_usec - start.tv_usec)/(float)1000000);  
-//  abt_for(main_num_es, main_num_es, matrix_mul, 0);
-/*    printf("Done...verifying the result...\n");
     
-    multiply();
-    int i, j, k; 
-    for (i = 0; i < SIZE; i++) 
-    { 
-        for (j = 0; j < SIZE; j++) 
-        { 
-            if(result[i][j] != matC[i][j])
-            {
-                printf("Wrong result!\n");
-                break;
-            } 
-        } 
-    }*/
-    FILE *afp = fopen(summary_file, "a"); 
-    printf("%d %d %f\n", main_num_es, inner_num_es, elapsed_time);
-    fprintf(afp, "%d %d %f\n", main_num_es, inner_num_es, elapsed_time);
-    fclose(afp);
+  FILE *afp = fopen(summary_file, "a"); 
+  printf("%d %d %f\n", main_num_es, inner_num_es, elapsed_time);
+  fprintf(afp, "%d %d %f\n", main_num_es, inner_num_es, elapsed_time);
+  fclose(afp);
     //printf("Finished!\n"); 
-    return 0;
+  return 0;
     
 }
