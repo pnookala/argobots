@@ -140,7 +140,7 @@ int main (int argc, char** argv) {
   struct timeval start;
   struct timeval stop;
   gettimeofday(&start, NULL);
-  abt_for(main_num_es, inner_num_es, work_f, 0);
+  abt_for(main_num_es, inner_num_es, inner_par, 0);
   gettimeofday(&stop, NULL);
 
   float elapsed_time = (float)(stop.tv_sec - start.tv_sec + 

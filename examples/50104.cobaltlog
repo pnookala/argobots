@@ -22,3 +22,5 @@ Thu Oct 24 13:10:31 2019 +0000 (UTC) Info: stdin received from /dev/null
 Thu Oct 24 13:10:31 2019 +0000 (UTC) Info: stdout sent to /home/poornimans/pnookala-argobots/argobots/examples/50104.output
 Thu Oct 24 13:10:31 2019 +0000 (UTC) Info: stderr sent to /home/poornimans/pnookala-argobots/argobots/examples/50104.error
 Thu Oct 24 13:10:31 2019 +0000 (UTC) 
+Thu Oct 24 19:09:46 2019 +0000 (UTC) Info: maximum execution time exceeded; initiating job termination
+Thu Oct 24 19:09:47 2019 +0000 (UTC) Info: job is in the process of exiting; user delete request ignored

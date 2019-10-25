@@ -20,9 +20,10 @@
 #include <abt.h>
 
 #define NUM_XSTREAMS 1
-#define NUM_INNER_XSTREAMS 1
-#define NUM_THREADS 1
+#define NUM_INNER_XSTREAMS 4
+#define NUM_THREADS 4
 
+//static int num_recursive_calls = 0;
 /* global */
 ABT_pool g_pool = ABT_POOL_NULL;
 ABT_pool inner_pool = ABT_POOL_NULL;
@@ -69,18 +70,20 @@ int init_abt(int num_xstreams, ABT_xstream *xstreams, ABT_pool *g_pool) {
     /* create a scheduler pool? */
     ABT_pool_create_basic(ABT_POOL_FIFO, ABT_POOL_ACCESS_MPMC, ABT_TRUE, g_pool);
     ////////////////////////////////////////////////////////////////////////////
-
-    ABT_xstream_self(&xstreams[0]);
+    
     if(initialized)
-	set_main_sched_err = -1;
+	    set_main_sched_err = -1;
     else
+    {
+        ABT_xstream_self(&xstreams[0]);
     	set_main_sched_err = ABT_xstream_set_main_sched_basic(xstreams[0], ABT_SCHED_DEFAULT, 1, g_pool);
-	
+	    initialized = 0;
+    }
+
     int start_i = (set_main_sched_err != ABT_SUCCESS) ? 0 : 1;
-	
     for(int i = start_i; i < num_xstreams; i++) {
-	ABT_xstream_create_basic(ABT_SCHED_DEFAULT, 1, g_pool, ABT_SCHED_CONFIG_NULL, &xstreams[i]);
-	ABT_xstream_start(xstreams[i]);
+	    ABT_xstream_create_basic(ABT_SCHED_DEFAULT, 1, g_pool, ABT_SCHED_CONFIG_NULL, &xstreams[i]);
+	    ABT_xstream_start(xstreams[i]);
     }
 
     return start_i;
@@ -99,8 +102,8 @@ void matmul(const real_t * restrict a, const real_t * restrict b,
             real_t * restrict c, int64_t di, int64_t dj, int64_t dk, int64_t aN,
             int64_t bN, int64_t cN)
 {
-    	    printf("# of Inner ESs: %d\n", num_inner_xstreams);
-            ABT_xstream *xstreams;
+    	//printf("# of Inner ESs: %d\n", num_inner_xstreams);
+        ABT_xstream *xstreams;
 	 
 	    xstreams = (ABT_xstream *)malloc(sizeof(ABT_xstream) * num_inner_xstreams);
  
@@ -108,26 +111,27 @@ void matmul(const real_t * restrict a, const real_t * restrict b,
 	    int iter = dj/NUM_THREADS;
 	    int leftover = dj % NUM_THREADS;
 	    ABT_thread *threads = malloc(sizeof(ABT_thread) * NUM_THREADS);
-	
+
 	for (int i = 0; i < NUM_THREADS; i++) {
- 	   matmul_args *args = (matmul_args*)malloc(sizeof(thread_args));
+ 	   matmul_args *args = (matmul_args*)malloc(sizeof(matmul_args));
 	   args->a = a;
 	   args->b = b;
 	   args->c = c;
 	   args->di = di;
 	   args->dj_start = i*iter;
-	   args->dj_end = args->dj_start + iter - 1;
+	   args->dj_end = args->dj_start + iter;
 	   if(i == NUM_THREADS - 1) args->dj_end = args->dj_end + leftover;
 	   args->dk = dk;
 	   args->aN = aN;
 	   args->bN = bN;
 	   args->cN = cN;
 
-	   ABT_thread_create(inner_pool, matmul_handler, args, ABT_THREAD_ATTR_NULL, &threads[i]);
+	   ABT_thread_create(inner_pool, matmul_handler, args, 
+                                ABT_THREAD_ATTR_NULL, &threads[i]);
 	}
 
 	for(int i = 0; i < NUM_THREADS; i++) {
-	    ABT_thread_join(threads[i]);
+	    //ABT_thread_join(threads[i]);
 	    ABT_thread_free(&threads[i]);
 	}
 	
@@ -139,13 +143,29 @@ void matmul(const real_t * restrict a, const real_t * restrict b,
 	free(threads);
 	free(xstreams);
 	ABT_finalize();
+
+    //#pragma omp parallel for
+    /*for (int64_t j = 0; j < dj; j++)
+        for (int64_t i = 0; i < di; i++)
+            for (int64_t k = 0; k < dk; k++)
+                c[i + j * cN] += a[k + j * aN] * b[i + k * bN];
+*/}
+
+void matmul_serial(const real_t * restrict a, const real_t * restrict b,
+            real_t * restrict c, int64_t di, int64_t dj, int64_t dk, int64_t aN,
+            int64_t bN, int64_t cN)
+{
+    for (int64_t j = 0; j < dj; j++)
+        for (int64_t i = 0; i < di; i++)
+            for (int64_t k = 0; k < dk; k++)
+                c[i + j * cN] += a[k + j * aN] * b[i + k * bN];
 }
 
 void matadd(const real_t * restrict a, const real_t * restrict b,
             real_t * restrict c, int64_t di, int64_t dj, int64_t aN, int64_t bN,
             int64_t cN)
 {
-    #pragma omp parallel for
+    //#pragma omp parallel for
     for (int64_t j = 0; j < dj; j++)
         for (int64_t i = 0; i < di; i++)
             c[i + j * cN] = a[i + j * aN] + b[i + j * bN];
@@ -156,7 +176,7 @@ void mataddaddminadd(const real_t * restrict a1, const real_t * restrict a2,
                      real_t * restrict c, int64_t di, int64_t dj, int64_t aN,
                      int64_t cN)
 {
-    #pragma omp parallel for
+    //#pragma omp parallel for
     for (int64_t j = 0; j < dj; j++)
         for (int64_t i = 0; i < di; i++)
             c[i + j * cN] = a1[i + j * aN] + a2[i + j * aN] - a3[i + j * aN]
@@ -167,7 +187,7 @@ void matmin(const real_t * restrict a, const real_t * restrict b,
             real_t * restrict c, int64_t di, int64_t dj, int64_t aN, int64_t bN,
             int64_t cN)
 {
-    #pragma omp parallel for
+    //#pragma omp parallel for
     for (int64_t j = 0; j < dj; j++)
         for (int64_t i = 0; i < di; i++)
             c[i + j * cN] = a[i + j * aN] - b[i + j * bN];
@@ -176,7 +196,7 @@ void matmin(const real_t * restrict a, const real_t * restrict b,
 void matassign(const real_t * restrict a, real_t * restrict c,
                int64_t di, int64_t dj, int64_t aN, int64_t cN)
 {
-    #pragma omp parallel for
+    //#pragma omp parallel for
     for (int64_t j = 0; j < dj; j++)
         memcpy(&c[j * cN], &a[j * aN], sizeof(real_t) * di);
 }
@@ -185,7 +205,7 @@ void strassen(const real_t *a,const real_t *b, real_t *c, int64_t dn,
               int64_t n)
 {
     if (dn <= g_cutoff) {
-        matmul(a, b, c, dn, dn, dn, n, n, n);
+        matmul_serial(a, b, c, dn, dn, dn, n, n, n);
     } else {
         const real_t *A[4];
         const real_t *B[4];
@@ -292,6 +312,8 @@ void strassen_thread(void *args)
     real_t *a = arguments->a;
     real_t *b = arguments->b;
     real_t *c = arguments->c;
+    
+    //__sync_fetch_and_add(&num_recursive_calls, 1);
 
     if (dn <= g_cutoff) {
         matmul(a, b, c, dn, dn, dn, n, n, n);
@@ -412,11 +434,13 @@ void strassen_thread(void *args)
 
 int main(int argc, char *argvs[])
 {
-    if (argc < 5) {
-        printf("Usage: MATSIZE_N NREPEATS G_PADDING G_CUTOFF\n");
-        printf("ex: ./strassen 1024 1 16 128\n");
+    if (argc < 6) {
+        printf("Usage: MATSIZE_N NREPEATS G_PADDING G_CUTOFF SUMMARYFILE\n");
+        printf("ex: ./strassen 1024 1 16 128 output.dat\n");
         return -1;
     }
+    struct timeval start, stop;
+
     int num_xstreams = (argc > 5) ? atoi(argvs[5]) : NUM_XSTREAMS;
     num_inner_xstreams = (argc > 6) ? atoi(argvs[6]) : NUM_INNER_XSTREAMS;
 
@@ -424,6 +448,8 @@ int main(int argc, char *argvs[])
     int64_t num_repeats = atoi(argvs[2]);
     g_padding = atoi(argvs[3]);
     g_cutoff = atoi(argvs[4]);
+    char* summary_file = argvs[7];
+
     if (dn & (dn - 1)) {
         printf("MATSIZE_N must be a power of 2.\n");
         return -1;
@@ -444,18 +470,12 @@ int main(int argc, char *argvs[])
     }
     if (num_repeats == 0) {
         // Error check.
-        printf("Performing strassen's MM ...\n");
-	strassen(a, b, c, dn, n);
-	printf("... Done\n");
+        strassen(a, b, c, dn, n);
         real_t *ans = (real_t *)calloc(n * dn, sizeof(real_t));
-	printf("Performing naive MM ...\n");
         matmul(a, b, ans, dn, dn, dn, n, n, n);
-	printf("... Done\n");
         int num_fails = 0;
         for (int64_t j = 0; j < dn; j++) {
             for (int64_t i = 0; i < dn; i++) {
-                printf("Different: c[%d,%d] (=%f) != %f\n", (int)i, (int)j,
-                       c[i + j * n], ans[i + j * n]);
                 if (fabs(c[i + j * n] - ans[i + j * n]) > (real_t)0.0001) {
                     printf("Different: c[%d,%d] (=%f) != %f\n", (int)i, (int)j,
                            c[i + j * n], ans[i + j * n]);
@@ -471,35 +491,45 @@ END_LOOP:
     } else {
         // Performance check.
         for (int i = 0; i < num_repeats; i++) {
-	    ABT_thread thread;
-	    printf("# of ESs: %d\n", num_xstreams);
-	    ABT_xstream *xstreams;
-	    thread_args args_thread;
+	        ABT_thread thread;
+	        //printf("# of ESs: %d\n", num_xstreams);
+	        ABT_xstream *xstreams;
+	        thread_args args_thread;
 	 
-	    xstreams = (ABT_xstream *)malloc(sizeof(ABT_xstream) * num_xstreams);
- 
-	    int j = init_abt(num_xstreams, xstreams, &g_pool);
-            double t1 = get_time();
+   	        xstreams = (ABT_xstream *)malloc(sizeof(ABT_xstream) * num_xstreams);
+            gettimeofday(&start, NULL);
+
+	        int j = init_abt(num_xstreams, xstreams, &g_pool);
             args_thread.a = a;
             args_thread.b = b;
             args_thread.c = c;
             args_thread.dn = dn;
             args_thread.n = n;
-            ABT_thread_create(g_pool, strassen_thread, &args_thread, ABT_THREAD_ATTR_NULL, &thread);
-	    ABT_thread_join(thread);
-            
-	    double t2 = get_time();
-            printf("[%d] Elapsed: %f [s]\n", i, t2 - t1);
-	    ABT_thread_free(&thread);
+        //    ABT_thread_create(g_pool, strassen_thread, &args_thread, ABT_THREAD_ATTR_NULL, &thread);
+	    //ABT_thread_join(thread);
+            strassen_thread(&args_thread);
+        //printf("[%d] Elapsed: %f [s]\n", i, t2 - t1);
+	    //ABT_thread_free(&thread);
+        //printf("num calls %d num ESs %d\n", num_recursive_calls, num_recursive_calls*num_inner_xstreams);
+	        while(j < num_xstreams) {
+	            ABT_xstream_join(xstreams[j]);
+	            ABT_xstream_free(&xstreams[j]);
+	            j++;
+	        }
+	        
+            free(xstreams);
+	        ABT_finalize();
+            gettimeofday(&stop, NULL);
+            float elapsed_time = (float)(stop.tv_sec - start.tv_sec +
+                (stop.tv_usec - start.tv_usec)/(float)1000000);
 
-	    while(j < num_xstreams) {
-	      ABT_xstream_join(xstreams[j]);
-	      ABT_xstream_free(&xstreams[j]);
-	      j++;
-	    }
-	    free(xstreams);
-	    ABT_finalize();
-        }
+            if(summary_file != NULL) {
+                FILE *afp = fopen(summary_file, "a");
+                printf("%d %d %f\n", num_xstreams, num_inner_xstreams, elapsed_time);
+                fprintf(afp, "%d %d %f\n", num_xstreams, num_inner_xstreams, elapsed_time);
+                fclose(afp);
+            }
+        }   
     }
     return 0;
 }
