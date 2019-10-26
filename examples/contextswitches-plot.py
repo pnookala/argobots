@@ -10,7 +10,7 @@ from statistics import mean
 from itertools import cycle
 
 def main(args):
-    lines = ['k-o', 'k-.'] #, 'co--', 'mo--', 'ro--', 'yo--', 'gv--', 'bv--', 'cv--', 'mv--', 'rv--', 'yv--', 'g*--', 'b*--', 'c*--', 'm*--', 'r*--', 'y*--']    
+    lines = ['k-', 'k-.'] #, 'co--', 'mo--', 'ro--', 'yo--', 'gv--', 'bv--', 'cv--', 'mv--', 'rv--', 'yv--', 'g*--', 'b*--', 'c*--', 'm*--', 'r*--', 'y*--']    
     linecycler = cycle(lines)
     
     hostname = ["haswell-72"] #, "arm-tx-96", "ibm-power9"]
@@ -20,7 +20,6 @@ def main(args):
     x = []
     #y = [[0 for x in range(w)] for y in range(h)] 
     y = []
-    yerr = []
     num_threads=[72,144,216,288]
     test_name=["abt-ves", "abt-no-ves"]
     testname_print=["abt-ves", "abt-no-ves"]
@@ -39,7 +38,6 @@ def main(args):
             q = []
             plotx = []
             ploty = []
-            plotyerr = []
             with open(filename) as csvfile:
                 plots = csv.reader(csvfile, delimiter=' ')
                 for row in plots:
@@ -47,19 +45,16 @@ def main(args):
                         p.append(int(row[1]))
                     else:
                         p.append(int(row[0]))
-                    q.append(float(row[2]))
+                    q.append(int(row[1]))
             i += 1;
-            for j in range(0,len(p), 10):
-                plotx.append(p[j])
-                ploty.append(float(mean(q[j:j+10])))
-                plotyerr.append(float(np.std(q[j:j+10])))
-            x.append(plotx)
-            y.append(ploty)
-            yerr.append(plotyerr)
+            #for j in range(0,len(p), 10):
+            #    plotx.append(p[j])
+            #    ploty.append(mean(q[j:j+10]))
+            x.append(p)
+            y.append(q)
         plotname = test_type
-        print(yerr)
         for j in range(0,i):
-            plt.errorbar(x[j], y[j], yerr[j], fmt="-o", label=test_type + "-" + testname_print[j])
+            plt.plot(x[j], y[j], next(linecycler), label=test_type + "-" + testname_print[j])
 
         plt.xlabel("#ESs")
         plt.ylabel(yname)
