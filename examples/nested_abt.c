@@ -15,8 +15,11 @@ typedef struct {
 typedef void (*inner_f)(void*);
 
 void work_f(void* args) {
-	printf("Hello World\n");
-	/*threadData* data = (threadData*)args;
+	//printf("Hello World\n");
+	for(int i = 0; i < 100000000; i++) {
+        asm volatile("");
+    }
+    /*threadData* data = (threadData*)args;
   
     for (int i = data->start_i; i < data->end_i; i++)  
          for (int j = 0; j < SIZE; j++)  
@@ -86,7 +89,7 @@ void abt_for(int num_threads, int loop_count, inner_f inner_func, int level) {
   //      threads[i].arg->start_i = i * each;
   //      threads[i].arg->end_i = threads[i].arg->start_i + each - 1;
         //printf("start_i %d, end_i %d\n", threads[i].arg->start_i, threads[i].arg->end_i);
-        ABT_thread_create(pools[i], work_f, NULL,
+        ABT_thread_create(pools[i], inner_func, NULL,
                       ABT_THREAD_ATTR_NULL, &threads[i*num_ult_per_pool+j].thread);
     }
   }
@@ -122,14 +125,14 @@ void inner2_par(int i) {
 }
 
 void inner_par(void* data) {
-  //printf("inner abt_for\n");
-  abt_for(inner_num_es, inner_num_es, work_f, 1);
+  printf("inner abt_for\n");
+  abt_for(inner_num_es, inner_num_es*144, work_f, 1);
 }
 
 int main (int argc, char** argv) {
   char* summary_file = NULL;
   if(argc != 4) {
-    printf("Usage: <#ESs> <#ULTs> <Summary File>\n");
+    printf("Usage: <#Main ESs> <#Inner ESs> <Summary File>\n");
     exit(-1);
   } 
   else {
@@ -140,7 +143,7 @@ int main (int argc, char** argv) {
   struct timeval start;
   struct timeval stop;
   gettimeofday(&start, NULL);
-  abt_for(main_num_es, inner_num_es, inner_par, 0);
+  abt_for(main_num_es, main_num_es, inner_par, 0);
   gettimeofday(&stop, NULL);
 
   float elapsed_time = (float)(stop.tv_sec - start.tv_sec + 

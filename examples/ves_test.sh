@@ -21,16 +21,16 @@ cd "${ABT_DIR}/examples"
 clang -g -O3 barrier_test.c -lm -I/home/poornimans/argobots-install/include -L/home/poornimans/argobots-install/lib -labt -o barrier_test
 clang -g -O3 noop.c -lm -I/home/poornimans/argobots-install/include -L/home/poornimans/argobots-install/lib -labt -o noop
 clang -g -O3 strassen_thread.c -lm -I/home/poornimans/argobots-install/include -L/home/poornimans/argobots-install/lib -labt -o strassen_thread
-
+clang -g -O3 nested_abt.c -lm -I/home/poornimans/argobots-install/include -L/home/poornimans/argobots-install/lib -labt -o nested_abt
 
 num_ess=(72 144 216 288)
 #num_threads=(72 144 216 288)
 cpus=$(nproc)
-test_name=(noop-private-abt-ves barrier-abt-ves)
-exec_name=(noop barier_test) #(nested_abt barrier_test)
+test_name=(noop-private-switch50) #(noop-private-abt-ves barrier-abt-ves nested-noop-abt)
+exec_name=(noop)  #(noop barier_test) #(nested_abt barrier_test nested_abt)
 hostname='haswell-72'
 out_dir='out'
-#$(awk '{print $1}' /etc/hostname)
+$(awk '{print $1}' /etc/hostname)
 echo "Number of cores is $cpus"
 
 if [ -d "${out_dir}" ]; then
@@ -47,21 +47,23 @@ for type in "${test_name[@]}"
         do
             #for threads in "${num_threads[@]}"
             #do
-                for i in {1..10}
+               for i in {1..10}
                 do
                     echo "[$i] Benchmarking ${type} with $ess ES(s) and 10368 thread(s)"
-                    ./${exec_name} $ess 10368 out/${rawfilename}.dat
+                    ./${exec_name} $ess $ess out/${rawfilename}.dat
                     echo ""
                 done
             #done
         done
     done
 
+exit 1
+
 #Strassen's test
-num_ess=(2 4 6 8 12)
+num_ess=(72 144 216 288)
 
 #num_threads=(72 144 216 288)
-test_name=(strassen-abt-ves)
+test_name=(strassen-top-level-abt-ves)
 exec_name=(strassen_thread) #(nested_abt barrier_test)
 hostname='haswell-72'
 out_dir='out'
@@ -82,10 +84,10 @@ for type in "${test_name[@]}"
         do
             #for threads in "${num_threads[@]}"
             #do
-                for i in {1..10}
+                for i in {1..5}
                 do
                     echo "[$i] Benchmarking ${type} with $ess ES(s) and 10368 thread(s)"
-                    ./${exec_name} 2048 1 16 128 1 $ess out/${rawfilename}.dat
+                    ./${exec_name} 2048 1 16 128 $ess 1 out/${rawfilename}.dat
                     echo ""
                 done
             #done
