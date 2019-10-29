@@ -23,11 +23,11 @@ clang -g -O3 noop.c -lm -I/home/poornimans/argobots-install/include -L/home/poor
 clang -g -O3 strassen_thread.c -lm -I/home/poornimans/argobots-install/include -L/home/poornimans/argobots-install/lib -labt -o strassen_thread
 clang -g -O3 nested_abt.c -lm -I/home/poornimans/argobots-install/include -L/home/poornimans/argobots-install/lib -labt -o nested_abt
 
-num_ess=(72 144 216 288)
+num_ess=(1 2 3 4)
 #num_threads=(72 144 216 288)
 cpus=$(nproc)
-test_name=(noop-private-switch50) #(noop-private-abt-ves barrier-abt-ves nested-noop-abt)
-exec_name=(noop)  #(noop barier_test) #(nested_abt barrier_test nested_abt)
+test_name=(nested-noop-abt-ves) #(noop-private-abt-ves barrier-abt-ves nested-noop-abt)
+exec_name=(nested_abt)  #(noop barier_test) #(nested_abt barrier_test nested_abt)
 hostname='haswell-72'
 out_dir='out'
 $(awk '{print $1}' /etc/hostname)
@@ -50,7 +50,7 @@ for type in "${test_name[@]}"
                for i in {1..10}
                 do
                     echo "[$i] Benchmarking ${type} with $ess ES(s) and 10368 thread(s)"
-                    ./${exec_name} $ess $ess out/${rawfilename}.dat
+                    ./${exec_name} $ess 72 out/${rawfilename}.dat
                     echo ""
                 done
             #done
