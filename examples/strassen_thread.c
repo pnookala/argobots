@@ -17,11 +17,13 @@
 #include <math.h>
 #include <string.h>
 #include <sys/time.h>
+#include <emmintrin.h>
 #include <abt.h>
+//#include <cblas.h>
 
 #define NUM_XSTREAMS 1
-#define NUM_INNER_XSTREAMS 4
-#define NUM_THREADS 4
+#define NUM_INNER_XSTREAMS 1
+static int  NUM_THREADS = 1;
 
 //static int num_recursive_calls = 0;
 /* global */
@@ -61,14 +63,14 @@ static inline double get_time()
 int64_t g_padding = 0;
 int64_t g_cutoff = 0;
 
-int init_abt(int num_xstreams, ABT_xstream *xstreams, ABT_pool *g_pool) {
+int init_abt(int num_xstreams, ABT_xstream *xstreams, ABT_pool *pool) {
     int set_main_sched_err;
     int initialized = ABT_initialized() != ABT_ERR_UNINITIALIZED;
     /* initialize argobots */
     ABT_init(0, NULL);
 
     /* create a scheduler pool? */
-    ABT_pool_create_basic(ABT_POOL_FIFO, ABT_POOL_ACCESS_MPMC, ABT_TRUE, g_pool);
+    ABT_pool_create_basic(ABT_POOL_FIFO, ABT_POOL_ACCESS_MPMC, ABT_TRUE, pool);
     ////////////////////////////////////////////////////////////////////////////
     
     if(initialized)
@@ -76,13 +78,13 @@ int init_abt(int num_xstreams, ABT_xstream *xstreams, ABT_pool *g_pool) {
     else
     {
         ABT_xstream_self(&xstreams[0]);
-    	set_main_sched_err = ABT_xstream_set_main_sched_basic(xstreams[0], ABT_SCHED_DEFAULT, 1, g_pool);
+    	set_main_sched_err = ABT_xstream_set_main_sched_basic(xstreams[0], ABT_SCHED_DEFAULT, 1, pool);
 	    initialized = 0;
     }
 
     int start_i = (set_main_sched_err != ABT_SUCCESS) ? 0 : 1;
     for(int i = start_i; i < num_xstreams; i++) {
-	    ABT_xstream_create_basic(ABT_SCHED_DEFAULT, 1, g_pool, ABT_SCHED_CONFIG_NULL, &xstreams[i]);
+	    ABT_xstream_create_basic(ABT_SCHED_DEFAULT, 1, pool, ABT_SCHED_CONFIG_NULL, &xstreams[i]);
 	    ABT_xstream_start(xstreams[i]);
     }
 
@@ -90,12 +92,22 @@ int init_abt(int num_xstreams, ABT_xstream *xstreams, ABT_pool *g_pool) {
 }
 
 void matmul_handler(void* data) {
-  matmul_args *args = (matmul_args*)data;
+    matmul_args *args = (matmul_args*)data;
 
     for (int64_t j = args->dj_start; j < args->dj_end; j++)
+    {
         for (int64_t i = 0; i < args->di; i++)
-            for (int64_t k = 0; k < args->dk; k++)
-                args->c[i + j * args->cN] += args->a[k + j * args->aN] * args->b[i + k * args->bN];
+        {    
+            __m128d c = _mm_setzero_pd();
+            for (int64_t k = 0; k < args->dk; k+=4)
+                c = _mm_add_pd(c, _mm_mul_pd(
+                        _mm_load_pd(&args->a[k + j * args->aN]), 
+                        _mm_load_pd(&args->b[i + k * args->bN])));
+                //args->c[i + j * args->cN] += args->a[k + j * args->aN] * args->b[i + k * args->bN];
+            c = _mm_add_pd(c, c);
+            _mm_store_sd(&args->c[i + j * args->cN], c);
+        }
+    }
 }
 
 void matmul(const real_t * restrict a, const real_t * restrict b,
@@ -104,10 +116,11 @@ void matmul(const real_t * restrict a, const real_t * restrict b,
 {
     	//printf("# of Inner ESs: %d\n", num_inner_xstreams);
         ABT_xstream *xstreams;
+        NUM_THREADS = num_inner_xstreams; // For simplicity
 	 
 	    xstreams = (ABT_xstream *)malloc(sizeof(ABT_xstream) * num_inner_xstreams);
- 
-	    int start_i = init_abt(num_inner_xstreams, xstreams, &inner_pool);
+        ABT_pool matmul_pool = ABT_POOL_NULL; 
+	    int start_i = init_abt(num_inner_xstreams, xstreams, &matmul_pool);
 	    int iter = dj/NUM_THREADS;
 	    int leftover = dj % NUM_THREADS;
 	    ABT_thread *threads = malloc(sizeof(ABT_thread) * NUM_THREADS);
@@ -126,7 +139,7 @@ void matmul(const real_t * restrict a, const real_t * restrict b,
 	   args->bN = bN;
 	   args->cN = cN;
 
-	   ABT_thread_create(inner_pool, matmul_handler, args, 
+	   ABT_thread_create(matmul_pool, matmul_handler, args, 
                                 ABT_THREAD_ATTR_NULL, &threads[i]);
 	}
 
@@ -137,11 +150,11 @@ void matmul(const real_t * restrict a, const real_t * restrict b,
 	
 	for(int j = start_i; j < num_inner_xstreams; j++) {
 	      ABT_xstream_join(xstreams[j]);
-	      ABT_xstream_free(&xstreams[j]);
+	      //ABT_xstream_free(&xstreams[j]);
 	}
 
-	free(threads);
-	free(xstreams);
+	//free(threads);
+	//free(xstreams);
 	ABT_finalize();
 
     //#pragma omp parallel for
@@ -169,6 +182,17 @@ void matadd(const real_t * restrict a, const real_t * restrict b,
     for (int64_t j = 0; j < dj; j++)
         for (int64_t i = 0; i < di; i++)
             c[i + j * cN] = a[i + j * aN] + b[i + j * bN];
+}
+
+void mattrans(real_t * restrict m, int64_t size) 
+{
+    for (int i = 0; i < size; i++) {
+        for (int j = i + 1; j < size; j++) {
+            real_t tmp = m[i + j * size];
+            m[i + j * size] = m[j + i * size];
+            m[j + i * size] = tmp;
+        }
+    }
 }
 
 void mataddaddminadd(const real_t * restrict a1, const real_t * restrict a2,
@@ -205,7 +229,7 @@ void strassen(const real_t *a,const real_t *b, real_t *c, int64_t dn,
               int64_t n)
 {
     if (dn <= g_cutoff) {
-        matmul_serial(a, b, c, dn, dn, dn, n, n, n);
+        matmul(a, b, c, dn, dn, dn, n, n, n);
     } else {
         const real_t *A[4];
         const real_t *B[4];
@@ -400,7 +424,7 @@ void strassen_thread(void *args)
 	}
 
 	for(int i = 0; i < 7; i++) {
-	    ABT_thread_join(threads[i]);
+	    //ABT_thread_join(threads[i]);
 	    ABT_thread_free(&threads[i]);
 	}
 
@@ -505,19 +529,19 @@ END_LOOP:
             args_thread.c = c;
             args_thread.dn = dn;
             args_thread.n = n;
-        //    ABT_thread_create(g_pool, strassen_thread, &args_thread, ABT_THREAD_ATTR_NULL, &thread);
-	    //ABT_thread_join(thread);
-            strassen_thread(&args_thread);
-        //printf("[%d] Elapsed: %f [s]\n", i, t2 - t1);
-	    //ABT_thread_free(&thread);
-        //printf("num calls %d num ESs %d\n", num_recursive_calls, num_recursive_calls*num_inner_xstreams);
+            ABT_thread_create(g_pool, strassen_thread, &args_thread, ABT_THREAD_ATTR_NULL, &thread);
+	        ABT_thread_join(thread);
+            //strassen_thread(&args_thread);
+            //printf("[%d] Elapsed: %f [s]\n", i, t2 - t1);
+	        //ABT_thread_free(&thread);
+            //printf("num calls %d num ESs %d\n", num_recursive_calls, num_recursive_calls*num_inner_xstreams);
 	        while(j < num_xstreams) {
 	            ABT_xstream_join(xstreams[j]);
-	            ABT_xstream_free(&xstreams[j]);
+	            //ABT_xstream_free(&xstreams[j]);
 	            j++;
 	        }
 	        
-            free(xstreams);
+            //free(xstreams);
 	        ABT_finalize();
             gettimeofday(&stop, NULL);
             float elapsed_time = (float)(stop.tv_sec - start.tv_sec +
