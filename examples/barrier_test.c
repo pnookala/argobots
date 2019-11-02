@@ -11,7 +11,7 @@ typedef struct {
 } threadData;
 
 void run(void* arg) {
-    threadData* td = (threadData*)arg;
+    //threadData* td = (threadData*)arg;
     //printf("Entered %d\n", td->id);
     ABT_barrier_wait(global_barrier);
     //printf("Exiting %d\n", td->id);
@@ -80,12 +80,12 @@ int main(int argc, char** argv) {
   //printf("Each thread processes %d size matrix\n", each);
   for (i = 0; i < num_threads; i++) {
     for(int j = 0; j < each; j++) {
-        threadData* arg = (threadData*)malloc(sizeof(threadData));
-        arg->id = i * each + j;
+        //threadData* arg = (threadData*)malloc(sizeof(threadData));
+        //arg->id = i * each + j;
         //printf("thread id %d\n", arg->id);
     
-        ret = ABT_thread_create(pools[i], run, (void *)arg,
-                                        ABT_THREAD_ATTR_NULL, &threads[arg->id]);
+        ret = ABT_thread_create(pools[i], run, NULL,
+                                        ABT_THREAD_ATTR_NULL, &threads[i * each + j]);
   
     }
   }

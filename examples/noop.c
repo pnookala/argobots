@@ -82,7 +82,7 @@ int main(int argc, char** argv) {
   /* ULT creation */
   threads = (ABT_thread *)malloc(sizeof(ABT_thread) * loop_count);
   int each = loop_count/num_threads;
-  for (i = 0; i < num_threads; i++) {
+    for (i = 0; i < num_threads; i++) {
     for(int j = 0; j < each; j++) {
 #ifdef SHARED
         ret = ABT_thread_create(pool, noop, NULL, ABT_THREAD_ATTR_NULL,

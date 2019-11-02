@@ -125,7 +125,7 @@ void inner2_par(int i) {
 }
 
 void inner_par(void* data) {
-  printf("inner abt_for\n");
+ // printf("inner abt_for\n");
   abt_for(inner_num_es, inner_num_es*144, work_f, 1);
 }
 

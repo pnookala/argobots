@@ -17,6 +17,7 @@
 #include <string.h>
 #include <sys/time.h>
 #include <omp.h>
+#include <immintrin.h>
 
 static inline double get_time()
 {
@@ -33,18 +34,30 @@ void matmul(const real_t * restrict a, const real_t * restrict b,
             real_t * restrict c, int64_t di, int64_t dj, int64_t dk, int64_t aN,
             int64_t bN, int64_t cN)
 {
-    #pragma omp parallel for
+    #pragma omp parallel for num_threads(2)
     for (int64_t j = 0; j < dj; j++)
+    {
         for (int64_t i = 0; i < di; i++)
-            for (int64_t k = 0; k < dk; k++)
-                c[i + j * cN] += a[k + j * aN] * b[i + k * bN];
+        {    
+            //for (int64_t k = 0; k < dk; k++)
+            //    c[i + j * cN] += a[k + j * aN] * b[i + k * bN];
+            __m128d t = _mm_setzero_pd();
+            for (int64_t k = 0; k < dk; k+=4)
+                t = _mm_add_pd(t, _mm_mul_pd(
+                        _mm_load_pd(&a[k + j * aN]),
+                        _mm_load_pd(&b[i + k * bN])));
+                //args->c[i + j * args->cN] += args->a[k + j * args->aN] * args->b[i + k * args->bN]; 
+            t = _mm_add_pd(t, t);
+            _mm_store_sd(&c[i + j * cN], t);
+        }
+    }
 }
 
 void matadd(const real_t * restrict a, const real_t * restrict b,
             real_t * restrict c, int64_t di, int64_t dj, int64_t aN, int64_t bN,
             int64_t cN)
 {
-    #pragma omp parallel for
+    //#pragma omp parallel for
     for (int64_t j = 0; j < dj; j++)
         for (int64_t i = 0; i < di; i++)
             c[i + j * cN] = a[i + j * aN] + b[i + j * bN];
@@ -55,7 +68,7 @@ void mataddaddminadd(const real_t * restrict a1, const real_t * restrict a2,
                      real_t * restrict c, int64_t di, int64_t dj, int64_t aN,
                      int64_t cN)
 {
-    #pragma omp parallel for
+    //#pragma omp parallel for
     for (int64_t j = 0; j < dj; j++)
         for (int64_t i = 0; i < di; i++)
             c[i + j * cN] = a1[i + j * aN] + a2[i + j * aN] - a3[i + j * aN]
@@ -66,7 +79,7 @@ void matmin(const real_t * restrict a, const real_t * restrict b,
             real_t * restrict c, int64_t di, int64_t dj, int64_t aN, int64_t bN,
             int64_t cN)
 {
-    #pragma omp parallel for
+    //#pragma omp parallel for
     for (int64_t j = 0; j < dj; j++)
         for (int64_t i = 0; i < di; i++)
             c[i + j * cN] = a[i + j * aN] - b[i + j * bN];
@@ -75,7 +88,7 @@ void matmin(const real_t * restrict a, const real_t * restrict b,
 void matassign(const real_t * restrict a, real_t * restrict c,
                int64_t di, int64_t dj, int64_t aN, int64_t cN)
 {
-    #pragma omp parallel for
+    //#pragma omp parallel for
     for (int64_t j = 0; j < dj; j++)
         memcpy(&c[j * cN], &a[j * aN], sizeof(real_t) * di);
 }
@@ -154,9 +167,9 @@ void strassen(const real_t *a,const real_t *b, real_t *c, int64_t dn,
         for (int i = 0; i < 7; i++)
             P[i] = Pbuf + Sn * dn / 2 * i;
         // P1 = S1*S2, P2 = S3*S4, ...
-    	#pragma omp parallel
+    	#pragma omp parallel for num_threads(8)
         	for (int i = 0; i < 7; i++) {
-			#pragma omp task
+		//	#pragma omp task
 				//printf("thread %d\n", omp_get_thread_num());
             			strassen(S[i * 2], S[i * 2 + 1], P[i], dn / 2, Sn);
 		}
