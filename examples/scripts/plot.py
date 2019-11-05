@@ -21,16 +21,19 @@ def main(args):
     #y = [[0 for x in range(w)] for y in range(h)] 
     y = []
     yerr = []
-    num_threads=[72,144,216,288]
+    num_threads=["72","144","216","288","576","1152","2592","5184","10368"]
+    index = np.arange(len(num_threads))
+    print(index)
     test_name=["abt-ves", "abt-no-ves"]
     testname_print=["abt-ves", "abt-no-ves"]
     test_type=sys.argv[1]
-
+    xcol = int(sys.argv[2])
+    bar_width = 0.35
     yname = "Execution Time (Seconds)"
-
     #x1 = int(sys.argv[2]);
     #y1 = int(sys.argv[3]);
-    i = 0;
+    i = 0
+    step = 10
     for host in hostname:
         for test in test_name:
             filename = "out/" + host + "-" + test_type + "-" + test + ".dat"        
@@ -43,31 +46,37 @@ def main(args):
             with open(filename) as csvfile:
                 plots = csv.reader(csvfile, delimiter=' ')
                 for row in plots:
-                    if test_type == "strassen":
-                        p.append(int(row[1]))
-                    else:
-                        p.append(int(row[0]))
+                    p.append(int(row[xcol]))
                     q.append(float(row[2]))
             i += 1;
             for j in range(0,len(p), 10):
                 plotx.append(p[j])
-                ploty.append(float(mean(q[j:j+10])))
-                plotyerr.append(float(np.std(q[j:j+10])))
+                ploty.append(float(mean(q[j:j+step])))
+                plotyerr.append(float(np.std(q[j:j+step])))
             x.append(plotx)
             y.append(ploty)
             yerr.append(plotyerr)
         plotname = test_type
+        print(x)
+        print(y)
         print(yerr)
+        fig, ax = plt.subplots()
+        change = -1 * bar_width/2
         for j in range(0,i):
-            plt.errorbar(x[j], y[j], yerr[j], fmt="-o", label=test_type + "-" + testname_print[j])
+            plt.bar(index + change, y[j], yerr = yerr[j], width=0.35, label=test_type + "-" + testname_print[j])
+            change = -1 * change
+            #plt.errorbar(x[j], y[j], yerr=yerr[j], width=width, label=test_type + "-" + testname_print[j])
 
-        plt.xlabel("#ESs")
+        plt.xlabel("#ULTs (#ES = 72)")
         plt.ylabel(yname)
+        #plt.xscale('log')
         if test_type == "strassen":
             plt.xticks(np.arange(min(x[0]), max(x[0])+1, 5000))
         else:
-            plt.xticks(np.arange(min(x[0]), max(x[0])+1, 72))
+            plt.xticks(index, labels=num_threads)
+            #plt.xticks(np.arange(min(x[0]), max(x[0])+1, 72))
         plt.grid(True)
+        fig.tight_layout()
         plt.legend()
         plt.savefig(plotname, dpi=300)
         i = 0;
