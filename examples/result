@@ -1,8 +1,0 @@
-Number of cores is 72
-Benchmarking matrix multiplication with 1 thread(s)
-
-real	0m15.735s
-user	0m15.728s
-sys	0m0.006s
-
-Benchmarking matrix multiplication with 1 thread(s)

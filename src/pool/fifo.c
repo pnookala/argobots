@@ -52,7 +52,7 @@ struct data {
     int *num_units;
     unit_t *p_head;
     unit_t *p_tail;
-}  __attribute__ ((aligned (64)));
+};//  __attribute__ ((aligned (64)));
 
 typedef struct data data_t;
 

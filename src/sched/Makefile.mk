@@ -9,6 +9,5 @@ abt_sources += \
 	sched/config.c \
 	sched/prio.c \
 	sched/sched.c \
-	sched/randws.c \
-	sched/master.c
-
+	sched/master.c \
+	sched/randws.c

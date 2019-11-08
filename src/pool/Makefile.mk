@@ -8,4 +8,3 @@ abt_sources += \
 	pool/fifo_wait.c \
 	pool/random.c \
 	pool/pool.c
-

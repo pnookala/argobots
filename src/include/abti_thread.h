@@ -542,7 +542,6 @@ void ABTI_xstream_yield(ABTI_sched *p_sched, ABTI_xstream *p_xstream)
     p_thread = p_sched->p_thread;
 
     if (ABTI_sched_get_effective_size(k_thread->k_main_sched) > 0) {
-        //printf("yielding from %d\n", k_thread->rank);
         //printf("yield called by %d\n", p_xstream->rank); 
        /* Now we will push the scheduelr back to the pool so it can be scheduled
         * again */

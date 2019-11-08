@@ -95,10 +95,7 @@ int ABT_init(int argc, char **argv)
     gp_ABTI_global->k_threads = (ABTI_kthread **) ABTU_calloc(
 	    gp_ABTI_global->max_xstreams, sizeof(ABTI_xstream *));
     gp_ABTI_global->num_kthreads = 0;
-    if (gp_ABTI_global->num_cores > 1) 
-        gp_ABTI_global->kthread_lastidx = 1;
-    else
-        gp_ABTI_global->kthread_lastidx = 0;
+    gp_ABTI_global->kthread_lastidx = 0;
 #endif
 
     /* Create a spinlock */
@@ -202,9 +199,21 @@ int ABT_finalize(void)
                         ABT_ERR_INV_THREAD,
                         "ABT_finalize must be called by the primary ULT.");
 
+#ifdef ABT_XSTREAM_USE_VIRTUAL
+    //int total_ves = 0;
+    /*for (int i = 1; i < gp_ABTI_global->num_kthreads; i++) {
+        ABTI_kthread *k_thread = gp_ABTI_global->k_threads[i];
+    //    total_ves += k_thread->num_vxstreams;
+        //printf("rank %d #vES %d\n", i, k_thread->num_vxstreams);
+        ABTD_xstream_context_join(k_thread->ctx);
+    }*/
     /* Set the join request */
     ABTI_kthread_set_request(p_xstream->p_kthread, ABTI_XSTREAM_REQ_JOIN);
     p_xstream->p_kthread->k_req_arg = NULL;
+    //total_ves += p_xstream->p_kthread->num_vxstreams;
+    //printf("rank %d #vES %d\n", 0, p_xstream->p_kthread->num_vxstreams);    
+    //printf("Total #vES : %d\n", total_ves);
+#endif
     ABTI_xstream_set_request(p_xstream, ABTI_XSTREAM_REQ_JOIN);
     /* We wait for the remaining jobs */
     if (p_xstream->state != ABT_XSTREAM_STATE_TERMINATED) {

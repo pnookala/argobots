@@ -8,7 +8,9 @@
 static void ABTI_xstream_set_new_rank(ABTI_xstream *);
 static ABT_bool ABTI_xstream_take_rank(ABTI_xstream *, int);
 static void ABTI_xstream_return_rank(ABTI_xstream *);
-
+#ifdef ABT_XSTREAM_USE_VIRTUAL
+static void ABTI_kthread_return_rank(ABTI_kthread *);
+#endif
 
 /** @defgroup ES Execution Stream (ES)
  * This group is for Execution Stream.
@@ -123,7 +125,7 @@ int ABTI_kthread_create_master(ABTI_kthread **k_thread)
     ABTI_kthread *k_newthread;
         
     //Get handle to existing k_thread if we already exhausted all the cores
-    if(gp_ABTI_global->num_kthreads == gp_ABTI_global->num_cores)
+    /*if(gp_ABTI_global->num_kthreads == gp_ABTI_global->num_cores)
     {
         ABTI_spinlock_acquire(&gp_ABTI_global->kthreads_lock);
         //Get the kthread with minimum virtual ES count
@@ -136,7 +138,7 @@ int ABTI_kthread_create_master(ABTI_kthread **k_thread)
         ABTI_spinlock_release(&gp_ABTI_global->kthreads_lock);
         *k_thread = k_newthread;
         goto fn_exit;
-    }
+    }*/
 
     ABTI_sched* sched;
 
@@ -454,7 +456,7 @@ int ABTI_xstream_start_primary(ABTI_xstream *p_xstream, ABTI_thread *p_thread)
 
     /* Set the CPU affinity for this kernel thread */
     if (gp_ABTI_global->set_affinity == ABT_TRUE) {
-	ABTD_affinity_set(p_kthread->ctx, p_kthread->rank);
+	    ABTD_affinity_set(p_kthread->ctx, p_kthread->rank);
     }
 
 #else
@@ -701,8 +703,9 @@ int ABT_xstream_join(ABT_xstream xstream)
     /* Join only if master scheduler's pool is empty. */
     if(p_xstream->p_kthread->type == ABTI_KTHREAD_TYPE_SECONDARY) {
         ABTI_kthread_set_request(p_xstream->p_kthread, ABTI_XSTREAM_REQ_JOIN);
-        /* We need to manually context switch to scheduler here  */
-    //    abt_errno = ABTD_xstream_context_join(p_xstream->p_kthread->ctx);
+        
+        ABT_thread_yield();
+        ABTD_xstream_context_join(p_xstream->p_kthread->ctx);
     }
 #else
     /* Normal join request */
@@ -1370,7 +1373,7 @@ int ABTI_xstream_check_events(ABTI_xstream *p_xstream, ABT_sched sched)
 {
     int abt_errno = ABT_SUCCESS;
     ABTI_info_check_print_all_thread_stacks();
-  
+ 
     if (p_xstream->request & ABTI_XSTREAM_REQ_JOIN) {
           //||  (p_xstream->request == (ABTI_XSTREAM_REQ_JOIN | 
           //                      ABTI_XSTREAM_REQ_SUSPEND))) {
@@ -1429,7 +1432,7 @@ int ABTI_kthread_check_events(ABTI_kthread *k_thread, ABT_sched sched)
 {
     int abt_errno = ABT_SUCCESS;
     ABTI_info_check_print_all_thread_stacks();
-
+    
     if (k_thread->request & ABTI_XSTREAM_REQ_JOIN) {
         abt_errno = ABT_sched_finish(sched);
         ABTI_CHECK_ERROR(abt_errno);
@@ -1632,7 +1635,8 @@ int ABTI_xstream_free(ABTI_xstream *p_xstream)
     ABTI_spinlock_free(&p_xstream->sched_lock);
 
     ABTU_free(p_xstream);
-    
+   
+ 
    fn_exit:
     return abt_errno;
 
@@ -1735,7 +1739,7 @@ void ABTI_kthread_schedule(void *p_arg)
         k_sched->state = ABT_SCHED_STATE_TERMINATED;
 
         ABTI_spinlock_release(&k_thread->sched_lock);
-        
+       
         request = ABTD_atomic_load_uint32(&k_thread->request);
 #ifdef ABT_CONFIG_HANDLE_POWER_EVENT
         /* If there is a stop request, the ES has to be terminated/ */
@@ -1763,6 +1767,7 @@ void ABTI_kthread_schedule(void *p_arg)
     }
 
     LOG_EVENT("[T%d] terminated\n", k_thread->rank);
+    ABTI_kthread_return_rank(k_thread);
 }
 
 int ABTI_kthread_schedule_thread(ABTI_kthread *k_thread, ABTI_thread *p_thread)
@@ -2494,3 +2499,13 @@ static void ABTI_xstream_return_rank(ABTI_xstream *p_xstream)
     ABTI_spinlock_release(&gp_ABTI_global->xstreams_lock);
 }
 
+#ifdef ABT_XSTREAM_USE_VIRTUAL
+static void ABTI_kthread_return_rank(ABTI_kthread *k_thread)
+{
+    /* Remove this xstream from the global ES array */
+    ABTI_spinlock_acquire(&gp_ABTI_global->kthreads_lock);
+    gp_ABTI_global->k_threads[k_thread->rank] = NULL;
+    gp_ABTI_global->num_kthreads--;
+    ABTI_spinlock_release(&gp_ABTI_global->kthreads_lock);    
+}
+#endif

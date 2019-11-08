@@ -6,6 +6,21 @@
 #define NUM_ES  1
 #define NUM_ITERATIONS 100000000
 
+typedef unsigned long long ticks;
+
+static inline ticks getticks(void) {
+    ticks tsc;
+    asm volatile(
+            "rdtsc;"
+            "shl $32, %%rdx;"
+            "or %%rdx, %%rax"
+            : "=a"(tsc)
+            :
+            : "%rcx", "%rdx");
+
+    return tsc;
+}
+
 void noop(void* arg) {
     for(int i=0; i<NUM_ITERATIONS; i++) {
         asm volatile("");
@@ -22,23 +37,26 @@ int main(int argc, char** argv) {
   int num_threads, loop_count, ret;
     char* summary_file = NULL;
 
-    if(argc == 4) {
+    if(argc == 3) {
         num_threads = atoi(argv[1]);
-        loop_count = atoi(argv[2]);
-        summary_file = argv[3];
-    }
-    else if(argc == 3)  {
-        num_threads = atoi(argv[1]);
-        loop_count = atoi(argv[2]);
+        summary_file = argv[2];
     }
     else {
-        num_threads = NUM_ES;
-        loop_count = NUM_ES;
+        printf("USAGE: <#ESs> <Summary File>\n");
+        exit(-1);
     }
   
   struct timeval start;
   struct timeval stop;
   ABT_xstream *xstreams = NULL;
+  /*ticks* create_start;
+  ticks*  create_end;
+  ticks* join_start;
+  ticks*  join_end;
+  ticks* free_start;
+  ticks*  free_end;*/
+  ticks start_ticks = 0;
+  ticks end_ticks = 0;
   ABT_thread *threads = NULL;
   int set_main_sched_err;
   int start_i = 0;
@@ -47,6 +65,7 @@ int main(int argc, char** argv) {
   gettimeofday(&start, NULL);
   ABT_init(0, NULL);
 
+  
   /* shared pool creation */
 #ifdef SHARED
   ABT_pool_create_basic(ABT_POOL_FIFO, ABT_POOL_ACCESS_MPMC, ABT_TRUE, &pool);
@@ -55,7 +74,14 @@ int main(int argc, char** argv) {
 #endif  
   /* ES creation */
   xstreams = (ABT_xstream *)malloc(sizeof(ABT_xstream) * num_threads);
+  /*create_start = (ticks*)malloc(sizeof(ticks)*num_threads);
+  join_start = (ticks*)malloc(sizeof(ticks)*num_threads);
+  free_start = (ticks*)malloc(sizeof(ticks)*num_threads);
   
+  create_end = (ticks*)malloc(sizeof(ticks)*num_threads);
+  join_end = (ticks*)malloc(sizeof(ticks)*num_threads);
+  free_end = (ticks*)malloc(sizeof(ticks)*num_threads);
+  */
   ABT_xstream_self(&xstreams[0]);
 #ifdef SHARED
     set_main_sched_err = ABT_xstream_set_main_sched_basic(xstreams[0],
@@ -63,7 +89,7 @@ int main(int argc, char** argv) {
                                                           &pool);
     start_i = (set_main_sched_err != ABT_SUCCESS) ? 0 : 1;
 #endif
-  
+  start_ticks = getticks();
   for (i = 1; i < num_threads; i++) {
 #ifdef SHARED
     ABT_xstream_create_basic(ABT_SCHED_DEFAULT, 1, &pool, ABT_SCHED_CONFIG_NULL,
@@ -71,16 +97,18 @@ int main(int argc, char** argv) {
     ABT_xstream_start(xstreams[i]);
 #else
     ABT_xstream_create(ABT_SCHED_NULL, &xstreams[i]);
+    ABT_xstream_join(xstreams[i]);
+    ABT_xstream_free(&xstreams[i]);
 #endif
   }
-
-#ifndef SHARED
+  end_ticks = getticks();
+/*#ifndef SHARED
   for (i = 0; i < num_threads; i++) {
     ABT_xstream_get_main_pools(xstreams[i], 1, &pools[i]);
   }
-#endif
+#endif*/
   /* ULT creation */
-  threads = (ABT_thread *)malloc(sizeof(ABT_thread) * loop_count);
+  /*threads = (ABT_thread *)malloc(sizeof(ABT_thread) * loop_count);
   int each = loop_count/num_threads;
     for (i = 0; i < num_threads; i++) {
     for(int j = 0; j < each; j++) {
@@ -93,13 +121,13 @@ int main(int argc, char** argv) {
 #endif
     }
   }
-
+*/
 //  printf("threads created...joining threads!\n");
   /* join ULTs */
-  for (i = 0; i < loop_count; i++) {
+  /*for (i = 0; i < loop_count; i++) {
     //printf("joining thread %d\n", i);
     ABT_thread_free(&threads[i]);
-  }
+  }*/
 
   /* join ESs */
 #if 0
@@ -108,24 +136,44 @@ int main(int argc, char** argv) {
   for (i = 1; i < num_threads; i++)
 #else
     //printf("calling join on xstreams\n");
-    for (i = 1; i < num_threads; i++)
+    //for (i = 1; i < num_threads; i++)
 #endif
-      {
+     /* {
+        //join_start[i-1] = getticks();
 	    ABT_xstream_join(xstreams[i]);
-	    //ABT_xstream_free(&xstreams[i]);
-    }
+        //join_end[i-1] = getticks();
+        //free_start[i-1] = join_end[i-1];
+	    ABT_xstream_free(&xstreams[i]);
+        //free_end[i-1] = getticks();
+    }*/
 
-  //printf("call finalize\n");
+  //end_ticks = getticks();
+
   ABT_finalize();
   gettimeofday(&stop, NULL);
   float elapsed_time = (float)(stop.tv_sec - start.tv_sec +
                 (stop.tv_usec - start.tv_usec)/(float)1000000);
-    
+   
+  /*double create = 0.0;
+  double join = 0.0;
+  double free = 0.0;
+  for(int i = 0; i < num_threads-1; i++) {
+    create += create_end[i] - create_start[i];
+    join += join_end[i] - join_start[i];
+    free += free_end[i] - free_start[i];
+  }*/ 
+
   if(summary_file != NULL) {
-    FILE *afp = fopen(summary_file, "a");
-    printf("%d %d %f\n", num_threads, loop_count, elapsed_time);
-    fprintf(afp, "%d %d %f\n", num_threads, loop_count, elapsed_time);
-    fclose(afp);
+        FILE *afp = fopen(summary_file, "a");
+        /*printf("%d %f %f %f\n", num_threads, (create)/(num_threads-1),
+                            (join)/(num_threads-1),
+                            (free)/(num_threads-1));
+        fprintf(afp, "%d %f %f %f\n", num_threads, (create)/(num_threads-1),
+                            (join)/(num_threads-1),
+                            (free)/(num_threads-1));*/
+        printf("%d %f\n", num_threads, (end_ticks-start_ticks) * 1.0/(num_threads-1));
+        fprintf(afp, "%d %f\n", num_threads, (end_ticks-start_ticks) * 1.0/(num_threads-1));
+        fclose(afp);
   }
 }
 

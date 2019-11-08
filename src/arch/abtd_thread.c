@@ -163,7 +163,8 @@ static inline void ABTDI_thread_terminate(ABTI_thread *p_thread,
 	    /* If p_thread is a scheduler ULT, we have to context switch to master scheduler.
 	    * Now will stacked schedulers work? How do we handle this? */
 	    ABTI_xstream *p_xstream = p_thread->p_last_xstream;
-	    p_sched = p_xstream->p_kthread->k_main_sched;
+	    //ABTI_xstream *p_xstream = ABTI_local_get_xstream();
+        p_sched = p_xstream->p_kthread->k_main_sched;
 #else
         /* If p_thread is a scheduler ULT, we have to context switch to
          * the parent scheduler. */
