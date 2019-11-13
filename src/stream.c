@@ -33,7 +33,6 @@ int ABT_xstream_create(ABT_sched sched, ABT_xstream *newxstream)
     ABTI_sched *p_sched;
     ABTI_xstream *p_newxstream;
 
-    /* We cannot create a kernel thread each time, figure out when to do it!!  */
 #ifdef ABT_XSTREAM_USE_VIRTUAL
     ABTI_kthread *k_newthread;
     abt_errno = ABTI_kthread_create_master(&k_newthread);
@@ -123,29 +122,45 @@ int ABTI_kthread_create_master(ABTI_kthread **k_thread)
     int abt_errno = ABT_SUCCESS;
 
     ABTI_kthread *k_newthread;
-        
+       
+//#ifdef ABT_XSTREAM_PROFILE_VIRTUAL
+//    unsigned long long start = getticks();
+//#endif 
     //Get handle to existing k_thread if we already exhausted all the cores
     /*if(gp_ABTI_global->num_kthreads == gp_ABTI_global->num_cores)
     {
         ABTI_spinlock_acquire(&gp_ABTI_global->kthreads_lock);
         //Get the kthread with minimum virtual ES count
-        k_newthread = gp_ABTI_global->k_threads[gp_ABTI_global->kthread_lastidx];
-        gp_ABTI_global->kthread_lastidx += 1;
+        //int idx = __sync_fetch_and_add(&gp_ABTI_global->kthread_lastidx, 1);
+        k_newthread = gp_ABTI_global->k_threads[gp_ABTI_global->kthread_lastidx++];
+        //gp_ABTI_global->kthread_lastidx += 1;
         if(gp_ABTI_global->kthread_lastidx == gp_ABTI_global->num_cores)
         {
             gp_ABTI_global->kthread_lastidx = 0;
         }
+        //__sync_val_compare_and_swap(&gp_ABTI_global->kthread_lastidx, gp_ABTI_global->num_cores, 0);
         ABTI_spinlock_release(&gp_ABTI_global->kthreads_lock);
         *k_thread = k_newthread;
+//#ifdef ABT_XSTREAM_PROFILE_VIRTUAL
+//    gp_ABTI_global->sched_oh[gp_ABTI_global->profile_idx] += getticks() - start;
+//#endif
         goto fn_exit;
     }*/
 
     ABTI_sched* sched;
-
+    
     abt_errno = ABTI_sched_create_master(ABT_SCHED_CONFIG_NULL, &sched);
     ABTI_CHECK_ERROR(abt_errno);
 
+//#ifdef ABT_XSTREAM_PROFILE_VIRTUAL
+//    unsigned long long start = getticks();
+//#endif
     k_newthread = (ABTI_kthread*) ABTU_malloc(sizeof(ABTI_kthread));
+//#ifdef ABT_XSTREAM_PROFILE_VIRTUAL
+//    ABTI_spinlock_acquire(&gp_ABTI_global->kthreads_lock);
+//    gp_ABTI_global->malloc_oh[gp_ABTI_global->profile_idx] += getticks() - start;
+//    ABTI_spinlock_release(&gp_ABTI_global->kthreads_lock);
+//#endif 
     k_newthread->k_main_sched = sched;
 
     //k_newthread->v_xstreams = (ABTI_xstream**) ABTU_malloc(sizeof(ABTI_xstream*));
@@ -155,14 +170,25 @@ int ABTI_kthread_create_master(ABTI_kthread **k_thread)
     k_newthread->k_req_arg = NULL;
     
     ABTI_spinlock_create(&k_newthread->sched_lock);
-
+//#ifdef ABT_XSTREAM_PROFILE_VIRTUAL
+//    start = getticks();
+//#endif
     ABTI_spinlock_acquire(&gp_ABTI_global->kthreads_lock);
     k_newthread->rank = gp_ABTI_global->num_kthreads;
     gp_ABTI_global->k_threads[gp_ABTI_global->num_kthreads++] = k_newthread;
     ABTI_spinlock_release(&gp_ABTI_global->kthreads_lock);
-  
+//#ifdef ABT_XSTREAM_PROFILE_VIRTUAL
+//    ABTI_spinlock_acquire(&gp_ABTI_global->kthreads_lock);
+//    gp_ABTI_global->sched_oh[gp_ABTI_global->profile_idx] += getticks() - start;
+//    ABTI_spinlock_release(&gp_ABTI_global->kthreads_lock);
+//#endif  
     k_newthread->type = ABTI_KTHREAD_TYPE_SECONDARY; 
     *k_thread = k_newthread;
+        
+    if (gp_ABTI_global->set_affinity == ABT_TRUE) {
+        ABTD_affinity_set(k_newthread->ctx, k_newthread->rank);
+    }
+
   fn_exit:
     return abt_errno;
 
@@ -377,7 +403,7 @@ int ABTI_xstream_start(ABTI_xstream *p_xstream)
 
     } else {
 #ifdef ABT_XSTREAM_USE_VIRTUAL
-	    ABTI_kthread *k_thread = p_xstream->p_kthread;
+        ABTI_kthread *k_thread = p_xstream->p_kthread;
 	    /* Create the main sched ULT for primary kernel thread */
     	ABTI_sched *k_sched = k_thread->k_main_sched;
     	//if (k_sched == NULL) goto fn_exit;
@@ -390,7 +416,10 @@ int ABTI_xstream_start(ABTI_xstream *p_xstream)
  	    /* Push the scheduler to the list of schedulers */
     	//k_thread->v_xstreams[num_vxstreams] = p_xstream;
 
-    	ABTI_pool *p_pool = k_sched->pools[0];
+#ifdef ABT_XSTREAM_PROFILE_VIRTUAL
+        unsigned long long start = getticks();
+#endif
+        ABTI_pool *p_pool = k_sched->pools[0];
     	ABT_thread h_schedthread;
 
 	    ABTI_sched *p_sched = p_xstream->p_main_sched;
@@ -398,7 +427,11 @@ int ABTI_xstream_start(ABTI_xstream *p_xstream)
     	p_sched->p_thread->unit = p_pool->u_create_from_thread(h_schedthread);
     	abt_errno = ABTI_pool_push(p_pool, p_sched->p_thread->unit, p_xstream);
     	ABTI_CHECK_ERROR(abt_errno);	
-      
+#ifdef ABT_XSTREAM_PROFILE_VIRTUAL
+        ABTI_spinlock_acquire(&gp_ABTI_global->kthreads_lock);
+        gp_ABTI_global->sched_oh[gp_ABTI_global->profile_idx] += getticks() - start;
+        ABTI_spinlock_release(&gp_ABTI_global->kthreads_lock);
+#endif
         if(num_vxstreams == 0) { 
 	        abt_errno = ABTD_xstream_context_create(
 		        ABTI_kthread_launch_main_sched, (void *)p_xstream,
@@ -419,7 +452,6 @@ int ABTI_xstream_start(ABTI_xstream *p_xstream)
         ABTD_affinity_set(p_xstream->ctx, p_xstream->rank);
     }
 #endif
-
   fn_exit:
     return abt_errno;
 
@@ -585,7 +617,6 @@ int ABT_xstream_free(ABT_xstream *xstream)
  */
 int ABT_xstream_join(ABT_xstream xstream)
 {
-    //printf("join call\n");
     int abt_errno = ABT_SUCCESS;
     ABTI_xstream *p_xstream = ABTI_xstream_get_ptr(xstream);
     ABTI_thread *p_thread;
@@ -701,12 +732,11 @@ int ABT_xstream_join(ABT_xstream xstream)
   fn_join:
 #ifdef ABT_XSTREAM_USE_VIRTUAL
     /* Join only if master scheduler's pool is empty. */
-    if(p_xstream->p_kthread->type == ABTI_KTHREAD_TYPE_SECONDARY) {
-        ABTI_kthread_set_request(p_xstream->p_kthread, ABTI_XSTREAM_REQ_JOIN);
-        
-        ABT_thread_yield();
-        ABTD_xstream_context_join(p_xstream->p_kthread->ctx);
-    }
+    //if(p_xstream->p_kthread->type == ABTI_KTHREAD_TYPE_SECONDARY) {
+    //    ABTI_kthread_set_request(p_xstream->p_kthread, ABTI_XSTREAM_REQ_JOIN);
+    //    ABT_thread_yield();
+    //    ABTD_xstream_context_join(p_xstream->p_kthread->ctx);
+    //}
 #else
     /* Normal join request */
     abt_errno = ABTD_xstream_context_join(p_xstream->ctx);
@@ -1767,7 +1797,6 @@ void ABTI_kthread_schedule(void *p_arg)
     }
 
     LOG_EVENT("[T%d] terminated\n", k_thread->rank);
-    ABTI_kthread_return_rank(k_thread);
 }
 
 int ABTI_kthread_schedule_thread(ABTI_kthread *k_thread, ABTI_thread *p_thread)
@@ -2152,10 +2181,10 @@ int ABTI_xstream_set_main_sched(ABTI_xstream *p_xstream, ABTI_sched *p_sched)
     int p;
 
     if (p_xstream->p_main_sched) {
-	if (ABTI_sched_get_effective_size(p_xstream->p_main_sched) > 0) {
-		abt_errno = ABT_ERR_XSTREAM;
-		return abt_errno;
-	}
+	    if (ABTI_sched_get_effective_size(p_xstream->p_main_sched) > 0) {
+		    abt_errno = ABT_ERR_XSTREAM;
+		    return abt_errno;
+	    }   
     }
 
 #ifndef ABT_CONFIG_DISABLE_POOL_CONSUMER_CHECK
@@ -2377,6 +2406,22 @@ void *ABTI_kthread_launch_main_sched(void *p_arg)
     LOG_EVENT("[T%d] started for [E%d]\n", k_thread->rank, p_xstream->rank);
     ABTI_kthread_schedule((void *)k_thread);
     LOG_EVENT("[T%d] end\n", k_thread->rank);
+
+    ABTI_kthread_return_rank(k_thread);
+
+    /* Free the scheduler */
+    /*ABTI_sched *p_cursched = k_thread->k_main_sched;
+    if (p_cursched != NULL) {
+        ABTU_free(p_cursched->pools);
+        ABTU_free(p_cursched);
+    }*/
+
+    /* Free the context */
+    //ABTD_xstream_context_free(&k_thread->ctx);
+    /* Free the spinlock */
+    //ABTI_spinlock_free(&k_thread->sched_lock);
+
+    //ABTU_free(k_thread);
 
     ABTI_local_finalize();
 

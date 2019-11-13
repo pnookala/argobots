@@ -1,0 +1,26 @@
+Jobid: 63754
+qsub -q thing -n 1 -t 5:59 --mode interactive
+Fri Nov 08 15:45:04 2019 +0000 (UTC) submitted with cwd set to: /home/poornimans/pnookala-argobots/argobots
+jobid 63754 submitted from terminal /dev/pts/22
+Fri Nov 08 15:45:23 2019 +0000 (UTC) 
+Fri Nov 08 15:45:23 2019 +0000 (UTC) Command: '/usr/bin/ssh' 'thing03' '/usr/libexec/cobalt/cobalt-launcher.py' '--nf' '/var/tmp/cobalt.63754' '--jobid' '63754' '--cwd' '/home/poornimans/pnookala-argobots/argobots' '--env' 'COBALT_JOBID=63754' '/bin/sleep' '21540'
+Fri Nov 08 15:45:23 2019 +0000 (UTC) 
+Fri Nov 08 15:45:23 2019 +0000 (UTC) Environment:
+Fri Nov 08 15:45:23 2019 +0000 (UTC) SHELL=/bin/bash
+Fri Nov 08 15:45:23 2019 +0000 (UTC) COBALT_NODEFILE=/tmp/tmpT7Kok5
+Fri Nov 08 15:45:23 2019 +0000 (UTC) COBALT_PARTNAME=thing03
+Fri Nov 08 15:45:23 2019 +0000 (UTC) COBALT_JOBID=63754
+Fri Nov 08 15:45:23 2019 +0000 (UTC) COBALT_STARTTIME=1573227909
+Fri Nov 08 15:45:23 2019 +0000 (UTC) LOGNAME=poornimans
+Fri Nov 08 15:45:23 2019 +0000 (UTC) USER=poornimans
+Fri Nov 08 15:45:23 2019 +0000 (UTC) COBALT_ENDTIME=1573249449
+Fri Nov 08 15:45:23 2019 +0000 (UTC) COBALT_PARTSIZE=1
+Fri Nov 08 15:45:23 2019 +0000 (UTC) HOME=/home/poornimans
+Fri Nov 08 15:45:23 2019 +0000 (UTC) COBALT_JOBSIZE=1
+Fri Nov 08 15:45:23 2019 +0000 (UTC) 
+Fri Nov 08 15:45:23 2019 +0000 (UTC) Info: stdin received from /dev/null
+Fri Nov 08 15:45:23 2019 +0000 (UTC) Info: stdout sent to /home/poornimans/pnookala-argobots/argobots/63754.output
+Fri Nov 08 15:45:23 2019 +0000 (UTC) Info: stderr sent to /home/poornimans/pnookala-argobots/argobots/63754.error
+Fri Nov 08 15:45:23 2019 +0000 (UTC) 
+Fri Nov 08 21:44:24 2019 +0000 (UTC) Info: maximum execution time exceeded; initiating job termination
+Fri Nov 08 21:44:40 2019 +0000 (UTC) Info: job is in the process of exiting; user delete request ignored

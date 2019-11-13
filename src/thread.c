@@ -1952,9 +1952,17 @@ int ABTI_thread_create_main_ksched(ABTI_kthread *k_thread, ABTI_sched *k_sched,
 		                                  ABTI_STACK_TYPE_MALLOC, ABT_FALSE);
     else 
         ABTI_thread_attr_init(&attr, NULL, 0, ABTI_STACK_TYPE_MAIN, ABT_FALSE);
+#ifdef ABT_XSTREAM_PROFILE_VIRTUAL
+    unsigned long long start = getticks();
+#endif
     abt_errno = ABTI_ksched_thread_create(ABTI_kthread_schedule, 
                         (void*)k_thread, &attr, ABTI_THREAD_TYPE_MAIN_SCHED, 
                         k_sched, 0, k_thread, &v_newthread);
+#ifdef ABT_XSTREAM_PROFILE_VIRTUAL
+    ABTI_spinlock_acquire(&gp_ABTI_global->kthreads_lock);
+    gp_ABTI_global->ult_oh[gp_ABTI_global->profile_idx++] += getticks() - start;
+    ABTI_spinlock_release(&gp_ABTI_global->kthreads_lock);
+#endif
     ABTI_CHECK_ERROR(abt_errno);
 
     k_sched->p_thread = v_newthread;

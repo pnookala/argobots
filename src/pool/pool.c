@@ -33,8 +33,13 @@ int ABT_pool_create(ABT_pool_def *def, ABT_pool_config config,
 {
     int abt_errno = ABT_SUCCESS;
     ABTI_pool *p_pool;
-
+#ifdef ABT_XSTREAM_PROFILE_VIRTUAL
+    unsigned long long start = getticks();
+#endif
     p_pool = (ABTI_pool *)ABTU_malloc(sizeof(ABTI_pool));
+#ifdef ABT_XSTREAM_PROFILE_VIRTUAL
+   gp_ABTI_global->malloc_oh[gp_ABTI_global->profile_idx] += getticks() - start;
+#endif 
     p_pool->access               = def->access;
     p_pool->automatic            = ABT_FALSE;
     p_pool->num_scheds           = 0;

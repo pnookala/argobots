@@ -59,6 +59,7 @@
 #define ABT_THREAD_TYPE_FULLY_FLEDGED      0
 #define ABT_THREAD_TYPE_DYNAMIC_PROMOTION  1
 #define ABT_XSTREAM_USE_VIRTUAL            1
+//#define ABT_XSTREAM_PROFILE_VIRTUAL        1
 
 #ifdef ABT_XSTREAM_USE_VIRTUAL
 enum ABTI_kthread_type {
@@ -99,6 +100,26 @@ enum ABTI_stack_type {
 /* Macro functions */
 #define ABTI_UNUSED(a)              (void)(a)
 
+#ifdef ABT_XSTREAM_PROFILE_VIRTUAL
+static inline unsigned long long getticks(void) {
+    unsigned long long tsc;
+    asm volatile(
+            "rdtscp;"
+            "shl $32, %%rdx;"
+            "or %%rdx, %%rax"
+            : "=a"(tsc)
+            :
+            : "%rcx", "%rdx");
+
+    return tsc;
+}
+#endif
+
+#define TRACING_SSC_MARK( MARK_ID )                     \
+                asm volatile (                                  \
+                "\n\t  movl $"#MARK_ID", %%ebx"         \
+                "\n\t  .byte 0x64, 0x67, 0x90"          \
+                : : : "%ebx","memory" );
 
 /* Data Types */
 typedef struct ABTI_global          ABTI_global;
@@ -183,6 +204,14 @@ struct ABTI_global {
     ABTI_kthread **k_threads;	/* Kernel thread array, has pointers to p_xstreams */
     int kthread_lastidx;
     ABTI_spinlock kthreads_lock;
+#ifdef ABT_XSTREAM_PROFILE_VIRTUAL
+    unsigned long long *malloc_oh;
+    unsigned long long *ult_oh;
+    unsigned long long *sched_oh;
+    unsigned long long *join_oh;
+    int profile_idx;
+    
+#endif
 #endif
     ABTI_xstream **p_xstreams;   /* ES array */
     ABTI_spinlock xstreams_lock; /* Spinlock protecting p_xstreams. Any write
