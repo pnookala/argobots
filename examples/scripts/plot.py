@@ -21,7 +21,8 @@ def main(args):
     #y = [[0 for x in range(w)] for y in range(h)] 
     y = []
     yerr = []
-    num_threads=["72","144","216","288","576","1152","2592","5184","10368"]
+    #num_threads=["72","144","216","288","576","1152","2592","5184","10368"]
+    num_threads=["72","144","288","576","1152","2592","5184","10368","20736"] #,"41472","72000"]
     index = np.arange(len(num_threads))
     print(index)
     test_name=["abt-ves", "abt-no-ves"]
