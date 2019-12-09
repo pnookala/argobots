@@ -43,15 +43,9 @@ int ABTI_sched_create_master(ABT_sched_config config, ABTI_sched **newsched) {
    int abt_errno = ABT_SUCCESS;
    ABTI_sched *p_sched;
    int p;
-#ifdef ABT_XSTREAM_PROFILE_VIRTUAL
-    unsigned long long start = getticks();
-#endif
    p_sched = (ABTI_sched *) ABTU_malloc(sizeof(ABTI_sched));
     //Create the array of execution streams
    p_sched->pools = (ABT_pool *) ABTU_malloc(p_sched->num_pools * sizeof(ABT_pool));
-#ifdef ABT_XSTREAM_PROFILE_VIRTUAL
-   gp_ABTI_global->malloc_oh[gp_ABTI_global->profile_idx] += getticks() - start;
-#endif
     p_sched->num_pools = 1;
     /* Create random access pool here */
    for (p = 0; p < p_sched->num_pools; p++) {

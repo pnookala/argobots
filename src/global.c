@@ -212,13 +212,15 @@ int ABT_finalize(void)
 
 #ifdef ABT_XSTREAM_USE_VIRTUAL
     //int total_ves = 0;
-    for (int i = 1; i < gp_ABTI_global->num_kthreads; i++) {
+    for (int i = 1; i < gp_ABTI_global->num_cores; i++) {
         ABTI_kthread *k_thread = gp_ABTI_global->k_threads[i];
-        ABTI_kthread_set_request(k_thread, ABTI_XSTREAM_REQ_JOIN);
-        ABT_thread_yield();
-    //    total_ves += k_thread->num_vxstreams;
-        //printf("rank %d #vES %d\n", i, k_thread->num_vxstreams);
-        ABTD_xstream_context_join(k_thread->ctx);
+        if(k_thread != NULL) {
+            ABTI_kthread_set_request(k_thread, ABTI_XSTREAM_REQ_JOIN);
+            ABT_thread_yield();
+            //total_ves += k_thread->num_vxstreams;
+            //printf("rank %d #vES %d\n", i, k_thread->num_vxstreams);
+            ABTD_xstream_context_join(k_thread->ctx);
+        }
     }
     /* Set the join request */
     ABTI_kthread_set_request(p_xstream->p_kthread, ABTI_XSTREAM_REQ_JOIN);
@@ -247,19 +249,21 @@ int ABT_finalize(void)
 
 #ifdef ABT_XSTREAM_USE_VIRTUAL
     /* We have to join all kernel threads */
-    /*for (int i = 1; i < gp_ABTI_global->num_kthreads; i++) {
+    /*for (int i = 1; i < gp_ABTI_global->num_cores; i++) {
 	    LOG_EVENT("[U%" PRIu64 ":E%d] joining all k threads\n",
                   ABTI_thread_get_id(p_thread), p_thread->p_last_xstream->rank);
     	ABTI_kthread *k_thread = gp_ABTI_global->k_threads[i];
-        k_thread->k_req_arg = (void *)p_thread;
-	    ABTI_kthread_set_request(p_xstream->p_kthread, ABTI_XSTREAM_REQ_JOIN);
-        //ABTI_thread_context_switch_thread_to_sched(p_thread, k_thread->k_main_sched);
-    	abt_errno = ABTD_xstream_context_join(k_thread->ctx);
-    }
+        if(k_thread != NULL) {
+            k_thread->k_req_arg = (void *)p_thread;
+	        ABTI_kthread_set_request(p_xstream->p_kthread, ABTI_XSTREAM_REQ_JOIN);
+            //ABTI_thread_context_switch_thread_to_sched(p_thread, k_thread->k_main_sched);
+    	    abt_errno = ABTD_xstream_context_join(k_thread->ctx);
+        }
+    }*/
 
-    LOG_EVENT("[U%" PRIu64 ":E%d] yield to primary master scheduler\n",
-                  ABTI_thread_get_id(p_thread), p_thread->p_last_xstream->rank);
-    *//* After ending the primary virtual ES scheduler */
+    //LOG_EVENT("[U%" PRIu64 ":E%d] yield to primary master scheduler\n",
+    //              ABTI_thread_get_id(p_thread), p_thread->p_last_xstream->rank);
+    /* After ending the primary virtual ES scheduler */
     /*ABTI_kthread *k_thread = ABTI_local_get_kthread();
     k_thread->k_req_arg = (void *)p_thread;
     ABTI_kthread_set_request(k_thread, ABTI_XSTREAM_REQ_JOIN);

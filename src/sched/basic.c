@@ -87,14 +87,13 @@ static int sched_init(ABT_sched sched, ABT_sched_config config)
 
 static void sched_run(ABT_sched sched)
 {
-    uint32_t work_count = 0;
+    uint32_t pop_count = 0;
     void *data;
     sched_data *p_data;
     uint32_t event_freq;
     int num_pools;
     ABT_pool *pools;
     int i;
-    CNT_DECL(run_cnt);
 
     ABTI_xstream *p_xstream = ABTI_local_get_xstream();
     ABTI_sched *p_sched = ABTI_sched_get_ptr(sched);
@@ -104,37 +103,39 @@ static void sched_run(ABT_sched sched)
     event_freq = p_data->event_freq;
     num_pools  = p_data->num_pools;
     pools      = p_data->pools;
-
+    ABT_unit unit = ABT_UNIT_NULL;
+    
     while (1) {
-        CNT_INIT(run_cnt, 0);
-
+        TRACING_SSC_MARK(0x7000);
         /* Execute one work unit from the scheduler's pool */
         for (i = 0; i < num_pools; i++) {
-            ABT_pool pool = pools[i];
-            ABTI_pool *p_pool = ABTI_pool_get_ptr(pool);
+            ABTI_pool *p_pool = ABTI_pool_get_ptr(pools[i]);
             /* Pop one work unit */
-            ABT_unit unit = ABTI_pool_pop(p_pool);
-            if (unit != ABT_UNIT_NULL) {
+            ++pop_count;
+            if ((unit = ABTI_pool_pop(p_pool)) != ABT_UNIT_NULL) {
                 ABTI_xstream_run_unit(p_xstream, unit, p_pool);
-                CNT_INC(run_cnt);
                 break;
             }
         }
 
-        if (++work_count >= event_freq) {
+        if (pop_count >= event_freq) {
             ABTI_xstream_check_events(p_xstream, sched);
-            ABT_bool stop = ABTI_sched_has_to_stop(p_sched, p_xstream);
-            if (stop == ABT_TRUE)
+            if(ABTI_sched_has_to_stop(p_sched, p_xstream) == ABT_TRUE)
                 break;
-            work_count = 0;
-            SCHED_SLEEP(run_cnt, p_data->sleep_time);
+            pop_count = 0;
+#ifdef ABT_XSTREAM_USE_VIRTUAL
+            ABTI_xstream_yield(p_sched, p_xstream);
+#endif
+            SCHED_SLEEP(unit != ABT_UNIT_NULL, p_data->sleep_time);
         }
 #ifdef ABT_XSTREAM_USE_VIRTUAL
-        else {
+        /* Failed pop */
+        if (unit == ABT_UNIT_NULL) {
             /* Switch back to the master scheduler */
             ABTI_xstream_yield(p_sched, p_xstream);
         }
 #endif
+        TRACING_SSC_MARK(0x7010);
     }
 }
 

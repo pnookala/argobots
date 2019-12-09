@@ -544,10 +544,10 @@ END_LOOP:
             args_thread.c = c;
             args_thread.dn = dn;
             args_thread.n = n;
-            ABT_thread_create(pools[pool_idx], strassen_thread, &args_thread, ABT_THREAD_ATTR_NULL, &thread);
+            //ABT_thread_create(pools[pool_idx], strassen_thread, &args_thread, ABT_THREAD_ATTR_NULL, &thread);
 //            __sync_fetch_and_add(&pool_idx, 1);
-	        ABT_thread_join(thread);
-//            strassen_thread(&args_thread);
+	        //ABT_thread_join(thread);
+            strassen_thread(&args_thread);
             //printf("[%d] Elapsed: %f [s]\n", i, t2 - t1);
 	        //ABT_thread_free(&thread);
             //printf("num calls %d num ESs %d\n", num_recursive_calls, num_recursive_calls*num_inner_xstreams);

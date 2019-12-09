@@ -537,16 +537,15 @@ void ABTI_xstream_yield(ABTI_sched *p_sched, ABTI_xstream *p_xstream)
         == ABT_XSTREAM_STATE_TERMINATED) return;    
     //ABTI_sched *k_sched;
     ABTI_kthread *k_thread;
-    ABTI_thread *p_thread;
     k_thread = p_xstream->p_kthread;
-    p_thread = p_sched->p_thread;
 
-    if (ABTI_sched_get_effective_size(k_thread->k_main_sched) > 0) {
-        //printf("yield called by %d\n", p_xstream->rank); 
-       /* Now we will push the scheduelr back to the pool so it can be scheduled
+    if (ABTI_master_sched_get_effective_size(k_thread->k_main_sched) > 0) {
+    //if (ABTI_pool_get_size(k_thread->k_main_sched->pools[0]) > 0) {  
+        /* Now we will push the scheduelr back to the pool so it can be scheduled
         * again */
         ABTI_pool *p_pool = k_thread->k_main_sched->pools[0];
 
+        ABTI_thread *p_thread = p_sched->p_thread;
         ABTI_pool_push(p_pool, p_thread->unit, p_xstream);
         //printf("pushed es %d to pool on kt %d\n", p_xstream->rank, k_thread->rank); 
         LOG_EVENT("[U%" PRIu64 ":E%d] yielding to master\n",

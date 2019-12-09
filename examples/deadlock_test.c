@@ -6,9 +6,12 @@
 #define NUM_ES  1
 #define NUM_ITERATIONS 100000000
 
-void noop(void* arg) {
-    for(int i=0; i<NUM_ITERATIONS; i++) {
-        asm volatile("");
+static int barrier_flag = 0;
+
+void deadlock_recipe(void* arg) {
+    __sync_fetch_and_add(&barrier_flag, 1);
+    while (!__sync_bool_compare_and_swap(&barrier_flag, 5, 5)) {
+        ABT_thread_yield();
     }
 }
 
@@ -84,16 +87,18 @@ int main(int argc, char** argv) {
     for (i = 0; i < num_threads; i++) {
     for(int j = 0; j < each; j++) {
 #ifdef SHARED
-        ret = ABT_thread_create(pool, noop, NULL, ABT_THREAD_ATTR_NULL,
+        ret = ABT_thread_create(pool, deadlock_recipe, NULL, ABT_THREAD_ATTR_NULL,
                                         &threads[i*each+j]);
 #else
-        ret = ABT_thread_create(pools[i], noop, NULL,
+        ret = ABT_thread_create(pools[i], deadlock_recipe, NULL,
                                         ABT_THREAD_ATTR_NULL, &threads[i*each+j]);
 #endif
     }
   }
+        
+  deadlock_recipe(NULL);
 
-//  printf("threads created...joining threads!\n");
+  printf("threads created...joining threads!\n");
   /* join ULTs */
   for (i = 0; i < loop_count; i++) {
     //printf("joining thread %d\n", i);

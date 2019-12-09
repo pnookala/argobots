@@ -539,19 +539,19 @@ ABT_bool ABTI_master_sched_has_to_stop(ABTI_sched *p_sched, ABTI_kthread *k_thre
         goto fn_exit;
     }
 
-    size = ABTI_sched_get_effective_size(p_sched);
+    size = ABTI_master_sched_get_effective_size(p_sched);
     if (size == 0) {
         if (p_sched->request & ABTI_SCHED_REQ_FINISH) {
 	    /* Check join request */
             /* We need to lock in case someone wants to migrate to this
              * scheduler */
-	    ABTI_spinlock_acquire(&k_thread->sched_lock);
-            size_t size = ABTI_sched_get_effective_size(p_sched);
+	        ABTI_spinlock_acquire(&k_thread->sched_lock);
+            size_t size = ABTI_master_sched_get_effective_size(p_sched);
             if (size == 0) {
                 p_sched->state = ABT_SCHED_STATE_TERMINATED;
                 stop = ABT_TRUE;
             } //else {
-                ABTI_spinlock_release(&k_thread->sched_lock);
+            ABTI_spinlock_release(&k_thread->sched_lock);
             //}
         }
     }
@@ -748,6 +748,13 @@ size_t ABTI_sched_get_effective_size(ABTI_sched *p_sched)
         }
     }
     return pool_size;
+}
+
+/* Get the pool size of the master scheduler */
+size_t ABTI_master_sched_get_effective_size(ABTI_sched *k_sched)
+{
+    /* Assumption here is that master scheduler has only one pool */
+    return ABTI_pool_get_size(k_sched->pools[0]);
 }
 
 

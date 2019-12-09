@@ -25,13 +25,9 @@ void matrix_mul(void* args) {
 	threadData* data = (threadData*)args;
   
     for (int i = data->start_i; i < data->end_i; i++)  
-        for (int k = 0 ; k < SIZE ; k++)
-            for (int j = 0 ; j < SIZE ; j++) 
-                matC[i][j] = matC[i][j] + (matA[i][k] * matB[k][j]); 
-
-        //for (int j = 0; j < SIZE; j++)  
-        //        for (int k = 0; k < SIZE; k++)  
-    	//          matC[i][j] += matA[i][k] * matB[k][j];
+         for (int j = 0; j < SIZE; j++)  
+                for (int k = 0; k < SIZE; k++)  
+    	          matC[i][j] += matA[i][k] * matB[k][j];
 
 }
 

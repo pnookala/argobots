@@ -67,8 +67,8 @@ int main(int argc, char** argv) {
   ticks start_ticks;
   ticks end_ticks;
   ticks os_ticks;
-  ticks *diff_create_ticks;
-  ticks *diff_join_ticks;
+  ticks diff_create_ticks;
+  ticks diff_join_ticks;
   //float *times;
 
   //times = (float*)calloc(loop_count, sizeof(float));
@@ -90,27 +90,27 @@ int main(int argc, char** argv) {
     
   //start_ticks = (ticks*)calloc(loop_count, sizeof(ticks));
   //end_ticks = (ticks*)calloc(loop_count, sizeof(ticks));
-  diff_create_ticks = (ticks*)calloc(loop_count, sizeof(ticks));
-  diff_join_ticks = (ticks*)calloc(loop_count, sizeof(ticks));
-  ABT_xstream_self(&xstreams[0]);
+  //diff_create_ticks = (ticks*)calloc(loop_count, sizeof(ticks));
+  //diff_join_ticks = (ticks*)calloc(loop_count, sizeof(ticks));
+  //ABT_xstream_self(&xstreams[0]);
   
   /* warm up */
   //gettimeofday(&start, NULL);
-  //start_ticks = getticks();
-  for (i = 1; i < num_threads; i++) {
+  start_ticks = getticks();
+  for (i = 0; i < num_threads; i++) {
     ABT_xstream_create(ABT_SCHED_NULL, &xstreams[i]);
   }
-    //end_ticks = getticks();
-    //diff_create_ticks = (end_ticks - start_ticks)/(num_threads);
+    end_ticks = getticks();
+    diff_create_ticks = (end_ticks - start_ticks)/(num_threads);
 
- // start_ticks = getticks();
-  for (i=1; i < num_threads; i++) {  
+  start_ticks = getticks();
+  for (i=0; i < num_threads; i++) {  
     ABT_xstream_join(xstreams[i]);  
     //ABT_xstream_free(&xstreams[i]);
   }
-  //end_ticks = getticks();
+  end_ticks = getticks();
 
- // diff_join_ticks = (end_ticks - start_ticks)/(num_threads);
+  diff_join_ticks = (end_ticks - start_ticks)/(num_threads);
   //gettimeofday(&stop, NULL);
 
   //float osthread_time = (float)(stop.tv_sec - start.tv_sec +
@@ -125,10 +125,11 @@ int main(int argc, char** argv) {
     //gettimeofday(&start, NULL);
     for (i = 0; i < 72; i++) {
         //start_ticks[i-1] = getticks();
-        ABT_xstream_create(ABT_SCHED_NULL, &xstreams[i]);
+        es_create(&xstreams[i]);
+        //ABT_xstream_create(ABT_SCHED_NULL, &xstreams[i]);
     }
     end_ticks = getticks();
-    diff_create_ticks[k] = (end_ticks - start_ticks)/72;
+    diff_create_ticks = (end_ticks - start_ticks)/72;
     start_ticks = getticks();
     for (i = 0; i < 72; i++) { 
         //ABT_xstream_get_main_pools(xstreams[i], 1, &pools[i]);
@@ -136,13 +137,14 @@ int main(int argc, char** argv) {
         //ABT_thread_create(pools[i], noop, NULL,
         //                      ABT_THREAD_ATTR_NULL, NULL);
         //diff_ticks[i-1] = (getticks() - start_ticks[i-1]);
-        ABT_xstream_join(xstreams[i]);
+        es_join(&xstreams[i]);
+        //ABT_xstream_join(xstreams[i]);
         //ABT_xstream_free(&xstreams[i]);
         //diff_ticks[i-1] = (getticks() - start_ticks[i-1]);
      }
      //gettimeofday(&stop, NULL);
     end_ticks = getticks();
-    diff_join_ticks[k] = (end_ticks - start_ticks)/72;
+    diff_join_ticks = (end_ticks - start_ticks)/72;
      //float elapsed_time = (float)(stop.tv_sec - start.tv_sec +
      //           (stop.tv_usec - start.tv_usec)/(float)1000000);
      //times[k] = elapsed_time/72.0;
@@ -212,9 +214,9 @@ int main(int argc, char** argv) {
 
   if(summary_file != NULL) {
         FILE *afp = fopen(summary_file, "a");
-        for (int i=0; i < loop_count; i++) {
-            fprintf(afp, "%llu %llu\n", diff_create_ticks[i], diff_join_ticks[i]);
-        }
+        //for (int i=0; i < num_threads-1; i++) {
+        fprintf(afp, "%llu %llu\n", diff_create_ticks, diff_join_ticks);
+        //}
         /*printf("%d %f %f %f\n", num_threads, (create)/(num_threads-1),
                             (join)/(num_threads-1),
                             (free)/(num_threads-1));

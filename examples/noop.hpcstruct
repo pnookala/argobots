@@ -1,0 +1,240 @@
+<?xml version="1.0"?>
+<!DOCTYPE HPCToolkitStructure [
+<!-- ******************************************************************** -->
+<!-- HPCToolkit Structure DTD                                             -->
+<!-- Version 4.7                                                          -->
+<!-- ******************************************************************** -->
+
+<!ELEMENT HPCToolkitStructure (LM)*>
+<!ATTLIST HPCToolkitStructure
+	version CDATA #REQUIRED
+	i       CDATA #REQUIRED
+	n       CDATA #IMPLIED>
+  <!-- Load module: -->
+  <!--   (i)d: unique identifier for cross referencing -->
+  <!--   (n)ame -->
+  <!--   (l)ine range: "beg-end" (inclusive range) -->
+  <!--   (v)ma-range-set: "{[beg-end), [beg-end)...}" -->
+  <!ELEMENT LM (F|P)*>
+  <!ATTLIST LM
+	i CDATA #REQUIRED
+	n CDATA #REQUIRED
+	v CDATA #IMPLIED>
+  <!-- File: -->
+  <!ELEMENT F (P|L|S)*>
+  <!ATTLIST F
+	i CDATA #REQUIRED
+	n CDATA #REQUIRED>
+  <!-- Procedure: ln=link name (if different than name) -->
+  <!ELEMENT P (P|A|L|S|C)*>
+  <!ATTLIST P
+	i  CDATA #REQUIRED
+	n  CDATA #REQUIRED
+	ln CDATA #IMPLIED
+	l  CDATA #IMPLIED
+	s  CDATA #IMPLIED
+	v  CDATA #IMPLIED>
+  <!-- Alien: (f)ilename -->
+  <!ELEMENT A (A|L|S|C)*>
+  <!ATTLIST A
+	i CDATA #REQUIRED
+	f CDATA #IMPLIED
+	n CDATA #IMPLIED
+	ln CDATA #IMPLIED
+	l CDATA #IMPLIED
+	v CDATA #IMPLIED>
+  <!-- Loop -->
+  <!ELEMENT L (A|L|S|C)*>
+  <!ATTLIST L
+	i CDATA #REQUIRED
+	l CDATA #REQUIRED
+	f CDATA #IMPLIED
+	v CDATA #IMPLIED>
+  <!-- Statement -->
+  <!ELEMENT S (S)*>
+  <!ATTLIST S
+	i CDATA #REQUIRED
+	l CDATA #REQUIRED
+	v CDATA #IMPLIED>
+  <!-- Callsite (a special Statement) -->
+  <!ELEMENT C EMPTY>
+  <!ATTLIST C
+	i CDATA #REQUIRED
+	l CDATA #REQUIRED
+	v CDATA #IMPLIED>
+]>
+<HPCToolkitStructure i="0" version="4.7" n="">
+<LM i="2" n="/home/poornimans/pnookala-argobots/argobots/examples/noop" v="{}">
+  <F i="3" n="/home/poornimans/pnookala-argobots/argobots/examples/noop.c">
+    <P i="4" n="noop" l="9" v="{[0x400a30-0x400a31)}">
+      <S i="5" l="9" v="{[0x400a30-0x400a40)}"/>
+      <S i="6" l="13" v="{[0x400a45-0x400a46)}"/>
+      <L i="7" l="10" f="/home/poornimans/pnookala-argobots/argobots/examples/noop.c" v="{[0x400a40-0x400a41)}">
+        <S i="8" l="10" v="{[0x400a40-0x400a45)}"/>
+      </L>
+    </P>
+    <P i="9" n="main" l="15" v="{[0x400a50-0x400a51)}">
+      <S i="10" l="0" v="{[0x400a97-0x400a9e) [0x400aa2-0x400aa9) [0x400acf-0x400ae6) [0x400aeb-0x400af0) [0x400b1e-0x400b23) [0x400b31-0x400b39) [0x400b71-0x400b80) [0x400bbf-0x400bc4) [0x400bd0-0x400bf0) [0x400c42-0x400c47) [0x400c4c-0x400c50) [0x400c62-0x400c67) [0x400c72-0x400c80) [0x400cd7-0x400cdd) [0x400cea-0x400cf0)}"/>
+      <S i="11" l="15" v="{[0x400a50-0x400a61)}"/>
+      <S i="12" l="25" v="{[0x400a61-0x400a6b)}"/>
+      <S i="13" l="26" v="{[0x400a6b-0x400a6f)}"/>
+      <S i="14" l="27" v="{[0x400a7e-0x400a82)}"/>
+      <S i="15" l="28" v="{[0x400a93-0x400a97)}"/>
+      <S i="16" l="31" v="{[0x400a9e-0x400aa2)}"/>
+      <S i="17" l="32" v="{[0x400ab8-0x400abc)}"/>
+      <S i="18" l="45" v="{[0x400ae6-0x400aeb)}"/>
+      <S i="19" l="47" v="{[0x400af0-0x400af7)}"/>
+      <S i="20" l="48" v="{[0x400af7-0x400b00)}"/>
+      <S i="21" l="54" v="{[0x400b00-0x400b16)}"/>
+      <S i="22" l="57" v="{[0x400b16-0x400b1e)}"/>
+      <S i="23" l="59" v="{[0x400b23-0x400b2b)}"/>
+      <S i="24" l="67" v="{[0x400b2b-0x400b31) [0x400c67-0x400c70)}"/>
+      <S i="25" l="73" v="{[0x400b39-0x400b50)}"/>
+      <S i="26" l="78" v="{[0x400b67-0x400b71) [0x400bc4-0x400bc7)}"/>
+      <S i="27" l="83" v="{[0x400b9f-0x400bb4)}"/>
+      <S i="28" l="84" v="{[0x400bb4-0x400bbf)}"/>
+      <S i="29" l="85" v="{[0x400bc7-0x400bd0)}"/>
+      <S i="30" l="99" v="{[0x400c47-0x400c4c)}"/>
+      <S i="31" l="111" v="{[0x400c70-0x400c72)}"/>
+      <S i="32" l="119" v="{[0x400c92-0x400c9c)}"/>
+      <S i="33" l="120" v="{[0x400c9c-0x400ca8)}"/>
+      <S i="34" l="121" v="{[0x400cad-0x400cbc) [0x400cd3-0x400cd7)}"/>
+      <S i="35" l="122" v="{[0x400cbc-0x400cd3)}"/>
+      <S i="36" l="124" v="{[0x400ca8-0x400cad)}"/>
+      <S i="37" l="125" v="{[0x400cdd-0x400cea)}"/>
+      <S i="38" l="127" v="{[0x400cf0-0x400d09)}"/>
+      <S i="39" l="128" v="{[0x400d09-0x400d11)}"/>
+      <S i="40" l="130" v="{[0x400d11-0x400d22)}"/>
+      <L i="41" l="67" f="/home/poornimans/pnookala-argobots/argobots/examples/noop.c" v="{[0x400b50-0x400b51)}">
+        <S i="42" l="67" v="{[0x400b5d-0x400b67)}"/>
+        <S i="43" l="73" v="{[0x400b50-0x400b5d)}"/>
+      </L>
+      <L i="44" l="78" f="/home/poornimans/pnookala-argobots/argobots/examples/noop.c" v="{[0x400b80-0x400b81)}">
+        <S i="45" l="78" v="{[0x400b92-0x400b9f)}"/>
+        <S i="46" l="79" v="{[0x400b80-0x400b92)}"/>
+      </L>
+      <L i="47" l="85" f="/home/poornimans/pnookala-argobots/argobots/examples/noop.c" v="{[0x400bf0-0x400bf1)}">
+        <S i="48" l="0" v="{[0x400bf0-0x400c10)}"/>
+        <S i="49" l="85" v="{[0x400c32-0x400c42)}"/>
+        <L i="50" l="86" f="/home/poornimans/pnookala-argobots/argobots/examples/noop.c" v="{[0x400c10-0x400c11)}">
+          <S i="51" l="86" v="{[0x400c28-0x400c32)}"/>
+          <S i="52" l="91" v="{[0x400c10-0x400c28)}"/>
+        </L>
+      </L>
+      <L i="53" l="99" f="/home/poornimans/pnookala-argobots/argobots/examples/noop.c" v="{[0x400c50-0x400c51)}">
+        <S i="54" l="99" v="{[0x400c58-0x400c62)}"/>
+        <S i="55" l="101" v="{[0x400c50-0x400c58)}"/>
+      </L>
+      <L i="56" l="111" f="/home/poornimans/pnookala-argobots/argobots/examples/noop.c" v="{[0x400c80-0x400c81)}">
+        <S i="57" l="111" v="{[0x400c89-0x400c92)}"/>
+        <S i="58" l="114" v="{[0x400c80-0x400c89)}"/>
+      </L>
+      <A i="59" l="26" f="/home/poornimans/pnookala-argobots/argobots/examples/noop.c" n="" v="{}">
+        <A i="60" l="280" f="/usr/include/stdlib.h" n="atoi" v="{}">
+          <S i="61" l="280" v="{[0x400a6f-0x400a7e)}"/>
+        </A>
+      </A>
+      <A i="62" l="27" f="/home/poornimans/pnookala-argobots/argobots/examples/noop.c" n="" v="{}">
+        <A i="63" l="280" f="/usr/include/stdlib.h" n="atoi" v="{}">
+          <S i="64" l="0" v="{[0x400a8e-0x400a93)}"/>
+          <S i="65" l="280" v="{[0x400a82-0x400a8e)}"/>
+        </A>
+      </A>
+      <A i="66" l="31" f="/home/poornimans/pnookala-argobots/argobots/examples/noop.c" n="" v="{}">
+        <A i="67" l="280" f="/usr/include/stdlib.h" n="atoi" v="{}">
+          <S i="68" l="280" v="{[0x400aa9-0x400ab8)}"/>
+        </A>
+      </A>
+      <A i="69" l="32" f="/home/poornimans/pnookala-argobots/argobots/examples/noop.c" n="" v="{}">
+        <A i="70" l="280" f="/usr/include/stdlib.h" n="atoi" v="{}">
+          <S i="71" l="0" v="{[0x400ac8-0x400acf)}"/>
+          <S i="72" l="280" v="{[0x400abc-0x400ac8)}"/>
+        </A>
+      </A>
+    </P>
+  </F>
+  <F i="73" n="&lt;unknown file&gt; [noop]">
+    <P i="74" n="_init" l="0" v="{[0x4007f8-0x4007f9)}">
+      <S i="75" l="0" v="{[0x4007f8-0x400812)}"/>
+    </P>
+    <P i="76" n="ABT_xstream_get_main_pools@plt" l="0" v="{[0x400830-0x400831)}">
+      <S i="77" l="0" v="{[0x400830-0x400840)}"/>
+    </P>
+    <P i="78" n="ABT_xstream_join@plt" l="0" v="{[0x400840-0x400841)}">
+      <S i="79" l="0" v="{[0x400840-0x400850)}"/>
+    </P>
+    <P i="80" n="fclose@plt" l="0" v="{[0x400850-0x400851)}">
+      <S i="81" l="0" v="{[0x400850-0x400860)}"/>
+    </P>
+    <P i="82" n="gettimeofday@plt" l="0" v="{[0x400860-0x400861)}">
+      <S i="83" l="0" v="{[0x400860-0x400870)}"/>
+    </P>
+    <P i="84" n="ABT_thread_create@plt" l="0" v="{[0x400870-0x400871)}">
+      <S i="85" l="0" v="{[0x400870-0x400880)}"/>
+    </P>
+    <P i="86" n="__libc_start_main@plt" l="0" v="{[0x400880-0x400881)}">
+      <S i="87" l="0" v="{[0x400880-0x400890)}"/>
+    </P>
+    <P i="88" n="fprintf@plt" l="0" v="{[0x400890-0x400891)}">
+      <S i="89" l="0" v="{[0x400890-0x4008a0)}"/>
+    </P>
+    <P i="90" n="ABT_finalize@plt" l="0" v="{[0x4008a0-0x4008a1)}">
+      <S i="91" l="0" v="{[0x4008a0-0x4008b0)}"/>
+    </P>
+    <P i="92" n="strtol@plt" l="0" v="{[0x4008b0-0x4008b1)}">
+      <S i="93" l="0" v="{[0x4008b0-0x4008c0)}"/>
+    </P>
+    <P i="94" n="ABT_xstream_self@plt" l="0" v="{[0x4008c0-0x4008c1)}">
+      <S i="95" l="0" v="{[0x4008c0-0x4008d0)}"/>
+    </P>
+    <P i="96" n="ABT_init@plt" l="0" v="{[0x4008d0-0x4008d1)}">
+      <S i="97" l="0" v="{[0x4008d0-0x4008e0)}"/>
+    </P>
+    <P i="98" n="malloc@plt" l="0" v="{[0x4008e0-0x4008e1)}">
+      <S i="99" l="0" v="{[0x4008e0-0x4008f0)}"/>
+    </P>
+    <P i="100" n="fopen@plt" l="0" v="{[0x4008f0-0x4008f1)}">
+      <S i="101" l="0" v="{[0x4008f0-0x400900)}"/>
+    </P>
+    <P i="102" n="ABT_thread_free@plt" l="0" v="{[0x400900-0x400901)}">
+      <S i="103" l="0" v="{[0x400900-0x400910)}"/>
+    </P>
+    <P i="104" n="ABT_xstream_create@plt" l="0" v="{[0x400910-0x400911)}">
+      <S i="105" l="0" v="{[0x400910-0x400920)}"/>
+    </P>
+    <P i="106" n="ABT_initialized@plt" l="0" v="{[0x400920-0x400921)}">
+      <S i="107" l="0" v="{[0x400920-0x400930)}"/>
+    </P>
+    <P i="108" n="targ400930@plt" l="0" v="{[0x400930-0x400931)}">
+      <S i="109" l="0" v="{[0x400930-0x400938)}"/>
+    </P>
+    <P i="110" n="_start" l="0" v="{[0x400940-0x400941)}">
+      <S i="111" l="0" v="{[0x400940-0x400970)}"/>
+    </P>
+    <P i="112" n="deregister_tm_clones" l="0" v="{[0x400970-0x400971)}">
+      <S i="113" l="0" v="{[0x400970-0x4009a0)}"/>
+    </P>
+    <P i="114" n="register_tm_clones" l="0" v="{[0x4009a0-0x4009a1)}">
+      <S i="115" l="0" v="{[0x4009a0-0x4009e0)}"/>
+    </P>
+    <P i="116" n="__do_global_dtors_aux" l="0" v="{[0x4009e0-0x4009e1)}">
+      <S i="117" l="0" v="{[0x4009e0-0x400a00)}"/>
+    </P>
+    <P i="118" n="frame_dummy" l="0" v="{[0x400a00-0x400a01)}">
+      <S i="119" l="0" v="{[0x400a00-0x400a30)}"/>
+    </P>
+    <P i="120" n="__libc_csu_init" l="0" v="{[0x400d30-0x400d31)}">
+      <S i="121" l="0" v="{[0x400d30-0x400d70) [0x400d86-0x400d95)}"/>
+      <L i="122" l="0" f="&lt;unknown file&gt; [noop]" v="{[0x400d70-0x400d71)}">
+        <S i="123" l="0" v="{[0x400d70-0x400d86)}"/>
+      </L>
+    </P>
+    <P i="124" n="__libc_csu_fini" l="0" v="{[0x400da0-0x400da1)}">
+      <S i="125" l="0" v="{[0x400da0-0x400da2)}"/>
+    </P>
+    <P i="126" n="_fini" l="0" v="{[0x400da4-0x400da5)}">
+      <S i="127" l="0" v="{[0x400da4-0x400dad)}"/>
+    </P>
+  </F>
+</LM>
+</HPCToolkitStructure>

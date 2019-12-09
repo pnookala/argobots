@@ -86,11 +86,13 @@ ABT_bool ABTI_sched_has_unit(ABTI_sched *p_sched)
 #define CNT_INIT(c,v)       c = v
 #define CNT_INC(c)          c++
 #define SCHED_SLEEP(c,t)    if (c == 0) nanosleep(&(t), NULL)
+#define CNT_ZERO(c)         c
 #else
 #define CNT_DECL(c)
 #define CNT_INIT(c,v)
 #define CNT_INC(c)
 #define SCHED_SLEEP(c,t)
+#define CNT_ZERO(c)        
 #endif
 
 #endif /* SCHED_H_INCLUDED */

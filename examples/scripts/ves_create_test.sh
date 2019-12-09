@@ -1,9 +1,9 @@
 #!/bin/bash
 
 test_type=$1
-num_ess=(2 4 8 16 24 36 72)
+num_ess=(72)
 cpus=$(nproc)
-test_name=(xstream-create) #(noop-basic) # barrier-abt-ves) #(noop-private-abt-ves barrier-abt-ves nested-noop-abt)
+test_name=(ves-forkjoin) #(noop-basic) # barrier-abt-ves) #(noop-private-abt-ves barrier-abt-ves nested-noop-abt)
 exec_name=(ves_create) #( barier_test) #(nested_abt barrier_test nested_abt)
 hostname='haswell-72'
 out_dir='out'
@@ -22,10 +22,10 @@ for type in "${test_name[@]}"
         touch out/${rawfilename}.dat
         for ess in "${num_ess[@]}"
         do
-               for i in {1..50}
+               for i in {1..1}
                do
                     echo "[$i] Benchmarking ${type} with $ess ES(s) thread(s)"
-                    ./${exec_name} $ess out/${rawfilename}.dat
+                    ./${exec_name} $ess 1000 out/${rawfilename}.dat
                     echo ""
                done
         done

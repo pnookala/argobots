@@ -603,6 +603,7 @@ void          ABTI_elem_print(ABTI_elem *p_elem, FILE *p_os, int indent,
 int ABTI_xstream_create(ABTI_sched *p_sched, ABTI_xstream **pp_xstream);
 #ifdef ABT_XSTREAM_USE_VIRTUAL
 int ABTI_kthread_create_master(ABTI_kthread **k_thread);
+int ABTI_kthread_create_master_with_rank(ABTI_kthread **k_thread, int rank);
 int ABTI_kthread_join(ABTI_kthread *k_thread);
 #endif
 int ABTI_xstream_create_primary(ABTI_xstream **pp_xstream);
@@ -646,6 +647,7 @@ ABTI_sched_kind ABTI_sched_get_kind(ABT_sched_def *def);
 ABT_bool ABTI_sched_has_to_stop(ABTI_sched *p_sched, ABTI_xstream *p_xstream);
 #ifdef ABT_XSTREAM_USE_VIRTUAL
 ABT_bool ABTI_master_sched_has_to_stop(ABTI_sched *p_sched, ABTI_kthread *k_thread);
+size_t ABTI_master_sched_get_effective_size(ABTI_sched *k_sched);
 #endif
 size_t ABTI_sched_get_size(ABTI_sched *p_sched);
 size_t ABTI_sched_get_total_size(ABTI_sched *p_sched);

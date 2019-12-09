@@ -1,0 +1,4 @@
+Jobid: 79212
+qsub -q thing -n 1 -t 5:59 --mode interactive
+Mon Dec 09 17:25:42 2019 +0000 (UTC) submitted with cwd set to: /home/poornimans/pnookala-argobots/argobots
+jobid 79212 submitted from terminal /dev/pts/1

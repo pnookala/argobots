@@ -1,0 +1,24 @@
+Jobid: 79230
+qsub -q thing -n 1 -t 5:59 --mode interactive
+Mon Dec 09 19:09:13 2019 +0000 (UTC) submitted with cwd set to: /home/poornimans/pnookala-argobots/argobots
+jobid 79230 submitted from terminal /dev/pts/1
+Mon Dec 09 19:09:35 2019 +0000 (UTC) 
+Mon Dec 09 19:09:35 2019 +0000 (UTC) Command: '/usr/bin/ssh' 'thing02' '/usr/libexec/cobalt/cobalt-launcher.py' '--nf' '/var/tmp/cobalt.79230' '--jobid' '79230' '--cwd' '/home/poornimans/pnookala-argobots/argobots' '--env' 'COBALT_JOBID=79230' '/bin/sleep' '21540'
+Mon Dec 09 19:09:35 2019 +0000 (UTC) 
+Mon Dec 09 19:09:35 2019 +0000 (UTC) Environment:
+Mon Dec 09 19:09:35 2019 +0000 (UTC) SHELL=/bin/bash
+Mon Dec 09 19:09:35 2019 +0000 (UTC) COBALT_NODEFILE=/tmp/tmpimn2R3
+Mon Dec 09 19:09:35 2019 +0000 (UTC) COBALT_PARTNAME=thing02
+Mon Dec 09 19:09:35 2019 +0000 (UTC) COBALT_JOBID=79230
+Mon Dec 09 19:09:35 2019 +0000 (UTC) COBALT_STARTTIME=1575918563
+Mon Dec 09 19:09:35 2019 +0000 (UTC) LOGNAME=poornimans
+Mon Dec 09 19:09:35 2019 +0000 (UTC) USER=poornimans
+Mon Dec 09 19:09:35 2019 +0000 (UTC) COBALT_ENDTIME=1575940103
+Mon Dec 09 19:09:35 2019 +0000 (UTC) COBALT_PARTSIZE=1
+Mon Dec 09 19:09:35 2019 +0000 (UTC) HOME=/home/poornimans
+Mon Dec 09 19:09:35 2019 +0000 (UTC) COBALT_JOBSIZE=1
+Mon Dec 09 19:09:35 2019 +0000 (UTC) 
+Mon Dec 09 19:09:35 2019 +0000 (UTC) Info: stdin received from /dev/null
+Mon Dec 09 19:09:35 2019 +0000 (UTC) Info: stdout sent to /home/poornimans/pnookala-argobots/argobots/79230.output
+Mon Dec 09 19:09:35 2019 +0000 (UTC) Info: stderr sent to /home/poornimans/pnookala-argobots/argobots/79230.error
+Mon Dec 09 19:09:35 2019 +0000 (UTC) 

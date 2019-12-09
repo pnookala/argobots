@@ -2,9 +2,9 @@
 
 test_type=$1
 num_ess=(72)
-num_threads=(72 144 288 576 1152 2592 5184 10368 20736) # 41472 72000)
+num_threads=(72) # 144 216 288 576 1152 2592 5184 10368)
 cpus=$(nproc)
-test_name=(noop-basic) #(noop-basic mm-basic) # barrier-abt-ves) #(noop-private-abt-ves barrier-abt-ves nested-noop-abt)
+test_name=(noop-perf-cmp) #(noop-basic mm-basic) # barrier-abt-ves) #(noop-private-abt-ves barrier-abt-ves nested-noop-abt)
 exec_name=(noop) #( barier_test matrixmul) #(nested_abt barrier_test nested_abt)
 hostname='haswell-72'
 out_dir='out'
@@ -25,11 +25,11 @@ for type in "${test_name[@]}"
         do
             for threads in "${num_threads[@]}"
             do
-               for i in {1..10}
+               for i in {1..100}
                 do
-                    echo "[$i] Benchmarking ${type} with $ess ES(s) and ${threads} thread(s)"
+                    #echo "[$i] Benchmarking ${type} with $ess ES(s) and ${threads} thread(s)"
                     ./${exec_name} $ess ${threads}  out/${rawfilename}.dat
-                    echo ""
+                   #echo ""
                 done
             done
         done
