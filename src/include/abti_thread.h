@@ -535,7 +535,7 @@ void ABTI_xstream_yield(ABTI_sched *p_sched, ABTI_xstream *p_xstream)
 {
     if (ABTD_atomic_load_uint32((uint32_t *)&p_xstream->state)
         == ABT_XSTREAM_STATE_TERMINATED) return;    
-    //ABTI_sched *k_sched;
+    
     ABTI_kthread *k_thread;
     k_thread = p_xstream->p_kthread;
 

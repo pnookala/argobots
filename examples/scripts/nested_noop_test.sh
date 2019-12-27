@@ -2,12 +2,11 @@
 
 test_type=$1
 num_ess=(72)
-#num_threads=(72 144 288 576)
-num_threads=(144000) #(1152 2592 5184 10368 20736 41472 72000)
+num_threads=(1) # 144 288 576 1152 2592 5184) # 10368) # 41472 72000)
+num_iterations=(1 10 100 1000 10000 100000 1000000) #10000000)
 cpus=$(nproc)
-test_name=(noop-basic-1cycle)
- #(noop-basic mm-basic) # barrier-abt-ves) #(noop-private-abt-ves barrier-abt-ves nested-noop-abt)
-exec_name=(noop) #( barier_test matrixmul) #(nested_abt barrier_test nested_abt)
+test_name=(nested_noop) #(noop-basic mm-basic) # barrier-abt-ves) #(noop-private-abt-ves barrier-abt-ves nested-noop-abt)
+exec_name=(nested_abt) #( barier_test matrixmul) #(nested_abt barrier_test nested_abt)
 hostname='haswell-72'
 out_dir='out'
 #$(awk '{print $1}' /etc/hostname)
@@ -27,10 +26,10 @@ for type in "${test_name[@]}"
         do
             for threads in "${num_threads[@]}"
             do
-               for i in {1..1}
+               for i in "${num_iterations[@]}"
                 do
-                    echo "[$i] Benchmarking ${type} with $ess ES(s) and ${threads} thread(s)"
-                    ./${exec_name} $ess ${threads}  out/${rawfilename}.dat
+                    echo "Benchmarking ${type} with $ess ES(s), ${threads} thread(s) and $i NOOPs"
+                    ./${exec_name} $ess ${threads} $i out/${rawfilename}.dat
                     echo ""
                 done
             done

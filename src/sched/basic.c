@@ -51,6 +51,9 @@ static int sched_init(ABT_sched sched, ABT_sched_config config)
     int abt_errno = ABT_SUCCESS;
     int num_pools;
 
+    ABTI_sched *p_sched = ABTI_sched_get_ptr(sched);
+    ABTI_CHECK_NULL_SCHED_PTR(p_sched);
+
     /* Default settings */
     sched_data *p_data = (sched_data *)ABTU_malloc(sizeof(sched_data));
     p_data->event_freq = ABTI_global_get_sched_event_freq();
@@ -63,11 +66,10 @@ static int sched_init(ABT_sched sched, ABT_sched_config config)
     ABT_sched_config_read(config, 1, &p_data->event_freq);
 
     /* Save the list of pools */
-    ABT_sched_get_num_pools(sched, &num_pools);
+    num_pools = p_sched->num_pools;
     p_data->num_pools = num_pools;
     p_data->pools = (ABT_pool *)ABTU_malloc(num_pools * sizeof(ABT_pool));
-    abt_errno = ABT_sched_get_pools(sched, num_pools, 0, p_data->pools);
-    ABTI_CHECK_ERROR(abt_errno);
+    memcpy(p_data->pools, p_sched->pools, sizeof(ABT_pool) * num_pools);
 
     /* Sort pools according to their access mode so the scheduler can execute
        work units from the private pools. */
@@ -75,7 +77,7 @@ static int sched_init(ABT_sched sched, ABT_sched_config config)
         sched_sort_pools(num_pools, p_data->pools);
     }
 
-    abt_errno = ABT_sched_set_data(sched, (void *)p_data);
+    p_sched->data = p_data;
 
   fn_exit:
     return abt_errno;
@@ -106,7 +108,6 @@ static void sched_run(ABT_sched sched)
     ABT_unit unit = ABT_UNIT_NULL;
     
     while (1) {
-        TRACING_SSC_MARK(0x7000);
         /* Execute one work unit from the scheduler's pool */
         for (i = 0; i < num_pools; i++) {
             ABTI_pool *p_pool = ABTI_pool_get_ptr(pools[i]);
@@ -135,7 +136,6 @@ static void sched_run(ABT_sched sched)
             ABTI_xstream_yield(p_sched, p_xstream);
         }
 #endif
-        TRACING_SSC_MARK(0x7010);
     }
 }
 

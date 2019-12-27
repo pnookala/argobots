@@ -2,9 +2,25 @@
 #include <stdlib.h>
 #include <abt.h>
 #include <unistd.h>
-#include <sys/time.h>
-#define NUM_ES  1
-#define NUM_ITERATIONS 100000000
+#include <time.h>
+#define NUM_ES          1
+#define NUM_ITERATIONS  1 //100000000
+#define NUM_REPEAT      100
+
+typedef unsigned long long ticks;
+
+static inline ticks getticks(void) {
+    ticks tsc;
+    asm volatile(
+            "rdtscp;"
+            "shl $32, %%rdx;"
+            "or %%rdx, %%rax"
+            : "=a"(tsc)
+            :
+            : "%rcx", "%rdx");
+
+    return tsc;
+}
 
 void noop(void* arg) {
     for(int i=0; i<NUM_ITERATIONS; i++) {
@@ -35,17 +51,24 @@ int main(int argc, char** argv) {
         loop_count = NUM_ES;
     }
   
-  struct timeval start;
-  struct timeval stop;
+  struct timespec tstart, tend;
   ABT_xstream *xstreams = NULL;
   ABT_thread *threads = NULL;
   int set_main_sched_err;
   int start_i = 0;
-  int initialized = ABT_initialized() != ABT_ERR_UNINITIALIZED;
+  double *diff_time = (double*)malloc(sizeof(double) * NUM_REPEAT);
   /* initialization */
-  gettimeofday(&start, NULL);
-  ABT_init(0, NULL);
-
+  clock_gettime(CLOCK_MONOTONIC, &tstart);
+  noop(NULL);
+  clock_gettime(CLOCK_MONOTONIC, &tend);
+  
+  double noop_time =(tend.tv_sec - tstart.tv_sec)*1000 + 
+                    ((tend.tv_nsec - tstart.tv_nsec) / 1E6);
+  
+  /* Repeat to get stable results */
+  for (int count = 0; count < NUM_REPEAT; count++) {
+    clock_gettime(CLOCK_MONOTONIC, &tstart);
+    ABT_init(0, NULL);
   /* shared pool creation */
 #ifdef SHARED
   ABT_pool_create_basic(ABT_POOL_FIFO, ABT_POOL_ACCESS_MPMC, ABT_TRUE, &pool);
@@ -115,19 +138,26 @@ int main(int argc, char** argv) {
     }
 
   //printf("call finalize\n");
-  ABT_finalize();
-  gettimeofday(&stop, NULL);
-  float elapsed_time = (float)(stop.tv_sec - start.tv_sec +
-                (stop.tv_usec - start.tv_usec)/(float)1000000);
+   ABT_finalize();
+    clock_gettime(CLOCK_MONOTONIC, &tend);
+    free(pools);
+    free(threads);
+    free(xstreams);
+    diff_time[count] = (tend.tv_sec - tstart.tv_sec)*1000 + 
+                        ((tend.tv_nsec - tstart.tv_nsec) / 1E6);
+  }
+    //gettimeofday(&stop, NULL);
+  //float elapsed_time = (float)(stop.tv_sec - start.tv_sec +
+  //              (stop.tv_usec - start.tv_usec)/(float)1000000);
 
- 
+   
   if(summary_file != NULL) {
     FILE *afp = fopen(summary_file, "a");
-    printf("%d %d %f\n", num_threads, loop_count, elapsed_time);
-    fprintf(afp, "%d %d %f\n", num_threads, loop_count, elapsed_time);
+    for(int count = 0; count < NUM_REPEAT; count++) {
+        printf("%d %d %lf %lf\n", num_threads, loop_count, noop_time, diff_time[count]);
+        fprintf(afp, "%d %d %lf %lf\n", num_threads, loop_count, noop_time, diff_time[count]);
+    }    
     fclose(afp);
   }
-  free(pools);
-  free(xstreams);
 }
 

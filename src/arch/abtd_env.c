@@ -10,7 +10,7 @@
 #define ABTD_KEY_TABLE_DEFAULT_SIZE     4
 #define ABTD_THREAD_DEFAULT_STACKSIZE   16384
 #define ABTD_SCHED_DEFAULT_STACKSIZE    (4*1024*1024)
-#define ABTD_SCHED_EVENT_FREQ           50
+#define ABTD_SCHED_EVENT_FREQ           1
 #define ABTD_SCHED_SLEEP_NSEC           100
 
 #define ABTD_OS_PAGE_SIZE               (4*1024)
@@ -78,7 +78,7 @@ void ABTD_env_init(ABTI_global *p_global)
     if (env != NULL) {
         p_global->max_xstreams = atoi(env);
     } else {
-        p_global->max_xstreams = p_global->num_cores;
+        p_global->max_xstreams = p_global->num_cores * 2;
     }
 
     /* Default key table size */

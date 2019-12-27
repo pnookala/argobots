@@ -22,3 +22,4 @@ Mon Dec 09 19:09:35 2019 +0000 (UTC) Info: stdin received from /dev/null
 Mon Dec 09 19:09:35 2019 +0000 (UTC) Info: stdout sent to /home/poornimans/pnookala-argobots/argobots/79230.output
 Mon Dec 09 19:09:35 2019 +0000 (UTC) Info: stderr sent to /home/poornimans/pnookala-argobots/argobots/79230.error
 Mon Dec 09 19:09:35 2019 +0000 (UTC) 
+Mon Dec 09 23:03:40 2019 +0000 (UTC) Info: user delete requested with signal SIGTERM by user poornimans

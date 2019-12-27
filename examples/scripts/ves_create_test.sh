@@ -22,10 +22,10 @@ for type in "${test_name[@]}"
         touch out/${rawfilename}.dat
         for ess in "${num_ess[@]}"
         do
-               for i in {1..1}
+               for i in {1..1000}
                do
                     echo "[$i] Benchmarking ${type} with $ess ES(s) thread(s)"
-                    ./${exec_name} $ess 1000 out/${rawfilename}.dat
+                    ./${exec_name} $ess 1 out/${rawfilename}.dat
                     echo ""
                done
         done
