@@ -605,6 +605,7 @@ int ABTI_xstream_create(ABTI_sched *p_sched, ABTI_xstream **pp_xstream);
 int ABTI_kthread_create_master(ABTI_kthread **k_thread);
 int ABTI_kthread_create_master_with_rank(ABTI_kthread **k_thread, int rank);
 int ABTI_kthread_join(ABTI_kthread *k_thread);
+int ABTI_kthread_free(ABTI_kthread *k_thread);
 #endif
 int ABTI_xstream_create_primary(ABTI_xstream **pp_xstream);
 int ABTI_xstream_start(ABTI_xstream *p_xstream);

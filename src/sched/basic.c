@@ -87,6 +87,19 @@ static int sched_init(ABT_sched sched, ABT_sched_config config)
     goto fn_exit;
 }
 
+static inline unsigned long long getticks(void) {
+    unsigned long long tsc;
+    asm volatile(
+            "rdtscp;"
+            "shl $32, %%rdx;"
+            "or %%rdx, %%rax"
+            : "=a"(tsc)
+            :
+            : "%rcx", "%rdx");
+
+    return tsc;
+}
+
 static void sched_run(ABT_sched sched)
 {
     uint32_t pop_count = 0;

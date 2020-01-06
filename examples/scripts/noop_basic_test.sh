@@ -2,8 +2,8 @@
 
 test_type=$1
 num_ess=(72)
-#num_threads=(72 144 288 576)
-num_threads=(144000) #(1152 2592 5184 10368 20736 41472 72000)
+#num_threads=(41472 72000)
+num_threads=(72 144 288 576 1152 2592 5184 7776 10368 20736 41472 72000) # 144000)
 cpus=$(nproc)
 test_name=(noop-basic-1cycle)
  #(noop-basic mm-basic) # barrier-abt-ves) #(noop-private-abt-ves barrier-abt-ves nested-noop-abt)
@@ -27,7 +27,7 @@ for type in "${test_name[@]}"
         do
             for threads in "${num_threads[@]}"
             do
-               for i in {1..1}
+               for i in {1..10}
                 do
                     echo "[$i] Benchmarking ${type} with $ess ES(s) and ${threads} thread(s)"
                     ./${exec_name} $ess ${threads}  out/${rawfilename}.dat

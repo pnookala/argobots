@@ -51,7 +51,11 @@ int ABTI_sched_create_master(ABT_sched_config config, ABTI_sched **newsched) {
    for (p = 0; p < p_sched->num_pools; p++) {
         abt_errno = ABT_pool_create_random(ABT_POOL_ACCESS_MPMC, 
                        ABT_TRUE, &p_sched->pools[p]);
-    }  
+    }
+  
+    for (p = 0; p < p_sched->num_pools; p++) {
+        ABTI_pool_retain(ABTI_pool_get_ptr(p_sched->pools[p]));
+    }
  
    p_sched->used	= ABTI_SCHED_NOT_USED;
    p_sched->automatic	= ABT_TRUE;
@@ -59,7 +63,7 @@ int ABTI_sched_create_master(ABT_sched_config config, ABTI_sched **newsched) {
    p_sched->request	= 0;
    p_sched->p_thread 	= NULL;
    p_sched->p_ctx	= NULL;
-
+   p_sched->type    = ABT_SCHED_TYPE_ULT;
    p_sched->init	= sched_init;
    p_sched->run		= sched_run;
    p_sched->free	= sched_free;

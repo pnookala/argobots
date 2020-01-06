@@ -212,7 +212,7 @@ int ABT_finalize(void)
 
 #ifdef ABT_XSTREAM_USE_VIRTUAL
     //int total_ves = 0;
-    for (int i = 1; i < gp_ABTI_global->num_cores; i++) {
+    /*for (int i = 1; i < gp_ABTI_global->num_cores; i++) {
         ABTI_kthread *k_thread = gp_ABTI_global->k_threads[i];
         if(k_thread != NULL) {
             ABTI_kthread_set_request(k_thread, ABTI_XSTREAM_REQ_JOIN);
@@ -221,7 +221,7 @@ int ABT_finalize(void)
             //printf("rank %d #vES %d\n", i, k_thread->num_vxstreams);
             ABTD_xstream_context_join(k_thread->ctx);
         }
-    }
+    }*/
     /* Set the join request */
     ABTI_kthread_set_request(p_xstream->p_kthread, ABTI_XSTREAM_REQ_JOIN);
     p_xstream->p_kthread->k_req_arg = NULL;
@@ -272,16 +272,6 @@ int ABT_finalize(void)
     LOG_EVENT("[U%" PRIu64 ":E%d] resume after yield\n",
                   ABTI_thread_get_id(p_thread), p_thread->p_last_xstream->rank);
     */
-#ifdef ABT_XSTREAM_PROFILE_VIRTUAL
-    FILE *afp = fopen("vprof.data", "a");
-    for(int i = 0; i < gp_ABTI_global->profile_idx; i++) {
-        fprintf(afp, "%llu %llu %llu %llu\n", gp_ABTI_global->malloc_oh[i],
-                                gp_ABTI_global->ult_oh[i], 
-                                gp_ABTI_global->sched_oh[i],
-                                gp_ABTI_global->join_oh[i]);
-    }
-    fclose(afp);
-#endif
 #endif
 
     /* Remove the primary ULT */
@@ -301,6 +291,9 @@ int ABT_finalize(void)
     /* Free the ES array */
     ABTU_free(gp_ABTI_global->p_xstreams);
 
+#ifdef ABT_XSTREAM_USE_VIRTUAL
+    ABTU_free(gp_ABTI_global->k_threads);
+#endif
     /* Finalize the memory pool */
     ABTI_mem_finalize(gp_ABTI_global);
 

@@ -83,19 +83,23 @@ int main(int argc, char** argv) {
   //start_ticks = getticks();
   for (i = 1; i < num_threads; i++) {
     ABT_xstream_create(ABT_SCHED_NULL, &xstreams[i]);
-  }
+  //}
     //end_ticks = getticks();
     //diff_create_ticks = (end_ticks - start_ticks)/(num_threads);
 
  // start_ticks = getticks();
-  for (i = 1; i < num_threads; i++) {  
+  //for (i = 1; i < num_threads; i++) {  
     ABT_xstream_join(xstreams[i]);
     //ABT_xstream_free(&xstreams[i]);
   }
   //end_ticks = getticks();
 
-  /* warm up */
-  for(k = 0; k < 50; k++) {
+  /*for(i = 1; i < num_threads; i++) {
+    ABT_xstream_free(&xstreams[i]);
+  }
+  os_ticks = (end_ticks - start_ticks)/71;
+  *//* warm up for vES */
+  /*for(k = 0; k < 50; k++) {
     for (i = 0; i < 72; i++) {
         ABT_xstream_create(ABT_SCHED_NULL, &vxstreams[i]);
         ABT_xstream_join(vxstreams[i]);
@@ -104,7 +108,7 @@ int main(int argc, char** argv) {
     for(i = 0; i < 72; i++) {
         ABT_xstream_free(&vxstreams[i]);
     }
-  }
+  }*/
 
   /* actual run */
   for (k = 0; k < loop_count; k++) {

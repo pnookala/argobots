@@ -744,13 +744,14 @@ int ABT_xstream_join(ABT_xstream xstream)
   fn_join:
 #ifdef ABT_XSTREAM_USE_VIRTUAL
     /* Join only if master scheduler's pool is empty. */
-    /*if((p_xstream->p_kthread->type == ABTI_KTHREAD_TYPE_SECONDARY))// && 
+    if((p_xstream->p_kthread->type == ABTI_KTHREAD_TYPE_SECONDARY))// && 
         //(ABTI_pool_get_size(p_xstream->p_kthread->k_main_sched->pools[0]) == 0)) 
     {
         ABTI_kthread_set_request(p_xstream->p_kthread, ABTI_XSTREAM_REQ_JOIN);
         ABT_thread_yield();
         ABTD_xstream_context_join(p_xstream->p_kthread->ctx);
-    }*/
+        ABTI_kthread_free(p_xstream->p_kthread);
+    }
 #else
     /* Normal join request */
     abt_errno = ABTD_xstream_context_join(p_xstream->ctx);
@@ -1688,6 +1689,33 @@ int ABTI_xstream_free(ABTI_xstream *p_xstream)
     HANDLE_ERROR_FUNC_WITH_CODE(abt_errno);
     goto fn_exit;
 }
+
+#ifdef ABT_XSTREAM_USE_VIRTUAL
+int ABTI_kthread_free(ABTI_kthread *k_thread) {
+    int abt_errno = ABT_SUCCESS;
+    
+    LOG_EVENT("[T%d] freed\n", k_thread->rank);
+
+    ABTI_sched *k_cursched = k_thread->k_main_sched;
+    if(k_cursched != NULL) {
+        abt_errno = ABTI_sched_discard_and_free(k_cursched);
+        ABTI_CHECK_ERROR(abt_errno);
+    }
+
+    abt_errno = ABTD_xstream_context_free(&k_thread->ctx);
+    ABTI_CHECK_ERROR(abt_errno);
+
+    ABTI_spinlock_free(&k_thread->sched_lock);
+    ABTU_free(k_thread);
+  
+  fn_exit:
+    return abt_errno;
+
+  fn_fail:
+    HANDLE_ERROR_FUNC_WITH_CODE(abt_errno);
+    goto fn_exit;
+}
+#endif
 
 /* The main scheduler of each ES executes this routine. */
 void ABTI_xstream_schedule(void *p_arg)
