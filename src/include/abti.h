@@ -100,7 +100,6 @@ enum ABTI_stack_type {
 /* Macro functions */
 #define ABTI_UNUSED(a)              (void)(a)
 
-#ifdef ABT_XSTREAM_PROFILE_VIRTUAL
 static inline unsigned long long getticks(void) {
     unsigned long long tsc;
     asm volatile(
@@ -113,7 +112,6 @@ static inline unsigned long long getticks(void) {
 
     return tsc;
 }
-#endif
 
 #define TRACING_SSC_MARK( MARK_ID )                     \
                 asm volatile (                                  \

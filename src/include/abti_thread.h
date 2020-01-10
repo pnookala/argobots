@@ -546,7 +546,12 @@ void ABTI_xstream_yield(ABTI_sched *p_sched, ABTI_xstream *p_xstream)
         ABTI_pool *p_pool = k_thread->k_main_sched->pools[0];
 
         ABTI_thread *p_thread = p_sched->p_thread;
+#ifdef ABT_CONFIG_DISABLE_POOL_PRODUCER_CHECK
+        ABTI_pool_push(p_pool, p_thread->unit);
+#else
         ABTI_pool_push(p_pool, p_thread->unit, p_xstream);
+        //ABTI_CHECK_ERROR(abt_errno);
+#endif 
         //printf("pushed es %d to pool on kt %d\n", p_xstream->rank, k_thread->rank); 
         LOG_EVENT("[U%" PRIu64 ":E%d] yielding to master\n",
               ABTI_thread_get_id(p_thread), p_xstream->rank);

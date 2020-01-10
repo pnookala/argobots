@@ -91,7 +91,6 @@ int ABT_init(int argc, char **argv)
 
 #ifdef ABT_XSTREAM_USE_VIRTUAL
     //printf("Number of cores %d\n", gp_ABTI_global->num_cores);
-    //gp_ABTI_global->num_cores = 1;
     gp_ABTI_global->k_threads = (ABTI_kthread **) ABTU_calloc(
 	    gp_ABTI_global->max_xstreams, sizeof(ABTI_xstream *));
     gp_ABTI_global->num_kthreads = 0;
@@ -212,7 +211,7 @@ int ABT_finalize(void)
 
 #ifdef ABT_XSTREAM_USE_VIRTUAL
     //int total_ves = 0;
-    /*for (int i = 1; i < gp_ABTI_global->num_cores; i++) {
+    for (int i = 1; i < gp_ABTI_global->num_cores; i++) {
         ABTI_kthread *k_thread = gp_ABTI_global->k_threads[i];
         if(k_thread != NULL) {
             ABTI_kthread_set_request(k_thread, ABTI_XSTREAM_REQ_JOIN);
@@ -220,8 +219,9 @@ int ABT_finalize(void)
             //total_ves += k_thread->num_vxstreams;
             //printf("rank %d #vES %d\n", i, k_thread->num_vxstreams);
             ABTD_xstream_context_join(k_thread->ctx);
+            ABTI_kthread_free(k_thread);
         }
-    }*/
+    }
     /* Set the join request */
     ABTI_kthread_set_request(p_xstream->p_kthread, ABTI_XSTREAM_REQ_JOIN);
     p_xstream->p_kthread->k_req_arg = NULL;

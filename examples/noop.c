@@ -6,7 +6,7 @@
 #include "papi.h"
 
 #define NUM_ES          1
-#define NUM_ITERATIONS  1 //100000000
+#define NUM_ITERATIONS  100 //100000000
 #define NUM_REPEAT      1
 
 typedef unsigned long long ticks;
@@ -50,7 +50,7 @@ int main(int argc, char** argv) {
         exit(-1);
     }
 
-  long long values[2];
+  long long values[3];
   long long elapsed_us, elapsed_cyc;
   double ipc;
   PAPI_library_init(PAPI_VER_CURRENT);
@@ -85,15 +85,16 @@ int main(int argc, char** argv) {
 
         printf( __FILE__, __LINE__, "adding PAPI_TOT_INS", retval );
     }*/
+    retval = PAPI_add_named_event(EventSet1, "PAPI_REF_CYC");
 
     elapsed_us = PAPI_get_real_usec(  );
     elapsed_cyc = PAPI_get_real_cyc(  );
 
-    retval = PAPI_start( EventSet1 );
     pools = (ABT_pool *)malloc(sizeof(ABT_pool) * num_threads);
     /* ES creation */
     xstreams = (ABT_xstream *)malloc(sizeof(ABT_xstream) * num_threads);
     
+    retval = PAPI_start( EventSet1 );
     //clock_gettime(CLOCK_MONOTONIC, &tstart); 
     
     ABT_xstream_self(&xstreams[0]);
@@ -142,6 +143,7 @@ int main(int argc, char** argv) {
     retval = PAPI_remove_named_event( EventSet1, "PAPI_TOT_CYC" );
 
     retval = PAPI_remove_named_event( EventSet1, "PAPI_TOT_INS" );
+    retval = PAPI_remove_named_event( EventSet1, "PAPI_REF_CYC" );
 
     retval=PAPI_destroy_eventset( &EventSet1 );
 
@@ -163,11 +165,14 @@ int main(int argc, char** argv) {
   if(summary_file != NULL) {
     FILE *afp = fopen(summary_file, "a");
     for(int count = 0; count < NUM_REPEAT; count++) {
-        printf( "Real us : %lld \nReal cycles : %lld \nPAPI_TOT_CYC : %lld \nPAPI_TOT_INS : %lld \nIPC : %.2lf\n",
-                elapsed_us, elapsed_cyc, values[0], values[1], ipc);
-        fprintf(afp, "%lld %lld %lld %lld %.2lf\n", 
-                elapsed_us, elapsed_cyc, values[0], values[1], ipc);
+        printf( "#ESs : %d\n #ULTs : %d\n Real us : %lld \nReal cycles : %lld \nPAPI_TOT_CYC : %lld \nPAPI_TOT_INS : %lld \n PAPI_REF_CYC : %lld\n IPC : %.2lf\n",
+                num_threads, loop_count, elapsed_us, elapsed_cyc, values[0], values[1], values[2],  ipc);
+        fprintf(afp, "%d %d %lld %lld %lld %lld %lld %.2lf\n", 
+                num_threads, loop_count, elapsed_us, elapsed_cyc, values[0], values[1], values[2], ipc);
     }    
     fclose(afp);
   }
+  
+    PAPI_shutdown();
+    exit(0);
 }

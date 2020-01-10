@@ -527,12 +527,12 @@ int ABT_thread_join(ABT_thread thread)
         LOG_EVENT("[U%" PRIu64 ":E%d] resume after join\n",
                   ABTI_thread_get_id(p_self), p_self->p_last_xstream->rank);
         ABTI_local_set_xstream(p_self->p_last_xstream);
-#ifdef ABT_XSTREAM_USE_VIRTUAL
+/*#ifdef ABT_XSTREAM_USE_VIRTUAL
         if (ABTD_atomic_load_uint32((uint32_t *)&p_thread->p_last_xstream->request)
                                          == ABTI_XSTREAM_REQ_SUSPEND)
             ABTI_xstream_unset_request(p_self->p_last_xstream,
                         ABTI_XSTREAM_REQ_SUSPEND);
-#endif
+#endif*/
         return abt_errno;
     }
 
@@ -2224,9 +2224,12 @@ int ABTI_sched_set_ready(ABTI_sched *p_sched)
     
     ABTI_pool *p_pool = k_thread->k_main_sched->pools[0];
 
+#ifdef ABT_CONFIG_DISABLE_POOL_PRODUCER_CHECK
+    ABTI_pool_push(p_pool, p_thread->unit);
+#else
     abt_errno = ABTI_pool_push(p_pool, p_thread->unit, ABTI_xstream_self());
-    ABTI_CHECK_ERROR(abt_errno); 
-
+    ABTI_CHECK_ERROR(abt_errno);
+#endif
     /* Decrease the number of blocked threads */
     ABTI_pool_dec_num_blocked(p_pool);
 

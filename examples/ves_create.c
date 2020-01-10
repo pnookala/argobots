@@ -68,32 +68,31 @@ int main(int argc, char** argv) {
   ticks start_ticks;
   ticks end_ticks;
   ticks os_ticks;
-  ticks *diff_ticks;
+  ticks diff_ticks;
     
   ABT_init(0, NULL);
   pools = (ABT_pool *)malloc(sizeof(ABT_pool) * num_threads);
   /* ES creation */
   xstreams = (ABT_xstream *)malloc(sizeof(ABT_xstream) * num_threads);
   vxstreams = (ABT_xstream *)malloc(sizeof(ABT_xstream) * num_threads);  
- 
-  diff_ticks = (ticks*)calloc(loop_count, sizeof(ticks));
+  //diff_ticks = (ticks*)calloc(loop_count, sizeof(ticks));
   ABT_xstream_self(&xstreams[0]);
   
   /* warm up */
   //start_ticks = getticks();
   for (i = 1; i < num_threads; i++) {
     ABT_xstream_create(ABT_SCHED_NULL, &xstreams[i]);
-  //}
-    //end_ticks = getticks();
-    //diff_create_ticks = (end_ticks - start_ticks)/(num_threads);
+  }
+  //end_ticks = getticks();
+  //diff_create_ticks = (end_ticks - start_ticks)/(num_threads);
 
- // start_ticks = getticks();
-  //for (i = 1; i < num_threads; i++) {  
+  //start_ticks = getticks();
+  for (i = 1; i < num_threads; i++) {  
     ABT_xstream_join(xstreams[i]);
     //ABT_xstream_free(&xstreams[i]);
   }
   //end_ticks = getticks();
-
+  //diff_ticks = end_ticks - start_ticks;
   /*for(i = 1; i < num_threads; i++) {
     ABT_xstream_free(&xstreams[i]);
   }
@@ -126,10 +125,11 @@ int main(int argc, char** argv) {
         ABT_xstream_join(vxstreams[i]);
     }
     end_ticks = getticks();
-    diff_ticks[k] = (end_ticks - start_ticks)/71;
+    //diff_ticks[k] = (end_ticks - start_ticks)/71;
     for(i = 1; i < 72; i++) {
         ABT_xstream_free(&vxstreams[i]);
     }
+    diff_ticks = end_ticks - start_ticks;
   }
 
   ABT_finalize();
@@ -140,11 +140,11 @@ int main(int argc, char** argv) {
   
   if(summary_file != NULL) {
         FILE *afp = fopen(summary_file, "a");
-        //fprintf(afp, "%llu\n", os_ticks);
-        for (int i=0; i < loop_count; i++) {
-            fprintf(afp, "%llu\n", diff_ticks[i]);//diff_create_ticks[i], diff_join_ticks[i],
+        fprintf(afp, "%llu\n", diff_ticks/(num_threads-1));
+        //for (int i=0; i < loop_count; i++) {
+        //    fprintf(afp, "%llu\n", diff_ticks[i]);//diff_create_ticks[i], diff_join_ticks[i],
                                 //(diff_create_ticks[i]+diff_join_ticks[i]));
-        }
+        //}
         /*printf("%d %f %f %f\n", num_threads, (create)/(num_threads-1),
                             (join)/(num_threads-1),
                             (free)/(num_threads-1));

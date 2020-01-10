@@ -188,10 +188,6 @@ int ABTI_kthread_create_master(ABTI_kthread **k_thread)
 //#endif  
     k_newthread->type = ABTI_KTHREAD_TYPE_SECONDARY; 
     *k_thread = k_newthread;
-        
-    if (gp_ABTI_global->set_affinity == ABT_TRUE) {
-        ABTD_affinity_set(k_newthread->ctx, k_newthread->rank);
-    }   
 
   fn_exit:
     return abt_errno;
@@ -485,13 +481,21 @@ int ABTI_xstream_start(ABTI_xstream *p_xstream)
 	    ABTI_sched *p_sched = p_xstream->p_main_sched;
     	h_schedthread = ABTI_thread_get_handle(p_sched->p_thread);
     	p_sched->p_thread->unit = p_pool->u_create_from_thread(h_schedthread);
-    	abt_errno = ABTI_pool_push(p_pool, p_sched->p_thread->unit, p_xstream);
+#ifdef ABT_CONFIG_DISABLE_POOL_PRODUCER_CHECK
+        ABTI_pool_push(p_pool, p_sched->p_thread->unit);
+#else
+        abt_errno = ABTI_pool_push(p_pool, p_sched->p_thread->unit, p_xstream);
     	ABTI_CHECK_ERROR(abt_errno);
-        
+#endif       
+ 
         if(num_vxstreams == 0) { 
             abt_errno = ABTD_xstream_context_create(
 		        ABTI_kthread_launch_main_sched, (void *)p_xstream,
 		        &k_thread->ctx);
+
+            if (gp_ABTI_global->set_affinity == ABT_TRUE) {
+                ABTD_affinity_set(k_thread->ctx, k_thread->rank);
+            }
         }
 #else
         /* Start the main scheduler on a different ES */
@@ -579,8 +583,12 @@ int ABTI_xstream_start_primary(ABTI_xstream *p_xstream, ABTI_thread *p_thread)
     ABT_thread h_schedthread;
     h_schedthread = ABTI_thread_get_handle(p_sched->p_thread);
     p_sched->p_thread->unit = p_pool->u_create_from_thread(h_schedthread);
+#ifdef ABT_CONFIG_DISABLE_POOL_PRODUCER_CHECK
+    ABTI_pool_push(p_pool, p_thread->unit);
+#else
     abt_errno = ABTI_pool_push(p_pool, p_sched->p_thread->unit, p_xstream);
     ABTI_CHECK_ERROR(abt_errno);
+#endif
 
     LOG_EVENT("[U%" PRIu64 ":E%d] yield\n",
 		                    ABTI_thread_get_id(p_thread), 
@@ -744,14 +752,14 @@ int ABT_xstream_join(ABT_xstream xstream)
   fn_join:
 #ifdef ABT_XSTREAM_USE_VIRTUAL
     /* Join only if master scheduler's pool is empty. */
-    if((p_xstream->p_kthread->type == ABTI_KTHREAD_TYPE_SECONDARY))// && 
+    /*if((p_xstream->p_kthread->type == ABTI_KTHREAD_TYPE_SECONDARY))// && 
         //(ABTI_pool_get_size(p_xstream->p_kthread->k_main_sched->pools[0]) == 0)) 
     {
         ABTI_kthread_set_request(p_xstream->p_kthread, ABTI_XSTREAM_REQ_JOIN);
         ABT_thread_yield();
         ABTD_xstream_context_join(p_xstream->p_kthread->ctx);
         ABTI_kthread_free(p_xstream->p_kthread);
-    }
+    }*/
 #else
     /* Normal join request */
     abt_errno = ABTD_xstream_context_join(p_xstream->ctx);

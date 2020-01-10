@@ -7,7 +7,7 @@
 #include <immintrin.h>
 #include <time.h>
 
-#define NUM_REPEATS 100
+#define NUM_REPEATS 1
 
 typedef double real_t;
 static int main_num_es = 4;
@@ -114,7 +114,6 @@ void abt_for(int num_threads, int loop_count, inner_f inner_func, int level) {
     ABT_xstream_self(&xstreams[0]);
     start_i = 1;
   }
-    
   for (i = start_i; i < num_threads; i++) {
         ABT_xstream_create(ABT_SCHED_NULL, &xstreams[i]);
     }
@@ -122,11 +121,17 @@ void abt_for(int num_threads, int loop_count, inner_f inner_func, int level) {
   for (i = 0; i < num_threads; i++) {
     ABT_xstream_get_main_pools(xstreams[i], 1, &pools[i]);
   }
-  
+
+  if(level == 0) {
+    ABT_xstream_set_main_sched_basic(xstreams[0],
+                                                          ABT_SCHED_DEFAULT, 1,
+                                                          &pools[0]);
+  }
+
   /* ULT creation */
   threads = (abt_thread_data_t *)malloc(sizeof(abt_thread_data_t) * loop_count);
     int each = loop_count/num_threads; 
-    for (i = 0; i < num_threads; i++) {
+    for (i = 0; i < loop_count; i++) {
       for(int j = 0; j < each; j++) {
         threads[i*each+j].inner_func = inner_func;
         ABT_thread_create(pools[i], inner_func_wrapper, &threads[i*each+j],
@@ -143,7 +148,6 @@ void abt_for(int num_threads, int loop_count, inner_f inner_func, int level) {
     {
 	    ABT_xstream_join(xstreams[i]);
     }
-
   ABT_finalize();
 }
 
@@ -153,9 +157,9 @@ void inner2_par(int i) {
 
 void inner_par(void* data) {
 #ifdef USE_NESTED_ULTS
-  ults_for(inner_num_es, 2592, work_f);
+  ults_for(inner_num_es, inner_num_es,  work_f);
 #else
-  abt_for(inner_num_es, 2592, work_f, 1);
+  abt_for(inner_num_es, inner_num_es, work_f, 1);
 #endif
 }
 
