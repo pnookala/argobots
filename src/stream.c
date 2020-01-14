@@ -756,7 +756,10 @@ int ABT_xstream_join(ABT_xstream xstream)
         //(ABTI_pool_get_size(p_xstream->p_kthread->k_main_sched->pools[0]) == 0)) 
     {
         ABTI_kthread_set_request(p_xstream->p_kthread, ABTI_XSTREAM_REQ_JOIN);
-        ABT_thread_yield();
+        while(ABTD_atomic_load_uint32((uint32_t *)&p_xstream->p_kthread->state) 
+            != ABT_XSTREAM_STATE_TERMINATED) {
+            ABT_thread_yield();
+        }
         ABTD_xstream_context_join(p_xstream->p_kthread->ctx);
         ABTI_kthread_free(p_xstream->p_kthread);
     }*/
@@ -1845,6 +1848,9 @@ void ABTI_kthread_schedule(void *p_arg)
             }
         }
     }
+    
+    ABTD_atomic_store_uint32((uint32_t *)&k_thread->state,
+                             ABT_XSTREAM_STATE_TERMINATED);
 
     LOG_EVENT("[T%d] terminated\n", k_thread->rank);
 }

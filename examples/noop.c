@@ -6,7 +6,7 @@
 #include "papi.h"
 
 #define NUM_ES          1
-#define NUM_ITERATIONS  100 //100000000
+#define NUM_ITERATIONS  1 //100 //100000000
 #define NUM_REPEAT      1
 
 typedef unsigned long long ticks;
@@ -63,12 +63,12 @@ int main(int argc, char** argv) {
   double *diff_time = (double*)malloc(sizeof(double) * NUM_REPEAT);
   ticks start_ticks, end_ticks;
 
-  clock_gettime(CLOCK_MONOTONIC, &tstart);
-  noop(NULL);
-  clock_gettime(CLOCK_MONOTONIC, &tend);
+  //clock_gettime(CLOCK_MONOTONIC, &tstart);
+  //noop(NULL);
+  //clock_gettime(CLOCK_MONOTONIC, &tend);
   
-  double noop_time =(tend.tv_sec - tstart.tv_sec) + 
-                    ((tend.tv_nsec - tstart.tv_nsec) / 1E9);
+  //double noop_time =(tend.tv_sec - tstart.tv_sec) + 
+  //                  ((tend.tv_nsec - tstart.tv_nsec) / 1E9);
   /* Repeat to get stable results */
   int EventSet1 = PAPI_NULL;
   int retval;

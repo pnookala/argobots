@@ -7,7 +7,7 @@
 #include <immintrin.h>
 #include <time.h>
 
-#define NUM_REPEATS 1
+#define NUM_REPEATS 100
 
 typedef double real_t;
 static int main_num_es = 4;

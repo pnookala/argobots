@@ -3,7 +3,7 @@
 test_type=$1
 num_ess=(72)
 cpus=$(nproc)
-test_name=(ves-forkjoin-virtual) #(noop-basic) # barrier-abt-ves) #(noop-private-abt-ves barrier-abt-ves nested-noop-abt)
+test_name=(ves-forkjoin-osthread-join) #(noop-basic) # barrier-abt-ves) #(noop-private-abt-ves barrier-abt-ves nested-noop-abt)
 exec_name=(ves_create) #( barier_test) #(nested_abt barrier_test nested_abt)
 hostname='haswell-72'
 out_dir='out'
@@ -25,7 +25,7 @@ for type in "${test_name[@]}"
                for i in {1..1000}
                do
                     echo "[$i] Benchmarking ${type} with $ess ES(s) thread(s)"
-                    ./${exec_name} $ess 1 out/${rawfilename}.dat
+                    ./${exec_name} $ess 0 out/${rawfilename}.dat
                     echo ""
                done
         done

@@ -343,6 +343,7 @@ struct ABTI_kthread {
     int num_vxstreams;          /* Number of virtual ESs */
     int rank;
     ABTI_spinlock sched_lock;   /* Lock for the scheduler management */
+    ABT_xstream_state state;
 };
 #endif
 

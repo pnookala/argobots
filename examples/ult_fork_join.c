@@ -6,8 +6,9 @@
 #include <unistd.h>
 #include <sys/time.h>
 #include <sched.h>
+#include <papi.h>
 #define NUM_ES  1
-#define NUM_ITERATIONS 1000
+#define NUM_ITERATIONS 1
 
 typedef unsigned long long ticks;
 
@@ -39,7 +40,7 @@ void noop(void* arg) {
 int main(int argc, char** argv) {
   int i,k;
   ABT_pool *pools;
-  int num_threads, loop_count, ret;
+  int num_threads, loop_count;
     char* summary_file = NULL;
 
     if(argc == 4) {
@@ -61,6 +62,11 @@ int main(int argc, char** argv) {
   ticks *diff_ticks;
   float *times;
 
+  long long values[3];
+  long long elapsed_us, elapsed_cyc;
+  double ipc;
+  PAPI_library_init(PAPI_VER_CURRENT);
+
   times = (float*)calloc(loop_count, sizeof(float));
    /* initialization */
   //  gettimeofday(&start, NULL);
@@ -72,7 +78,19 @@ int main(int argc, char** argv) {
     //CPU_SET (my_cpu_num, &my_cpu);
     //if (sched_setaffinity (0, sizeof(my_cpu), &my_cpu) == -1)
     //    printf ("setaffinity failed\n");
-    
+  int EventSet1 = PAPI_NULL;
+  int retval;
+  int ret = PAPI_create_eventset(&EventSet1);
+    retval=PAPI_add_named_event(EventSet1,"PAPI_TOT_CYC");
+
+    /* Add PAPI_TOT_INS */
+    retval=PAPI_add_named_event(EventSet1,"PAPI_TOT_INS");
+    /*if (retval!=PAPI_OK) {
+
+        printf( __FILE__, __LINE__, "adding PAPI_TOT_INS", retval );
+    }*/
+    retval = PAPI_add_named_event(EventSet1, "PAPI_REF_CYC");
+
   ABT_init(0, NULL);
   pools = (ABT_pool *)malloc(sizeof(ABT_pool) * num_threads);
   /* ES creation */
@@ -80,7 +98,7 @@ int main(int argc, char** argv) {
     
   //start_ticks = (ticks*)calloc(loop_count, sizeof(ticks));
   //end_ticks = (ticks*)calloc(loop_count, sizeof(ticks));
-  diff_ticks = (ticks*)calloc(NUM_ITERATIONS, sizeof(ticks));
+  //diff_ticks = (ticks*)calloc(NUM_ITERATIONS, sizeof(ticks));
 
   ABT_xstream_self(&xstreams[0]);
   
@@ -109,8 +127,10 @@ int main(int argc, char** argv) {
   for(i = 0; i < num_threads; i++) {
     ABT_thread_join(&threads[i]);
   }*/
-
-  start_ticks = getticks();
+  elapsed_us = PAPI_get_real_usec(  );
+    elapsed_cyc = PAPI_get_real_cyc(  );
+  retval = PAPI_start( EventSet1 );
+  //start_ticks = getticks();
   for (i = 0; i < num_threads; i++) {
     for(int j = 0; j < each; j++) {
 #ifdef SHARED
@@ -123,14 +143,18 @@ int main(int argc, char** argv) {
     }
   }
 
+  retval = PAPI_stop( EventSet1, values );
+    elapsed_us = (PAPI_get_real_usec(  ) - elapsed_us)/(loop_count);
+    elapsed_cyc = PAPI_get_real_cyc(  ) - elapsed_cyc;
+
 //  printf("threads created...joining threads!\n");
   /* join ULTs */
   for (i = 0; i < loop_count; i++) {
     //printf("joining thread %d\n", i);
-    ABT_thread_free(&threads[i]);
+    ABT_thread_join(threads[i]);
   }
-  end_ticks = getticks();
-  diff_ticks[count] = (end_ticks - start_ticks)/loop_count;
+  //end_ticks = getticks();
+  //diff_ticks[count] = (end_ticks - start_ticks)/loop_count;
   }
 
   /* join ESs */
@@ -151,6 +175,20 @@ int main(int argc, char** argv) {
         //free_end[i-1] = getticks();
     }
 
+    retval = PAPI_remove_named_event( EventSet1, "PAPI_TOT_CYC" );
+
+    retval = PAPI_remove_named_event( EventSet1, "PAPI_TOT_INS" );
+    retval = PAPI_remove_named_event( EventSet1, "PAPI_REF_CYC" );
+
+    retval=PAPI_destroy_eventset( &EventSet1 );
+
+    /* Calculate Instructions per Cycle, avoiding division by zero */
+    if (values[0]!=0) {
+        ipc = (double)values[1]/(double)values[0];
+    }
+    else {
+        ipc=0.0;
+    }
   //end_ticks = getticks();
 
   ABT_finalize();
@@ -170,9 +208,14 @@ int main(int argc, char** argv) {
 
   if(summary_file != NULL) {
         FILE *afp = fopen(summary_file, "a");
-        for (int i=0; i < NUM_ITERATIONS; i++) {
-            fprintf(afp, "%d %llu\n", loop_count, diff_ticks[i]);
-        }
+        //for(int count = 0; count < NUM_REPEAT; count++) {
+        printf( "#ESs : %d\n #ULTs : %d\n Real us : %lld \nReal cycles : %lld \nPAPI_TOT_CYC : %lld \nPAPI_TOT_INS : %lld \n PAPI_REF_CYC : %lld\n IPC : %.2lf\n",
+                num_threads, loop_count, elapsed_us, elapsed_cyc, values[0], values[1], values[2],  ipc);
+        fprintf(afp, "%d %d %lld %lld %lld %lld %lld %.2lf\n",
+                num_threads, loop_count, elapsed_us, elapsed_cyc, values[0], values[1], values[2], ipc);
+        //for (int i=0; i < NUM_ITERATIONS; i++) {
+        //    fprintf(afp, "%d %llu\n", loop_count, diff_ticks[i]);
+        //}
         /*printf("%d %f %f %f\n", num_threads, (create)/(num_threads-1),
                             (join)/(num_threads-1),
                             (free)/(num_threads-1));
@@ -181,7 +224,7 @@ int main(int argc, char** argv) {
                             (free)/(num_threads-1));*/
         fclose(afp);
   }
-
+    PAPI_shutdown();
     printf("Done!\n");
 }
 
